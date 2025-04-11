@@ -40,6 +40,22 @@
   //     }
   // }, 100);
 
+  const createTokenColorsContainer = (titleText, linkHref) => {
+    const container = document.createElement("div");
+    container.className = "type-container";
+
+    const title = document.createElement("h4");
+    title.textContent = titleText;
+
+    const link = document.createElement("a");
+    link.href = linkHref;
+    link.textContent = "More Info";
+
+    container.appendChild(title);
+    container.appendChild(link);
+
+    return container;
+  };
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
     const message = event.data; // The json data that the extension sent
@@ -51,28 +67,45 @@
         // Clear existing color inputs
         colors.innerHTML = "";
 
-        // Generate accordion for each color
         message.colors.forEach((color) => {
           const accordion = document.createElement("div");
           accordion.className = "accordion";
 
-          // Accordion header
           const header = document.createElement("div");
           header.className = "accordion-header";
+
           const colorPreview = document.createElement("span");
           colorPreview.className = "color-preview";
           colorPreview.style.backgroundColor = color;
-          const headerText = document.createElement("span");
-          headerText.textContent = color;
-          header.appendChild(colorPreview);
-          header.appendChild(headerText);
-          accordion.appendChild(header);
 
-          // Accordion content
+          const colorInfo = document.createElement("div");
+
+          const colorText = document.createElement("span");
+          colorText.textContent = color;
+
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          const badgeCount =
+            (message.colormaps.colorsMap[color]
+              ? message.colormaps.colorsMap[color].length
+              : 0) +
+            (message.colormaps.tokenColorsMap[color]
+              ? message.colormaps.tokenColorsMap[color].scope.length
+              : 0) +
+            (message.colormaps.syntaxMap[color]
+              ? message.colormaps.syntaxMap[color].length
+              : 0);
+          badge.textContent = badgeCount;
+
+          colorInfo.appendChild(colorText);
+          colorInfo.appendChild(badge);
+
+          header.appendChild(colorPreview);
+          header.appendChild(colorInfo);
+
           const content = document.createElement("div");
           content.className = "accordion-content";
 
-          // Add keys from colorsMap
           if (message.colormaps.colorsMap[color]) {
             const ul = document.createElement("ul");
             message.colormaps.colorsMap[color].forEach((key) => {
@@ -80,11 +113,14 @@
               li.textContent = key;
               ul.appendChild(li);
             });
-            ul.style.marginBottom = "10px";
+            const container = createTokenColorsContainer(
+              "Colors",
+              "https://code.visualstudio.com/api/references/theme-color"
+            );
+            content.appendChild(container);
             content.appendChild(ul);
           }
 
-          // Add keys from tokenColorsMap
           if (message.colormaps.tokenColorsMap[color]) {
             const ul = document.createElement("ul");
             message.colormaps.tokenColorsMap[color].scope.forEach((key) => {
@@ -92,11 +128,15 @@
               li.textContent = key;
               ul.appendChild(li);
             });
-            ul.style.marginBottom = "10px";
+
+            const container = createTokenColorsContainer(
+              "Token Colors",
+              "https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide"
+            );
+            content.appendChild(container);
             content.appendChild(ul);
           }
 
-          // Add keys from syntaxMap
           if (message.colormaps.syntaxMap[color]) {
             const ul = document.createElement("ul");
             message.colormaps.syntaxMap[color].forEach((key) => {
@@ -104,15 +144,24 @@
               li.textContent = key;
               ul.appendChild(li);
             });
-            ul.style.marginBottom = "10px";
+            const container = createTokenColorsContainer(
+              "Syntax Colors",
+              "https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide"
+            );
+
+            content.appendChild(container);
             content.appendChild(ul);
           }
 
+          accordion.appendChild(header);
           accordion.appendChild(content);
           colors.appendChild(accordion);
+        });
 
-          // Toggle accordion content visibility
+        // Add event listeners for accordion toggle
+        document.querySelectorAll(".accordion-header").forEach((header) => {
           header.addEventListener("click", () => {
+            const content = header.nextElementSibling;
             content.classList.toggle("active");
           });
         });

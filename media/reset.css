@@ -28,6 +28,7 @@ img {
   max-width: 100%;
   height: auto;
 }
+/* custom styles*/
 .container-div {
   display: flex;
   margin: 10px 0;
@@ -43,23 +44,30 @@ img {
   outline: none;
 }
 
+/* accordion styles */
 /* Accordion container */
 .accordion {
   margin: 10px 0;
-  border: 1px solid var(--vscode-foreground);
-  border-radius: 5px;
+  border: 1px solid var(--vscode-focusBorder);
+  border-radius: 3px;
   overflow: hidden;
 }
 
 /* Accordion header */
 .accordion-header {
   background-color: var(--vscode-editor-background);
-  padding: 10px;
+  padding: 5px 10px;
   cursor: pointer;
   font-weight: bold;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* Add monospaced font-family for text */
+.accordion-header span {
+  font-size: 0.6em;
+  font-family: monospace;
 }
 
 /* Accordion content */
@@ -70,16 +78,88 @@ img {
   border-top: 1px solid var(--vscode-foreground);
 }
 
+.type-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.type-container:not(:first-child) {
+  margin-top: 10px;
+}
+.type-container a {
+  font-size: 0.6em;
+  color: var(--vscode-foreground);
+}
 /* Show content when active */
 .accordion-content.active {
   display: block;
 }
 
+.accordion-content ul li {
+  font-family: monospace;
+  font-size: 0.7em;
+}
+
 /* Color preview */
 .color-preview {
   display: inline-block;
-  width: 20px;
+  width: 40px;
   height: 20px;
   margin-right: 10px;
   border: 1px solid var(--vscode-focusBorder);
+}
+
+.badge {
+  background-color: var(--vscode-focusBorder);
+  border-radius: 10px;
+  padding: 5px;
+}
+
+/* loading styles */
+.loader-wrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  margin: auto;
+  height: 100%;
+}
+.loader {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  position: relative;
+  animation: rotate 1s linear infinite;
+}
+.loader::before {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0px;
+  border-radius: 50%;
+  border: 5px solid var(--vscode-foreground);
+  animation: prixClipFix 2s linear infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes prixClipFix {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0);
+  }
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0);
+  }
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%);
+  }
+  75% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%);
+  }
+  100% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0);
+  }
 }

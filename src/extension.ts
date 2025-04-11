@@ -1,16 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-//import { CatScratchEditorProvider } from "./editTheme";
-// import { main as requireJSON } from "json-easy-strip";
 const requireJSON = require("json-easy-strip");
 import * as fs from "fs";
 
-// const cats = {
-//   "Coding Cat": "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif",
-//   "Compiling Cat": "https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif",
-//   "Testing Cat": "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif",
-// };
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -94,21 +87,21 @@ type ThemeJson = {
 type ColorUsageMap = Record<string, string[]>;
 type TokenColorMap = Record<
   string,
-  Array<{ name?: string; scope?: string[]; type?: "foreground" | "background" }>
+  { scope: string[]; type: "foreground" | "background" }
 >;
 type SyntaxMap = Record<string, string[]>;
 
 // Define types for global settings
 interface GlobalCustomizations {
-  workbenchColorCustomizations: Record<string, string>;
-  editorTokenColorCustomizations: Array<{
+  colors: Record<string, string>;
+  tokenColors: Array<{
     scope: string[];
     settings: { foreground?: string; background?: string };
   }>;
 }
 
 /**
- * Manages cat coding webview panels
+ * Manages them editor webview
  */
 class ThemeEditorPanel {
   /**
@@ -194,9 +187,10 @@ class ThemeEditorPanel {
     themeJson: ThemeJson;
     globalCustomizations: GlobalCustomizations;
   } | null> {
-    const globalSettingsPath = vscode.Uri.joinPath(
-      vscode.Uri.file(process.env.HOME || ""),
-      ".config/Code/User/settings.json"
+    const globalSettingsPath = vscode.Uri.file(
+      process.platform === "darwin"
+        ? `${process.env.HOME}/Library/Application Support/Code/User/settings.json`
+        : `${process.env.HOME}/.config/Code/User/settings.json`
     );
 
     let globalSettings: any = {};
@@ -204,7 +198,7 @@ class ThemeEditorPanel {
       const settingsContent = await vscode.workspace.fs.readFile(
         globalSettingsPath
       );
-      globalSettings = JSON.parse(settingsContent.toString());
+      globalSettings = requireJSON.strip(settingsContent.toString());
     } catch (err) {
       console.error("Error reading global settings.json:", err);
     }
@@ -231,11 +225,14 @@ class ThemeEditorPanel {
               return {
                 themeJson: json,
                 globalCustomizations: {
-                  workbenchColorCustomizations:
-                    globalSettings["workbench.colorCustomizations"] || {},
-                  editorTokenColorCustomizations:
-                    globalSettings["editor.tokenColorCustomizations"]
-                      ?.textMateRules || [],
+                  colors:
+                    globalSettings["workbench.colorCustomizations"][
+                      `[${themeName}]`
+                    ] || {},
+                  tokenColors:
+                    globalSettings["editor.tokenColorCustomizations"][
+                      `[${themeName}]`
+                    ]?.textMateRules || [],
                 },
               };
             } catch (err) {
@@ -251,29 +248,37 @@ class ThemeEditorPanel {
   }
 
   public getColorUsage(theme: ThemeJson): {
-    colorsMap: Record<string, string[]>;
-    tokenColorsMap: Record<
-      string,
-      { scope: string[]; type: "foreground" | "background" }
-    >;
-    syntaxMap: Record<string, string[]>;
+    colorsMap: ColorUsageMap;
+    tokenColorsMap: TokenColorMap;
+    syntaxMap: SyntaxMap;
   } {
-    const colorsMap: Record<string, string[]> = {};
-    const tokenColorsMap: Record<
-      string,
-      { scope: string[]; type: "foreground" | "background" }
-    > = {};
-    const syntaxMap: Record<string, string[]> = {};
+    const colorsMap: ColorUsageMap = {};
+    const tokenColorsMap: TokenColorMap = {};
+    const syntaxMap: SyntaxMap = {};
+
+    // Helper function to normalize color to 6-digit hex without alpha and uppercase
+    const normalizeColor = (color: string): string => {
+      if (color.length === 4) {
+        return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toUpperCase();
+      } else if (color.length === 5) {
+        return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toUpperCase();
+      } else if (color.length === 9) {
+        return color.substring(0, 7).toUpperCase();
+      }
+      return color.toUpperCase();
+    };
 
     // Process colors
     for (const [property, value] of Object.entries(theme.colors ?? {})) {
-      if (!colorsMap[value]) {
-        colorsMap[value] = [];
+      const normalizedColor = normalizeColor(value);
+      if (!colorsMap[normalizedColor]) {
+        colorsMap[normalizedColor] = [];
       }
-      colorsMap[value].push(property);
+      colorsMap[normalizedColor].push(property);
     }
 
     // Process tokenColors
+    const processedScopes = new Set<string>();
     for (const token of theme.tokenColors ?? []) {
       const { foreground, background } = token.settings;
       const scope = Array.isArray(token.scope)
@@ -282,45 +287,56 @@ class ThemeEditorPanel {
         ? [token.scope]
         : ["global"];
 
-      if (foreground) {
-        if (!tokenColorsMap[foreground]) {
-          tokenColorsMap[foreground] = { scope: [], type: "foreground" };
+      scope.forEach((s) => {
+        if (foreground) {
+          const normalizedForeground = normalizeColor(foreground);
+          if (!processedScopes.has(`${s}-foreground`)) {
+            if (!tokenColorsMap[normalizedForeground]) {
+              tokenColorsMap[normalizedForeground] = {
+                scope: [],
+                type: "foreground",
+              };
+            }
+            tokenColorsMap[normalizedForeground].scope.push(s);
+            processedScopes.add(`${s}-foreground`);
+          }
         }
-        tokenColorsMap[foreground].scope.push(...scope);
-      }
 
-      if (background) {
-        if (!tokenColorsMap[background]) {
-          tokenColorsMap[background] = { scope: [], type: "background" };
+        if (background) {
+          const normalizedBackground = normalizeColor(background);
+          if (!processedScopes.has(`${s}-background`)) {
+            if (!tokenColorsMap[normalizedBackground]) {
+              tokenColorsMap[normalizedBackground] = {
+                scope: [],
+                type: "background",
+              };
+            }
+            tokenColorsMap[normalizedBackground].scope.push(s);
+            processedScopes.add(`${s}-background`);
+          }
         }
-        tokenColorsMap[background].scope.push(...scope);
-      }
+      });
     }
 
     // Process syntax
+    const processedSyntax = new Set<string>();
     for (const [categories, color] of Object.entries(theme.syntax ?? {})) {
-      const cleanCategories = categories
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean); // Remove empty entries
+      const normalizedColor = normalizeColor(color);
+      const scopes = categories.split(",").map((item) => item.trim());
 
-      if (!syntaxMap[color]) {
-        syntaxMap[color] = [];
-      }
-
-      syntaxMap[color].push(...cleanCategories);
+      scopes.forEach((scope) => {
+        if (!processedSyntax.has(`${scope}-${normalizedColor}`)) {
+          if (!syntaxMap[normalizedColor]) {
+            syntaxMap[normalizedColor] = [];
+          }
+          syntaxMap[normalizedColor].push(scope);
+          processedSyntax.add(`${scope}-${normalizedColor}`);
+        }
+      });
     }
 
     return { colorsMap, tokenColorsMap, syntaxMap };
   }
-
-  /*
-  public doRefactor() {
-    // Send a message to the webview webview.
-    // You can send any JSON serializable data.
-    this._panel.webview.postMessage({ command: "refactor" });
-  }
-    */
 
   public dispose() {
     ThemeEditorPanel.currentPanel = undefined;
@@ -334,18 +350,6 @@ class ThemeEditorPanel {
         x.dispose();
       }
     }
-  }
-
-  public hexToRgb(hex: string) {
-    const cleanHex = hex.replace("#", "");
-    const r = parseInt(cleanHex.substring(0, 2), 16);
-    const g = parseInt(cleanHex.substring(2, 4), 16);
-    const b = parseInt(cleanHex.substring(4, 6), 16);
-    return { r, g, b };
-  }
-
-  public getLuminance({ r, g, b }: { r: number; g: number; b: number }) {
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }
 
   public sortColorsByAppereances(colormaps: {
@@ -388,19 +392,43 @@ class ThemeEditorPanel {
     this.getThemeJsonByName(currentTheme as string).then((result) => {
       if (result) {
         const { themeJson, globalCustomizations } = result;
+        // console.log(" theme", JSON.stringify(themeJson));
+        // console.log(" out side!", JSON.stringify(globalCustomizations));
 
+        const maptypes = this.mergeThemeAndCustomizations(
+          themeJson,
+          globalCustomizations
+        );
+        //console.log(" maptypes", JSON.stringify(maptypes));
+        /*
         // Merge global customizations
         themeJson.colors = {
           ...themeJson.colors,
-          ...globalCustomizations.workbenchColorCustomizations,
+          ...globalCustomizations.colors,
         };
-
+        
         themeJson.tokenColors = [
           ...(themeJson.tokenColors || []),
-          ...globalCustomizations.editorTokenColorCustomizations,
+          ...globalCustomizations.tokenColors,
         ];
+        */
+        const fullThemeJson: ThemeJson = {
+          ...themeJson,
+          colors: {
+            ...themeJson.colors,
+            ...globalCustomizations.colors,
+          },
+          tokenColors: [
+            ...(themeJson.tokenColors || []),
+            ...globalCustomizations.tokenColors,
+          ],
+          syntax: {
+            ...(themeJson.syntax || {}),
+          },
+        };
 
-        const colormaps = this.getColorUsage(themeJson);
+        const colormaps = this.getColorUsage(fullThemeJson);
+        console.log(" clorsmaps", JSON.stringify(colormaps));
 
         // Color list without transparency
         const colors = this.sortColorsByAppereances(colormaps);
@@ -415,32 +443,91 @@ class ThemeEditorPanel {
     });
   }
 
+  private mergeThemeAndCustomizations(
+    themeJson: ThemeJson,
+    globalCustomizations: GlobalCustomizations
+  ) {
+    const result: Record<string, { color: string; override?: string }> = {};
+
+    // Process colors from themeJson
+    for (const [property, color] of Object.entries(themeJson.colors || {})) {
+      result[property] = { color };
+    }
+
+    // Process tokenColors from themeJson
+    for (const token of themeJson.tokenColors || []) {
+      const { foreground, background } = token.settings;
+      const scope = Array.isArray(token.scope)
+        ? token.scope
+        : token.scope
+        ? [token.scope]
+        : ["global"];
+
+      if (foreground) {
+        scope.forEach((s) => {
+          result[s] = result[s] || { color: foreground };
+        });
+      }
+
+      if (background) {
+        scope.forEach((s) => {
+          result[s] = result[s] || { color: background };
+        });
+      }
+    }
+
+    // Process syntax from themeJson
+    for (const [categories, color] of Object.entries(themeJson.syntax || {})) {
+      const scopes = categories.split(",").map((item) => item.trim());
+      scopes.forEach((scope) => {
+        result[scope] = result[scope] || { color };
+      });
+    }
+
+    // Process globalCustomizations
+    for (const [property, overrideColor] of Object.entries(
+      globalCustomizations.colors || {}
+    )) {
+      if (result[property]) {
+        result[property].override = overrideColor as string;
+      } else {
+        result[property] = { color: overrideColor as string };
+      }
+    }
+
+    for (const token of globalCustomizations.tokenColors || []) {
+      const { foreground, background } = token.settings;
+      const scope = token.scope || ["global"];
+
+      if (foreground) {
+        scope.forEach((s: any) => {
+          if (result[s]) {
+            result[s].override = foreground;
+          } else {
+            result[s] = { color: foreground };
+          }
+        });
+      }
+
+      if (background) {
+        scope.forEach((s: any) => {
+          if (result[s]) {
+            result[s].override = background;
+          } else {
+            result[s] = { color: background };
+          }
+        });
+      }
+    }
+
+    return result;
+  }
+
   private _update() {
     const webview = this._panel.webview;
     this.loadCurrentTheme();
-    // Vary the webview's content based on where it is located in the editor.
-    // switch (this._panel.viewColumn) {
-    //   case vscode.ViewColumn.Two:
-    //     this._updateForCat(webview, "Compiling Cat");
-    //     return;
-
-    //   case vscode.ViewColumn.Three:
-    //     this._updateForCat(webview, "Testing Cat");
-    //     return;
-
-    //   case vscode.ViewColumn.One:
-    //   default:
-    //     this._updateForCat(webview, "Coding Cat");
-    //     return;
-    // }
-    //this._panel.title = catName;
     this._panel.webview.html = this._getHtmlForWebview(webview);
   }
-
-  // private _updateForCat(webview: vscode.Webview, catName: keyof typeof cats) {
-  //   this._panel.title = catName;
-  //   this._panel.webview.html = this._getHtmlForWebview(webview, cats[catName]);
-  // }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     // Local path to main script run in the webview
@@ -476,7 +563,6 @@ class ThemeEditorPanel {
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
-    // <img src="${catGifPath}" width="300" />
 
     return `<!DOCTYPE html>
 			<html lang="en">
@@ -499,8 +585,11 @@ class ThemeEditorPanel {
 			<body>
 				<h2 id="theme-name">${activeTheme}</h2>
         <hr/>
-				<h3 id="colors">${activeTheme}</h3>
-
+				<h3 id="colors">
+          <div class="loader-wrapper">
+            <span class="loader"></span>
+          </div>
+        </h3>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
