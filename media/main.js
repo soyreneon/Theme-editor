@@ -46,10 +46,30 @@
     switch (message.type) {
       case "themeChanged":
         themeName.textContent = message.theme;
-        jsonTheme.textContent = JSON.stringify(message.json);
-        colors.textContent = JSON.stringify(message.colors);
-        // currentCount = Math.ceil(currentCount * 0.5);
-        // counter.textContent = `${currentCount}`;
+        jsonTheme.textContent =
+          //JSON.stringify(message.json) +
+          //JSON.stringify(message.colors) +
+          "<br/><hr/> ****************" + JSON.stringify(message.colormaps);
+
+        // Clear existing color inputs
+        colors.innerHTML = "";
+
+        // Generate input type color for each color in the array
+        message.colors.forEach((color) => {
+          const containerDiv = document.createElement("div");
+          containerDiv.className = "container-div";
+          const colorDiv = document.createElement("div");
+          colorDiv.className = "color-div";
+
+          const colorInput = document.createElement("input");
+          colorInput.type = "color";
+          colorInput.value = color;
+
+          colorDiv.appendChild(colorInput);
+          containerDiv.appendChild(colorDiv);
+          colors.appendChild(containerDiv);
+        });
+
         break;
     }
   });

@@ -2,6 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 //import { CatScratchEditorProvider } from "./editTheme";
+// import { main as requireJSON } from "json-easy-strip";
+const requireJSON = require("json-easy-strip");
+import * as fs from "fs";
 
 // const cats = {
 //   "Coding Cat": "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif",
@@ -91,9 +94,18 @@ type ThemeJson = {
 type ColorUsageMap = Record<string, string[]>;
 type TokenColorMap = Record<
   string,
-  Array<{ name: string; scope?: string[] } | "foreground" | "background">
+  Array<{ name?: string; scope?: string[]; type?: "foreground" | "background" }>
 >;
 type SyntaxMap = Record<string, string[]>;
+
+// Define types for global settings
+interface GlobalCustomizations {
+  workbenchColorCustomizations: Record<string, string>;
+  editorTokenColorCustomizations: Array<{
+    scope: string[];
+    settings: { foreground?: string; background?: string };
+  }>;
+}
 
 /**
  * Manages cat coding webview panels
@@ -160,29 +172,7 @@ class ThemeEditorPanel {
 
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration("workbench.colorTheme")) {
-        const currentTheme = vscode.workspace
-          .getConfiguration("workbench")
-          .get("colorTheme");
-
-        this.getThemeJsonByName(currentTheme as string).then((json) => {
-          if (json) {
-            //console.log("Theme config:", json);
-            //objTheme = json;
-            const colors = this.getColorUsage(json);
-            this._panel?.webview.postMessage({
-              type: "themeChanged",
-              theme: currentTheme,
-              json: json,
-              colors: colors,
-            });
-          }
-        });
-
-        // this._panel?.webview.postMessage({
-        //   type: "themeChanged",
-        //   theme: currentTheme,
-        //   json: objTheme,
-        // });
+        this.loadCurrentTheme();
       }
     });
 
@@ -200,7 +190,25 @@ class ThemeEditorPanel {
     );
   }
 
-  public async getThemeJsonByName(themeName: string) {
+  public async getThemeJsonByName(themeName: string): Promise<{
+    themeJson: ThemeJson;
+    globalCustomizations: GlobalCustomizations;
+  } | null> {
+    const globalSettingsPath = vscode.Uri.joinPath(
+      vscode.Uri.file(process.env.HOME || ""),
+      ".config/Code/User/settings.json"
+    );
+
+    let globalSettings: any = {};
+    try {
+      const settingsContent = await vscode.workspace.fs.readFile(
+        globalSettingsPath
+      );
+      globalSettings = JSON.parse(settingsContent.toString());
+    } catch (err) {
+      console.error("Error reading global settings.json:", err);
+    }
+
     for (const ext of vscode.extensions.all) {
       const contributes = ext.packageJSON.contributes;
 
@@ -218,8 +226,18 @@ class ThemeEditorPanel {
                 themePath
               );
               const decoded = Buffer.from(themeContent).toString("utf8");
-              const json = JSON.parse(decoded);
-              return json;
+              const json: ThemeJson = requireJSON.strip(decoded);
+
+              return {
+                themeJson: json,
+                globalCustomizations: {
+                  workbenchColorCustomizations:
+                    globalSettings["workbench.colorCustomizations"] || {},
+                  editorTokenColorCustomizations:
+                    globalSettings["editor.tokenColorCustomizations"]
+                      ?.textMateRules || [],
+                },
+              };
             } catch (err) {
               console.error("Error reading theme JSON:", err);
             }
@@ -233,15 +251,21 @@ class ThemeEditorPanel {
   }
 
   public getColorUsage(theme: ThemeJson): {
-    colorsMap: ColorUsageMap;
-    tokenColorsMap: TokenColorMap;
-    syntaxMap: SyntaxMap;
+    colorsMap: Record<string, string[]>;
+    tokenColorsMap: Record<
+      string,
+      { scope: string[]; type: "foreground" | "background" }
+    >;
+    syntaxMap: Record<string, string[]>;
   } {
-    const colorsMap: ColorUsageMap = {};
-    const tokenColorsMap: TokenColorMap = {};
-    const syntaxMap: SyntaxMap = {};
+    const colorsMap: Record<string, string[]> = {};
+    const tokenColorsMap: Record<
+      string,
+      { scope: string[]; type: "foreground" | "background" }
+    > = {};
+    const syntaxMap: Record<string, string[]> = {};
 
-    // Procesar colors
+    // Process colors
     for (const [property, value] of Object.entries(theme.colors ?? {})) {
       if (!colorsMap[value]) {
         colorsMap[value] = [];
@@ -249,45 +273,36 @@ class ThemeEditorPanel {
       colorsMap[value].push(property);
     }
 
-    // Procesar tokenColors
+    // Process tokenColors
     for (const token of theme.tokenColors ?? []) {
       const { foreground, background } = token.settings;
-      const name = token.name ?? "Unnamed";
       const scope = Array.isArray(token.scope)
         ? token.scope
         : token.scope
         ? [token.scope]
-        : [];
+        : ["global"];
 
       if (foreground) {
         if (!tokenColorsMap[foreground]) {
-          tokenColorsMap[foreground] = [];
+          tokenColorsMap[foreground] = { scope: [], type: "foreground" };
         }
+        tokenColorsMap[foreground].scope.push(...scope);
+      }
 
-        if (background) {
-          tokenColorsMap[foreground].push("foreground");
-
-          if (!tokenColorsMap[background]) {
-            tokenColorsMap[background] = [];
-          }
-          tokenColorsMap[background].push("background");
-        } else {
-          tokenColorsMap[foreground].push({ name, scope });
-        }
-      } else if (background) {
+      if (background) {
         if (!tokenColorsMap[background]) {
-          tokenColorsMap[background] = [];
+          tokenColorsMap[background] = { scope: [], type: "background" };
         }
-        tokenColorsMap[background].push({ name, scope });
+        tokenColorsMap[background].scope.push(...scope);
       }
     }
 
-    // Procesar syntax
+    // Process syntax
     for (const [categories, color] of Object.entries(theme.syntax ?? {})) {
       const cleanCategories = categories
         .split(",")
         .map((item) => item.trim())
-        .filter(Boolean); // eliminar vacíos
+        .filter(Boolean); // Remove empty entries
 
       if (!syntaxMap[color]) {
         syntaxMap[color] = [];
@@ -321,9 +336,81 @@ class ThemeEditorPanel {
     }
   }
 
+  public hexToRgb(hex: string) {
+    const cleanHex = hex.replace("#", "");
+    const r = parseInt(cleanHex.substring(0, 2), 16);
+    const g = parseInt(cleanHex.substring(2, 4), 16);
+    const b = parseInt(cleanHex.substring(4, 6), 16);
+    return { r, g, b };
+  }
+
+  public getLuminance({ r, g, b }: { r: number; g: number; b: number }) {
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  }
+
+  public sortColorsByBrightness(colors: string[]) {
+    return colors
+      .map((hex) => {
+        const rgb = this.hexToRgb(hex);
+        const lum = this.getLuminance(rgb);
+        return { hex, lum };
+      })
+      .sort((a, b) => a.lum - b.lum) // Más oscuro a más claro
+      .map((entry) => entry.hex);
+  }
+
+  private loadCurrentTheme(): void {
+    const currentTheme = vscode.workspace
+      .getConfiguration("workbench")
+      .get<string>("colorTheme");
+
+    this.getThemeJsonByName(currentTheme as string).then((result) => {
+      if (result) {
+        const { themeJson, globalCustomizations } = result;
+
+        // Merge global customizations
+        themeJson.colors = {
+          ...themeJson.colors,
+          ...globalCustomizations.workbenchColorCustomizations,
+        };
+
+        themeJson.tokenColors = [
+          ...(themeJson.tokenColors || []),
+          ...globalCustomizations.editorTokenColorCustomizations,
+        ];
+
+        const colormaps = this.getColorUsage(themeJson);
+
+        // Color list without transparency
+        const colors = this.sortColorsByBrightness([
+          ...new Set([
+            ...Object.keys(colormaps.colorsMap).map((color) =>
+              color.length === 4
+                ? `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
+                : color.substring(0, 7)
+            ),
+            ...Object.keys(colormaps.syntaxMap).map((color) =>
+              color.substring(0, 7)
+            ),
+            ...Object.keys(colormaps.tokenColorsMap).map((color) =>
+              color.substring(0, 7)
+            ),
+          ]),
+        ]);
+        this._panel?.webview.postMessage({
+          type: "themeChanged",
+          theme: currentTheme,
+          json: themeJson,
+          colormaps: colormaps,
+          colors: colors,
+        });
+      }
+    });
+  }
+
   private _update() {
     const webview = this._panel.webview;
-
+    this.loadCurrentTheme();
     // Vary the webview's content based on where it is located in the editor.
     // switch (this._panel.viewColumn) {
     //   case vscode.ViewColumn.Two:
@@ -403,7 +490,6 @@ class ThemeEditorPanel {
 				<title>${activeTheme}</title>
 			</head>
 			<body>
-				<h1 id="lines-of-code-counter">0</h1>
 				<h2 id="theme-name">${activeTheme}</h2>
         <hr/>
 				<h3 id="colors">${activeTheme}</h3>
