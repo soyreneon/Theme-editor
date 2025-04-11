@@ -46,28 +46,75 @@
     switch (message.type) {
       case "themeChanged":
         themeName.textContent = message.theme;
-        jsonTheme.textContent =
-          //JSON.stringify(message.json) +
-          //JSON.stringify(message.colors) +
-          "<br/><hr/> ****************" + JSON.stringify(message.colormaps);
+        //jsonTheme.textContent = JSON.stringify(message.json);
 
         // Clear existing color inputs
         colors.innerHTML = "";
 
-        // Generate input type color for each color in the array
+        // Generate accordion for each color
         message.colors.forEach((color) => {
-          const containerDiv = document.createElement("div");
-          containerDiv.className = "container-div";
-          const colorDiv = document.createElement("div");
-          colorDiv.className = "color-div";
+          const accordion = document.createElement("div");
+          accordion.className = "accordion";
 
-          const colorInput = document.createElement("input");
-          colorInput.type = "color";
-          colorInput.value = color;
+          // Accordion header
+          const header = document.createElement("div");
+          header.className = "accordion-header";
+          const colorPreview = document.createElement("span");
+          colorPreview.className = "color-preview";
+          colorPreview.style.backgroundColor = color;
+          const headerText = document.createElement("span");
+          headerText.textContent = color;
+          header.appendChild(colorPreview);
+          header.appendChild(headerText);
+          accordion.appendChild(header);
 
-          colorDiv.appendChild(colorInput);
-          containerDiv.appendChild(colorDiv);
-          colors.appendChild(containerDiv);
+          // Accordion content
+          const content = document.createElement("div");
+          content.className = "accordion-content";
+
+          // Add keys from colorsMap
+          if (message.colormaps.colorsMap[color]) {
+            const ul = document.createElement("ul");
+            message.colormaps.colorsMap[color].forEach((key) => {
+              const li = document.createElement("li");
+              li.textContent = key;
+              ul.appendChild(li);
+            });
+            ul.style.marginBottom = "10px";
+            content.appendChild(ul);
+          }
+
+          // Add keys from tokenColorsMap
+          if (message.colormaps.tokenColorsMap[color]) {
+            const ul = document.createElement("ul");
+            message.colormaps.tokenColorsMap[color].scope.forEach((key) => {
+              const li = document.createElement("li");
+              li.textContent = key;
+              ul.appendChild(li);
+            });
+            ul.style.marginBottom = "10px";
+            content.appendChild(ul);
+          }
+
+          // Add keys from syntaxMap
+          if (message.colormaps.syntaxMap[color]) {
+            const ul = document.createElement("ul");
+            message.colormaps.syntaxMap[color].forEach((key) => {
+              const li = document.createElement("li");
+              li.textContent = key;
+              ul.appendChild(li);
+            });
+            ul.style.marginBottom = "10px";
+            content.appendChild(ul);
+          }
+
+          accordion.appendChild(content);
+          colors.appendChild(accordion);
+
+          // Toggle accordion content visibility
+          header.addEventListener("click", () => {
+            content.classList.toggle("active");
+          });
         });
 
         break;

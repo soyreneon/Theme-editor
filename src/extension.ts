@@ -348,15 +348,36 @@ class ThemeEditorPanel {
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }
 
-  public sortColorsByBrightness(colors: string[]) {
-    return colors
-      .map((hex) => {
-        const rgb = this.hexToRgb(hex);
-        const lum = this.getLuminance(rgb);
-        return { hex, lum };
-      })
-      .sort((a, b) => a.lum - b.lum) // Más oscuro a más claro
-      .map((entry) => entry.hex);
+  public sortColorsByAppereances(colormaps: {
+    colorsMap: Record<string, string[]>;
+    tokenColorsMap: Record<
+      string,
+      { scope: string[]; type: "foreground" | "background" }
+    >;
+    syntaxMap: Record<string, string[]>;
+  }) {
+    // Combine counts from colorsMap, tokenColorsMap, and syntaxMap
+    const colorCounts: { color: string; count: number }[] = [];
+
+    // Count elements in colorsMap
+    for (const [color, properties] of Object.entries(colormaps.colorsMap)) {
+      colorCounts.push({ color, count: properties.length });
+    }
+
+    // Count elements in tokenColorsMap (based on scope length)
+    for (const [color, tokenData] of Object.entries(colormaps.tokenColorsMap)) {
+      colorCounts.push({ color, count: tokenData.scope.length });
+    }
+
+    // Count elements in syntaxMap
+    for (const [color, categories] of Object.entries(colormaps.syntaxMap)) {
+      colorCounts.push({ color, count: categories.length });
+    }
+
+    // Sort colors by count in descending order
+    return colorCounts
+      .sort((a, b) => b.count - a.count) // More elements first
+      .map((entry) => entry.color);
   }
 
   private loadCurrentTheme(): void {
@@ -382,21 +403,7 @@ class ThemeEditorPanel {
         const colormaps = this.getColorUsage(themeJson);
 
         // Color list without transparency
-        const colors = this.sortColorsByBrightness([
-          ...new Set([
-            ...Object.keys(colormaps.colorsMap).map((color) =>
-              color.length === 4
-                ? `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
-                : color.substring(0, 7)
-            ),
-            ...Object.keys(colormaps.syntaxMap).map((color) =>
-              color.substring(0, 7)
-            ),
-            ...Object.keys(colormaps.tokenColorsMap).map((color) =>
-              color.substring(0, 7)
-            ),
-          ]),
-        ]);
+        const colors = this.sortColorsByAppereances(colormaps);
         this._panel?.webview.postMessage({
           type: "themeChanged",
           theme: currentTheme,
@@ -493,8 +500,6 @@ class ThemeEditorPanel {
 				<h2 id="theme-name">${activeTheme}</h2>
         <hr/>
 				<h3 id="colors">${activeTheme}</h3>
-        <p>end</p>
-				<h3 id="theme-json">${activeTheme}</h3>
 
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>

@@ -42,3 +42,44 @@ img {
   border: none;
   outline: none;
 }
+
+/* Accordion container */
+.accordion {
+  margin: 10px 0;
+  border: 1px solid var(--vscode-foreground);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+/* Accordion header */
+.accordion-header {
+  background-color: var(--vscode-editor-background);
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Accordion content */
+.accordion-content {
+  display: none;
+  padding: 10px;
+  background-color: var(--vscode-editor-background);
+  border-top: 1px solid var(--vscode-foreground);
+}
+
+/* Show content when active */
+.accordion-content.active {
+  display: block;
+}
+
+/* Color preview */
+.color-preview {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 1px solid var(--vscode-focusBorder);
+}
