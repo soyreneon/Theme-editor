@@ -557,9 +557,39 @@ class ThemeEditorPanel {
       "vscode.css"
     );
 
+    const stylesAccordionPath = vscode.Uri.joinPath(
+      this._extensionUri,
+      "media",
+      "accordion.css"
+    );
+
+    const stylesLoaderPath = vscode.Uri.joinPath(
+      this._extensionUri,
+      "media",
+      "loader.css"
+    );
+
+    const stylesCustomPath = vscode.Uri.joinPath(
+      this._extensionUri,
+      "media",
+      "custom.css"
+    );
+
+    const saveSvgUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "media", "save.svg")
+    );
+
+    // console.log("saveSvgUri", saveSvgUri);
+    const resetSvgUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "media", "reset.svg")
+    );
+
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(styleResetPath);
     const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+    const stylesAccordionUri = webview.asWebviewUri(stylesAccordionPath);
+    const stylesLoaderUri = webview.asWebviewUri(stylesLoaderPath);
+    const stylesCustomUri = webview.asWebviewUri(stylesCustomPath);
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
@@ -579,17 +609,27 @@ class ThemeEditorPanel {
 
 				<link href="${stylesResetUri}" rel="stylesheet">
 				<link href="${stylesMainUri}" rel="stylesheet">
+				<link href="${stylesAccordionUri}" rel="stylesheet">
+				<link href="${stylesLoaderUri}" rel="stylesheet">
+				<link href="${stylesCustomUri}" rel="stylesheet">
 
 				<title>${activeTheme}</title>
 			</head>
 			<body>
 				<h2 id="theme-name">${activeTheme}</h2>
+        <img src="${saveSvgUri}" alt="Save" />
         <hr/>
 				<h3 id="colors">
           <div class="loader-wrapper">
             <span class="loader"></span>
           </div>
         </h3>
+        <script nonce="${nonce}" >
+           const saveIconUri = "${saveSvgUri}";
+          
+           //window.saveIconUri = "${saveSvgUri}";
+          const resetIconUri = "${resetSvgUri}";
+        </script>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
