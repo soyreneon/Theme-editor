@@ -137,8 +137,16 @@
     });
 
     resetButton.addEventListener("click", () => {
-      input.value = color;
-      span.textContent = color;
+      openFullscreenModal(
+        () => {
+          input.value = color;
+          span.textContent = color;
+          console.log("Reset applied");
+        },
+        () => {
+          console.log("Reset canceled");
+        }
+      );
     });
 
     return controlDiv;
@@ -214,6 +222,47 @@
 
     return accordion;
   };
+
+  function openFullscreenModal(onApply, onCancel) {
+    // Create modal elements
+    const modal = document.createElement("div");
+    modal.className = "fullscreen-modal";
+
+    const modalContent = document.createElement("div");
+    modalContent.className = "modal-content";
+
+    const disclaimer = document.createElement("h3");
+    disclaimer.className = "disclaimer";
+    disclaimer.textContent = "Are you sure you want to reset the color?";
+
+    const applyButton = document.createElement("button");
+    applyButton.className = "apply-button";
+    applyButton.textContent = "Apply";
+
+    const cancelButton = document.createElement("button");
+    cancelButton.className = "cancel-button";
+    cancelButton.textContent = "Cancel";
+
+    // Append buttons to modal content
+    modalContent.appendChild(disclaimer);
+    modalContent.appendChild(applyButton);
+    modalContent.appendChild(cancelButton);
+    modal.appendChild(modalContent);
+
+    // Append modal to body
+    document.body.appendChild(modal);
+
+    // Add event listeners
+    applyButton.addEventListener("click", () => {
+      onApply();
+      document.body.removeChild(modal);
+    });
+
+    cancelButton.addEventListener("click", () => {
+      onCancel();
+      document.body.removeChild(modal);
+    });
+  }
 
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {

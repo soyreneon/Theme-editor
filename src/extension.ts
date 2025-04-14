@@ -569,6 +569,12 @@ class ThemeEditorPanel {
       "loader.css"
     );
 
+    const stylesModalPath = vscode.Uri.joinPath(
+      this._extensionUri,
+      "media",
+      "modal.css"
+    );
+
     const stylesCustomPath = vscode.Uri.joinPath(
       this._extensionUri,
       "media",
@@ -589,6 +595,7 @@ class ThemeEditorPanel {
     const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
     const stylesAccordionUri = webview.asWebviewUri(stylesAccordionPath);
     const stylesLoaderUri = webview.asWebviewUri(stylesLoaderPath);
+    const stylesModalUri = webview.asWebviewUri(stylesModalPath);
     const stylesCustomUri = webview.asWebviewUri(stylesCustomPath);
 
     // Use a nonce to only allow specific scripts to be run
@@ -611,13 +618,13 @@ class ThemeEditorPanel {
 				<link href="${stylesMainUri}" rel="stylesheet">
 				<link href="${stylesAccordionUri}" rel="stylesheet">
 				<link href="${stylesLoaderUri}" rel="stylesheet">
+				<link href="${stylesModalUri}" rel="stylesheet">
 				<link href="${stylesCustomUri}" rel="stylesheet">
 
 				<title>${activeTheme}</title>
 			</head>
 			<body>
 				<h2 id="theme-name">${activeTheme}</h2>
-        <img src="${saveSvgUri}" alt="Save" />
         <hr/>
 				<h3 id="colors">
           <div class="loader-wrapper">
@@ -625,9 +632,7 @@ class ThemeEditorPanel {
           </div>
         </h3>
         <script nonce="${nonce}" >
-           const saveIconUri = "${saveSvgUri}";
-          
-           //window.saveIconUri = "${saveSvgUri}";
+          const saveIconUri = "${saveSvgUri}";
           const resetIconUri = "${resetSvgUri}";
         </script>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
