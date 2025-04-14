@@ -131,6 +131,12 @@
 
     saveButton.addEventListener("click", () => {
       console.log("Saved color:", input.value);
+      // set value
+      vscode.postMessage({
+        command: "save",
+        color: input.value,
+        name: "",
+      });
     });
 
     resetButton.addEventListener("click", () => {

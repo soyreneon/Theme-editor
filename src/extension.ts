@@ -173,6 +173,9 @@ class ThemeEditorPanel {
     this._panel.webview.onDidReceiveMessage(
       (message) => {
         switch (message.command) {
+          case "save":
+            vscode.window.showErrorMessage(message.color);
+            return;
           case "alert":
             vscode.window.showErrorMessage(message.text);
             return;
