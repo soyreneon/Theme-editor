@@ -353,35 +353,41 @@ class ThemeEditorPanel {
   }
 
   public sortColorsByAppereances(colormaps: {
-    colorsMap: Record<string, string[]>;
-    tokenColorsMap: Record<
-      string,
-      { scope: string[]; type: "foreground" | "background" }
-    >;
-    syntaxMap: Record<string, string[]>;
+    colorsMap: ColorUsageMap;
+    tokenColorsMap: TokenColorMap;
+    syntaxMap: SyntaxMap;
   }) {
-    // Combine counts from colorsMap, tokenColorsMap, and syntaxMap
-    const colorCounts: { color: string; count: number }[] = [];
+    // Create a unified colorCounts object
+    const colorCounts: Record<string, { count: number }> = {};
 
     // Count elements in colorsMap
     for (const [color, properties] of Object.entries(colormaps.colorsMap)) {
-      colorCounts.push({ color, count: properties.length });
+      if (!colorCounts[color]) {
+        colorCounts[color] = { count: 0 };
+      }
+      colorCounts[color].count += properties.length;
     }
 
     // Count elements in tokenColorsMap (based on scope length)
     for (const [color, tokenData] of Object.entries(colormaps.tokenColorsMap)) {
-      colorCounts.push({ color, count: tokenData.scope.length });
+      if (!colorCounts[color]) {
+        colorCounts[color] = { count: 0 };
+      }
+      colorCounts[color].count += tokenData.scope.length;
     }
 
     // Count elements in syntaxMap
     for (const [color, categories] of Object.entries(colormaps.syntaxMap)) {
-      colorCounts.push({ color, count: categories.length });
+      if (!colorCounts[color]) {
+        colorCounts[color] = { count: 0 };
+      }
+      colorCounts[color].count += categories.length;
     }
 
-    // Sort colors by count in descending order
-    return colorCounts
-      .sort((a, b) => b.count - a.count) // More elements first
-      .map((entry) => entry.color);
+    // Sort colors by count in descending order and return as an array of color keys
+    return Object.entries(colorCounts)
+      .sort((a, b) => b[1].count - a[1].count) // More elements first
+      .map(([color]) => color);
   }
 
   private loadCurrentTheme(): void {
@@ -428,7 +434,6 @@ class ThemeEditorPanel {
         };
 
         const colormaps = this.getColorUsage(fullThemeJson);
-        console.log(" clorsmaps", JSON.stringify(colormaps));
 
         // Color list without transparency
         const colors = this.sortColorsByAppereances(colormaps);

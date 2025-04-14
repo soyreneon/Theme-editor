@@ -14,9 +14,6 @@
   const themeName = /** @type {HTMLElement} */ (
     document.getElementById("theme-name")
   );
-  const jsonTheme = /** @type {HTMLElement} */ (
-    document.getElementById("theme-json")
-  );
   const colors = /** @type {HTMLElement} */ (document.getElementById("colors"));
 
   console.log("Initial state", oldState);
