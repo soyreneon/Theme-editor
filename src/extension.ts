@@ -64,7 +64,10 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
     enableScripts: true,
 
     // And restrict the webview to only loading content from our extension's `media` directory.
-    localResourceRoots: [vscode.Uri.joinPath(extensionUri, "media")],
+    localResourceRoots: [
+      vscode.Uri.joinPath(extensionUri, "media"),
+      vscode.Uri.joinPath(extensionUri, "dist"),
+    ],
   };
 }
 
@@ -550,10 +553,39 @@ class ThemeEditorPanel {
       "main.js"
     );
 
+    const reactScriptPathOnDisk = vscode.Uri.joinPath(
+      this._extensionUri,
+      "dist/ui/",
+      "webview.js"
+    );
+
+    /*
+    const reactScriptPathOnDisk = vscode.Uri.joinPath(
+      this._extensionUri,
+      "dist/ui",
+      "ui.d36934a7.js"
+      // "index.js"
+    );
+    
+    */
     // And the uri we use to load this script in the webview
     const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
+    const reactScript = webview.asWebviewUri(reactScriptPathOnDisk);
 
+    const reactStyleResetPath = vscode.Uri.joinPath(
+      this._extensionUri,
+      "dist/ui",
+      "webview.css"
+    );
+    /*
     // Local path to css styles
+    const reactStyleResetPath = vscode.Uri.joinPath(
+      this._extensionUri,
+      "dist/ui",
+      "ui.80ad4eed.css"
+      // "index.css"
+    );
+    */
     const styleResetPath = vscode.Uri.joinPath(
       this._extensionUri,
       "media",
@@ -599,6 +631,7 @@ class ThemeEditorPanel {
     );
 
     // Uri to load styles into webview
+    const reactStylesResetUri = webview.asWebviewUri(reactStyleResetPath);
     const stylesResetUri = webview.asWebviewUri(styleResetPath);
     const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
     const stylesAccordionUri = webview.asWebviewUri(stylesAccordionPath);
@@ -608,6 +641,8 @@ class ThemeEditorPanel {
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
+
+    // <script nonce="${nonce}" type="module" src="${reactScript}"></script>
 
     return `<!DOCTYPE html>
 			<html lang="en">
@@ -622,6 +657,7 @@ class ThemeEditorPanel {
 
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+				<link href="${reactStylesResetUri}" rel="stylesheet">
 				<link href="${stylesResetUri}" rel="stylesheet">
 				<link href="${stylesMainUri}" rel="stylesheet">
 				<link href="${stylesAccordionUri}" rel="stylesheet">
@@ -632,7 +668,11 @@ class ThemeEditorPanel {
 				<title>${activeTheme}</title>
 			</head>
 			<body>
-				<h2 id="theme-name">${activeTheme}</h2>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+          <div id="app"></div>
+          <p>hey / / ${scriptUri} </p>
+        <script nonce="${nonce}" type="module" src="${reactScript}"></script>
+				<!--h2 id="theme-name">${activeTheme}</h2>
         <hr/>
 				<h3 id="colors">
           <div class="loader-wrapper">
@@ -643,7 +683,7 @@ class ThemeEditorPanel {
           const saveIconUri = "${saveSvgUri}";
           const resetIconUri = "${resetSvgUri}";
         </script>
-				<script nonce="${nonce}" src="${scriptUri}"></script>
+				<script nonce="${nonce}" src="${scriptUri}"></script-->
 			</body>
 			</html>`;
   }
