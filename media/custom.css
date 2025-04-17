@@ -13,19 +13,3 @@
   border: none;
   outline: none;
 }
-
-/* Color preview */
-.color-preview {
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-  margin-right: 10px;
-  border: 1px solid var(--vscode-focusBorder);
-}
-
-.badge {
-  background-color: var(--vscode-focusBorder);
-  border-radius: 10px;
-  padding: 5px;
-  margin-left: 10px;
-}

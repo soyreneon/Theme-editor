@@ -1,0 +1,13 @@
+.typeContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.typeContainer a {
+  font-size: 0.8em;
+  color: var(--vscode-foreground);
+  margin-right: 7px;
+}
+.typeContainer li span {
+  overflow-x: hidden;
+}

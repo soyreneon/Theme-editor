@@ -2,6 +2,7 @@ const esbuild = require("esbuild");
 
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
+import CssModulesPlugin from "esbuild-css-modules-plugin";
 
 /**
  * @type {import('esbuild').Plugin}
@@ -55,13 +56,16 @@ async function main() {
     minify: production,
     sourcemap: !production,
     sourcesContent: false,
-    // platform: "node",
-    // external: ["vscode"],
-    // logLevel: "silent",
-    // plugins: [
-    /* add to the end of plugins array */
-    //   esbuildProblemMatcherPlugin,
-    // ],
+    plugins: [
+      CssModulesPlugin({
+        // @see https://github.com/indooorsman/esbuild-css-modules-plugin/blob/main/index.d.ts for more details
+        force: true,
+        emitDeclarationFile: true,
+        localsConvention: "camelCaseOnly",
+        namedExports: true,
+        inject: false,
+      }),
+    ],
   });
   if (watch) {
     await ctx.watch();

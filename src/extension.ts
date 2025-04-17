@@ -3,6 +3,13 @@
 import * as vscode from "vscode";
 const requireJSON = require("json-easy-strip");
 import * as fs from "fs";
+import {
+  type ThemeJson,
+  type ColorUsageMap,
+  type TokenColorMap,
+  type SyntaxMap,
+  GlobalCustomizations,
+} from "../types";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -67,40 +74,14 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
     localResourceRoots: [
       vscode.Uri.joinPath(extensionUri, "media"),
       vscode.Uri.joinPath(extensionUri, "dist"),
+      vscode.Uri.joinPath(
+        extensionUri,
+        "node_modules",
+        "@vscode/codicons",
+        "dist"
+      ),
     ],
   };
-}
-
-type ThemeJson = {
-  name: string;
-  type: string;
-  colors?: Record<string, string>;
-  tokenColors?: {
-    name?: string;
-    scope?: string | string[];
-    settings: {
-      foreground?: string;
-      background?: string;
-      fontStyle?: string;
-    };
-  }[];
-  syntax?: Record<string, string>;
-};
-
-type ColorUsageMap = Record<string, string[]>;
-type TokenColorMap = Record<
-  string,
-  { scope: string[]; type: "foreground" | "background" }
->;
-type SyntaxMap = Record<string, string[]>;
-
-// Define types for global settings
-interface GlobalCustomizations {
-  colors: Record<string, string>;
-  tokenColors: Array<{
-    scope: string[];
-    settings: { foreground?: string; background?: string };
-  }>;
 }
 
 /**
@@ -177,6 +158,9 @@ class ThemeEditorPanel {
       (message) => {
         switch (message.command) {
           case "save":
+            vscode.window.showErrorMessage(message.color);
+            return;
+          case "reset":
             vscode.window.showErrorMessage(message.color);
             return;
           case "alert":
@@ -547,11 +531,11 @@ class ThemeEditorPanel {
     //console.log(workSpaceConfig.get("colorTheme"));
     const activeTheme = workSpaceConfig.get("colorTheme");
 
-    const scriptPathOnDisk = vscode.Uri.joinPath(
-      this._extensionUri,
-      "media",
-      "main.js"
-    );
+    // const scriptPathOnDisk = vscode.Uri.joinPath(
+    //   this._extensionUri,
+    //   "media",
+    //   "main.js"
+    // );
 
     const reactScriptPathOnDisk = vscode.Uri.joinPath(
       this._extensionUri,
@@ -569,7 +553,7 @@ class ThemeEditorPanel {
     
     */
     // And the uri we use to load this script in the webview
-    const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
+    // const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
     const reactScript = webview.asWebviewUri(reactScriptPathOnDisk);
 
     const reactStyleResetPath = vscode.Uri.joinPath(
@@ -586,93 +570,75 @@ class ThemeEditorPanel {
       // "index.css"
     );
     */
-    const styleResetPath = vscode.Uri.joinPath(
+    const iconsStylePath = vscode.Uri.joinPath(
       this._extensionUri,
-      "media",
-      "reset.css"
+      "node_modules",
+      "@vscode/codicons",
+      "dist",
+      "codicon.css"
     );
-    const stylesPathMainPath = vscode.Uri.joinPath(
-      this._extensionUri,
-      "media",
-      "vscode.css"
-    );
+    // const styleResetPath = vscode.Uri.joinPath(
+    //   this._extensionUri,
+    //   "media",
+    //   "reset.css"
+    // );
+    // const stylesPathMainPath = vscode.Uri.joinPath(
+    //   this._extensionUri,
+    //   "media",
+    //   "vscode.css"
+    // );
 
-    const stylesAccordionPath = vscode.Uri.joinPath(
-      this._extensionUri,
-      "media",
-      "accordion.css"
-    );
+    // const stylesAccordionPath = vscode.Uri.joinPath(
+    //   this._extensionUri,
+    //   "media",
+    //   "accordion.css"
+    // );
 
-    const stylesLoaderPath = vscode.Uri.joinPath(
-      this._extensionUri,
-      "media",
-      "loader.css"
-    );
+    // const stylesLoaderPath = vscode.Uri.joinPath(
+    //   this._extensionUri,
+    //   "media",
+    //   "loader.css"
+    // );
 
-    const stylesModalPath = vscode.Uri.joinPath(
-      this._extensionUri,
-      "media",
-      "modal.css"
-    );
+    // const stylesModalPath = vscode.Uri.joinPath(
+    //   this._extensionUri,
+    //   "media",
+    //   "modal.css"
+    // );
 
-    const stylesCustomPath = vscode.Uri.joinPath(
-      this._extensionUri,
-      "media",
-      "custom.css"
-    );
+    // const stylesCustomPath = vscode.Uri.joinPath(
+    //   this._extensionUri,
+    //   "media",
+    //   "custom.css"
+    // );
 
-    const saveSvgUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "save.svg")
-    );
+    // const saveSvgUri = webview.asWebviewUri(
+    //   vscode.Uri.joinPath(this._extensionUri, "media", "save.svg")
+    // );
 
-    // console.log("saveSvgUri", saveSvgUri);
-    const resetSvgUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "reset.svg")
-    );
+    // // console.log("saveSvgUri", saveSvgUri);
+    // const resetSvgUri = webview.asWebviewUri(
+    //   vscode.Uri.joinPath(this._extensionUri, "media", "reset.svg")
+    // );
 
     // Uri to load styles into webview
     const reactStylesResetUri = webview.asWebviewUri(reactStyleResetPath);
-    const stylesResetUri = webview.asWebviewUri(styleResetPath);
-    const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
-    const stylesAccordionUri = webview.asWebviewUri(stylesAccordionPath);
-    const stylesLoaderUri = webview.asWebviewUri(stylesLoaderPath);
-    const stylesModalUri = webview.asWebviewUri(stylesModalPath);
-    const stylesCustomUri = webview.asWebviewUri(stylesCustomPath);
+    // const stylesResetUri = webview.asWebviewUri(styleResetPath);
+    const iconStylesUri = webview.asWebviewUri(iconsStylePath);
+    // const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+    // const stylesAccordionUri = webview.asWebviewUri(stylesAccordionPath);
+    // const stylesLoaderUri = webview.asWebviewUri(stylesLoaderPath);
+    // const stylesModalUri = webview.asWebviewUri(stylesModalPath);
+    // const stylesCustomUri = webview.asWebviewUri(stylesCustomPath);
 
-    // Use a nonce to only allow specific scripts to be run
-    const nonce = getNonce();
-
-    // <script nonce="${nonce}" type="module" src="${reactScript}"></script>
-
-    return `<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-
-				<!--
-					Use a content security policy to only allow loading images from https or from our extension directory,
-					and only allow scripts that have a specific nonce.
-				-->
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
-
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-				<link href="${reactStylesResetUri}" rel="stylesheet">
-				<link href="${stylesResetUri}" rel="stylesheet">
-				<link href="${stylesMainUri}" rel="stylesheet">
-				<link href="${stylesAccordionUri}" rel="stylesheet">
-				<link href="${stylesLoaderUri}" rel="stylesheet">
+    /*
+    				<link href="${stylesLoaderUri}" rel="stylesheet">
 				<link href="${stylesModalUri}" rel="stylesheet">
 				<link href="${stylesCustomUri}" rel="stylesheet">
-
-				<title>${activeTheme}</title>
-			</head>
-			<body>
-        <noscript>You need to enable JavaScript to run this app.</noscript>
-          <div id="app"></div>
-          <p>hey / / ${scriptUri} </p>
-        <script nonce="${nonce}" type="module" src="${reactScript}"></script>
-				<!--h2 id="theme-name">${activeTheme}</h2>
+				<link href="${stylesResetUri}" rel="stylesheet">
+				<link href="${stylesMainUri}" rel="stylesheet">
+        <!--h2 id="theme-name">${activeTheme}</h2>
+        <p>hey / / ${scriptUri} </p>
         <hr/>
 				<h3 id="colors">
           <div class="loader-wrapper">
@@ -684,6 +650,34 @@ class ThemeEditorPanel {
           const resetIconUri = "${resetSvgUri}";
         </script>
 				<script nonce="${nonce}" src="${scriptUri}"></script-->
+        */
+    // Use a nonce to only allow specific scripts to be run
+    const nonce = getNonce();
+
+    // <script nonce="${nonce}" type="module" src="${reactScript}"></script>
+    // <link href="${iconStylesUri}" rel="stylesheet">
+
+    return `<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+
+        <!--
+					Use a content security policy to only allow loading images and svg icons from https or from our extension directory,
+					and only allow scripts that have a specific nonce.
+				-->
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${webview.cspSource}; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
+
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+				<link href="${reactStylesResetUri}" rel="stylesheet">
+        <link href="${iconStylesUri}" rel="stylesheet">
+        <title>${activeTheme}</title>
+			</head>
+			<body>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <div id="app"></div>
+          <script nonce="${nonce}" type="module" src="${reactScript}"></script>
 			</body>
 			</html>`;
   }

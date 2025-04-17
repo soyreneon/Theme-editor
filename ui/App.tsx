@@ -1,10 +1,22 @@
-import './App.css';
+import "@vscode-elements/elements-lite/components/divider/divider.css";
+import "@vscode-elements/elements-lite/components/button/button.css";
+import "@vscode-elements/elements-lite/components/badge/badge.css";
+import "@vscode-elements/elements-lite/components/collapsible/collapsible.css";
+import "./App.css";
+import { useTheme } from "./useStore";
+import Accordion from "./components/Accordion";
 
 export function App() {
+  const theme = useTheme();
+  const { title, colors, colorMap } = theme;
+
   return (
     <>
-      <h1>Parcel React App</h1>
-      <p>Edit <code>src/App.tsx</code> to get started!</p>
+      <h1>{title}</h1>
+      <hr className="vscode-divider" />
+      {colors.map((color) => (
+        <Accordion color={color} colormaps={colorMap} key={color} />
+      ))}
     </>
   );
 }
