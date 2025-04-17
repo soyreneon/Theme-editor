@@ -388,8 +388,6 @@ class ThemeEditorPanel {
     this.getThemeJsonByName(currentTheme as string).then((result) => {
       if (result) {
         const { themeJson, globalCustomizations } = result;
-        // console.log(" theme", JSON.stringify(themeJson));
-        // console.log(" out side!", JSON.stringify(globalCustomizations));
 
         const maptypes = this.mergeThemeAndCustomizations(
           themeJson,
