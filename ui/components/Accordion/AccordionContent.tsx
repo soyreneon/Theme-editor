@@ -50,6 +50,9 @@ const AccordionContent: FC<AccordionContentProps> = ({ color, colormaps }) => {
             onChange={(e) => setInputValue(e.target.value)}
           />
           <span className="color-value">{inputValue}</span>
+          <button type="button" className="vscode-action-button">
+            <i className="codicon codicon-refresh"></i>
+          </button>
         </div>
         <div className="btn-container">
           <button className="vscode-button secondary" onClick={handleSave}>
