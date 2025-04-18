@@ -3,3 +3,5 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+**/*.module.css.d.ts
+**/*.module.d.css.ts

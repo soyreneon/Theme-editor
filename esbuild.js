@@ -1,4 +1,5 @@
-const esbuild = require("esbuild");
+// const esbuild = require("esbuild");
+import * as esbuild from 'esbuild';
 
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
@@ -40,6 +41,7 @@ async function main() {
     platform: "node",
     outfile: "dist/extension.js",
     external: ["vscode"],
+    mainFields:["module", "main"],
     logLevel: "silent",
     plugins: [
       /* add to the end of plugins array */
@@ -49,7 +51,7 @@ async function main() {
   const ctxWeb = await esbuild.context({
     entryPoints: ["ui/index.tsx"],
     bundle: true,
-    format: "cjs",
+    //format: "cjs",
     platform: "browser",
     format: "esm",
     outfile: "dist/ui/webview.js",

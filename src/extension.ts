@@ -1,8 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-const requireJSON = require("json-easy-strip");
-import * as fs from "fs";
+//const requireJSON = require("json-easy-strip");
+//import stripJsonComments from 'strip-json-comments';
+
+//const { parse } = require("jsonc-parser");
+import { parse } from "jsonc-parser";
+// import * as fs from "fs";
 import {
   type ThemeJson,
   type ColorUsageMap,
@@ -177,10 +181,20 @@ class ThemeEditorPanel {
     themeJson: ThemeJson;
     globalCustomizations: GlobalCustomizations;
   } | null> {
+    // const globalSettingsPath = vscode.Uri.file(
+    //   process.platform === "darwin"
+    //     ? `${process.env.HOME}/Library/Application Support/Code/User/settings.json`
+    //     : `${process.env.HOME}/.config/Code/User/settings.json`
+    // );
+
+    const homeDir = process.env.HOME || process.env.USERPROFILE; // compatible en todas las plataformas
+
     const globalSettingsPath = vscode.Uri.file(
       process.platform === "darwin"
-        ? `${process.env.HOME}/Library/Application Support/Code/User/settings.json`
-        : `${process.env.HOME}/.config/Code/User/settings.json`
+        ? `${homeDir}/Library/Application Support/Code/User/settings.json`
+        : process.platform === "win32"
+        ? `${homeDir}\\AppData\\Roaming\\Code\\User\\settings.json`
+        : `${homeDir}/.config/Code/User/settings.json`
     );
 
     let globalSettings: any = {};
@@ -188,7 +202,7 @@ class ThemeEditorPanel {
       const settingsContent = await vscode.workspace.fs.readFile(
         globalSettingsPath
       );
-      globalSettings = requireJSON.strip(settingsContent.toString());
+      globalSettings = parse(settingsContent.toString());
     } catch (err) {
       console.error("Error reading global settings.json:", err);
     }
@@ -210,7 +224,7 @@ class ThemeEditorPanel {
                 themePath
               );
               const decoded = Buffer.from(themeContent).toString("utf8");
-              const json: ThemeJson = requireJSON.strip(decoded);
+              const json: ThemeJson = parse(decoded);
 
               return {
                 themeJson: json,
