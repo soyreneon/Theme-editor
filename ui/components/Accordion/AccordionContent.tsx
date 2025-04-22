@@ -3,9 +3,7 @@ import { colorMap } from "../../../types";
 import { vscode } from "../../useStore";
 import TypeList from "../TypeList";
 import Modal from "../Modal";
-import "./content.css";
-
-// const openFullscreenModal = (onConfirm, onCancel) => {};
+import styles from "./content.module.css";
 
 interface AccordionContentProps {
   color: string;
@@ -13,13 +11,16 @@ interface AccordionContentProps {
 }
 
 const AccordionContent: FC<AccordionContentProps> = ({ color, colormaps }) => {
+  const { colorsMap, tokenColorsMap, syntaxMap } = colormaps;
   const [inputValue, setInputValue] = useState(color);
   const [isModalShown, setIsModalShown] = useState<boolean>(false);
 
   const handleSave = () => {
+    if (color === inputValue) return;
     console.log("Saved color:", inputValue);
     vscode.postMessage({
       command: "save",
+      old: color,
       color: inputValue,
       name: "",
     });
@@ -39,49 +40,60 @@ const AccordionContent: FC<AccordionContentProps> = ({ color, colormaps }) => {
     setIsModalShown(true);
   };
 
+  const onResetColorPicker = () => {
+    setInputValue(color);
+  };
+
   return (
-    <div className="content">
-      <div className="control-container">
-        <div className="color-container">
-          <input
-            type="color"
-            value={inputValue}
-            className="color-input"
-            onChange={(e) => setInputValue(e.target.value)}
-          />
-          <span className="color-value">{inputValue}</span>
-          <button type="button" className="vscode-action-button">
-            <i className="codicon codicon-refresh"></i>
-          </button>
-        </div>
-        <div className="btn-container">
-          <button className="vscode-button secondary" onClick={handleSave}>
-            <span className="vscode-button__text">Save</span>
-          </button>
-          <button className="vscode-button" onClick={handleReset}>
-            <span className="vscode-button__text">Reset</span>
-          </button>
-        </div>
+    <div className={styles.content}>
+      <label htmlFor="colopicker" className={styles.colorLabel}>
+        Choose a new color:
+      </label>
+      <div className={styles.colorContainer}>
+        <input
+          type="color"
+          name="colopicker"
+          value={inputValue}
+          className="color-input"
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <span className={styles.colorValue}>{inputValue}</span>
+        <button
+          type="button"
+          className="vscode-action-button"
+          onClick={onResetColorPicker}
+        >
+          <i className="codicon codicon-refresh"></i>
+        </button>
+      </div>
+      <div className={styles.btnContainer}>
+        <button className="vscode-button secondary block" onClick={handleSave}>
+          <span className="vscode-button__text">Save</span>
+        </button>
+        <button className="vscode-button block" onClick={handleReset}>
+          <span className="vscode-button__text">Reset</span>
+        </button>
       </div>
       {isModalShown && <Modal onAccept={handleModal} />}
-      <br />
-      <TypeList
-        list={colormaps.colorsMap[color]}
-        link="https://code.visualstudio.com/api/references/theme-color"
-        title="Colors"
-      />
-      {colormaps.tokenColorsMap[color] && (
+      <div className={styles.typesContainer}>
         <TypeList
-          list={colormaps.tokenColorsMap[color].scope}
-          link="https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide"
-          title="Token Colors"
+          list={colorsMap[color]}
+          link="https://code.visualstudio.com/api/references/theme-color"
+          title="Colors"
         />
-      )}
-      <TypeList
-        list={colormaps.syntaxMap[color]}
-        link="https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide"
-        title="Syntax Colors"
-      />
+        {tokenColorsMap[color] && (
+          <TypeList
+            list={tokenColorsMap[color].scope}
+            link="https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide"
+            title="Token Colors"
+          />
+        )}
+        <TypeList
+          list={syntaxMap[color]}
+          link="https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide"
+          title="Syntax Colors"
+        />
+      </div>
     </div>
   );
 };

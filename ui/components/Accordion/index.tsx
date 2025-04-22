@@ -1,7 +1,8 @@
 import { type FC } from "react";
 import { colorMap } from "../../../types";
 import AccordionContent from "./AccordionContent";
-import "./accordion.css";
+import styles from "./accordion.module.css";
+// import "./accordion.css";
 
 interface AccordionProps {
   color: string;
@@ -21,10 +22,13 @@ const Accordion: FC<AccordionProps> = ({ color, colormaps }) => {
       <summary>
         <i className="codicon codicon-chevron-right icon-arrow"></i>
         <h2 className="title">
-          <span className="color-preview" style={{ backgroundColor: color }} />
+          <span
+            className={styles.colorPreview}
+            style={{ backgroundColor: color }}
+          />
           {color}
         </h2>
-        <div className="badge-container">
+        <div className={styles.badgeContainer}>
           <span className="vscode-badge activity-bar-counter">{count}</span>
         </div>
       </summary>

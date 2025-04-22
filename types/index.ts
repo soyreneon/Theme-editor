@@ -21,7 +21,7 @@ export type TokenColorMap = Record<
 >;
 export type SyntaxMap = Record<string, string[]>;
 
-export interface colorMap {
+export interface ColorMap {
   colorsMap: ColorUsageMap;
   tokenColorsMap: TokenColorMap;
   syntaxMap: SyntaxMap;

@@ -10,8 +10,8 @@ interface TypeListProps {
 const TypeList: FC<TypeListProps> = ({ list, title, link }) => {
   return (
     list && (
-      <div>
-        <div className={styles.typeContainer}>
+      <div className={styles.typeContainer}>
+        <div className={styles.header}>
           <h4>{title}</h4>
           <a href={link}>Learn more</a>
         </div>

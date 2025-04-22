@@ -1,0 +1,46 @@
+.content {
+  border: 1px solid var(--vscode-focusBorder);
+  /* border-top: none; */
+  padding: 10px 0;
+}
+
+.typesContainer {
+  margin: 0 5px;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px groove var(--vscode-focusBorder);
+}
+
+/* .colorContainer {
+  margin: 0 10px;
+} */
+
+.colorContainer,
+.btnContainer {
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  column-gap: 10px;
+}
+
+.colorContainer input[type="color"] {
+  width: 80px;
+  height: 35px;
+  flex: 1;
+  margin-right: 5px;
+  background-color: inherit;
+  padding: 0;
+}
+.colorLabel {
+  display: block;
+  margin: 0 10px;
+  font-size: 1em;
+  margin-bottom: 5px;
+  /* font-size: 0.85em; */
+  /* text-align: center; */
+}
+.colorValue {
+  font-family: monospace;
+  text-transform: uppercase;
+}

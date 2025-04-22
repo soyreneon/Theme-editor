@@ -12,6 +12,7 @@ import {
   type ColorUsageMap,
   type TokenColorMap,
   type SyntaxMap,
+  type ColorMap,
   GlobalCustomizations,
 } from "../types";
 
@@ -162,7 +163,7 @@ class ThemeEditorPanel {
       (message) => {
         switch (message.command) {
           case "save":
-            vscode.window.showErrorMessage(message.color);
+            vscode.window.showErrorMessage(`${message.color}, ${message.old}`);
             return;
           case "reset":
             vscode.window.showErrorMessage(message.color);
@@ -435,14 +436,15 @@ class ThemeEditorPanel {
           },
         };
 
-        const colormaps = this.getColorUsage(fullThemeJson);
+        const colormaps: ColorMap = this.getColorUsage(fullThemeJson);
 
         // Color list without transparency
-        const colors = this.sortColorsByAppereances(colormaps);
+        const colors: string[] = this.sortColorsByAppereances(colormaps);
+        // console.log("**", colors, col);
         this._panel?.webview.postMessage({
           type: "themeChanged",
           theme: currentTheme,
-          json: themeJson,
+          json: themeJson, // not using now
           colormaps: colormaps,
           colors: colors,
         });
@@ -543,27 +545,12 @@ class ThemeEditorPanel {
     //console.log(workSpaceConfig.get("colorTheme"));
     const activeTheme = workSpaceConfig.get("colorTheme");
 
-    // const scriptPathOnDisk = vscode.Uri.joinPath(
-    //   this._extensionUri,
-    //   "media",
-    //   "main.js"
-    // );
-
     const reactScriptPathOnDisk = vscode.Uri.joinPath(
       this._extensionUri,
       "dist/ui/",
       "webview.js"
     );
 
-    /*
-    const reactScriptPathOnDisk = vscode.Uri.joinPath(
-      this._extensionUri,
-      "dist/ui",
-      "ui.d36934a7.js"
-      // "index.js"
-    );
-    
-    */
     // And the uri we use to load this script in the webview
     // const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
     const reactScript = webview.asWebviewUri(reactScriptPathOnDisk);
@@ -573,15 +560,7 @@ class ThemeEditorPanel {
       "dist/ui",
       "webview.css"
     );
-    /*
-    // Local path to css styles
-    const reactStyleResetPath = vscode.Uri.joinPath(
-      this._extensionUri,
-      "dist/ui",
-      "ui.80ad4eed.css"
-      // "index.css"
-    );
-    */
+
     const iconsStylePath = vscode.Uri.joinPath(
       this._extensionUri,
       "node_modules",
@@ -589,85 +568,13 @@ class ThemeEditorPanel {
       "dist",
       "codicon.css"
     );
-    // const styleResetPath = vscode.Uri.joinPath(
-    //   this._extensionUri,
-    //   "media",
-    //   "reset.css"
-    // );
-    // const stylesPathMainPath = vscode.Uri.joinPath(
-    //   this._extensionUri,
-    //   "media",
-    //   "vscode.css"
-    // );
-
-    // const stylesAccordionPath = vscode.Uri.joinPath(
-    //   this._extensionUri,
-    //   "media",
-    //   "accordion.css"
-    // );
-
-    // const stylesLoaderPath = vscode.Uri.joinPath(
-    //   this._extensionUri,
-    //   "media",
-    //   "loader.css"
-    // );
-
-    // const stylesModalPath = vscode.Uri.joinPath(
-    //   this._extensionUri,
-    //   "media",
-    //   "modal.css"
-    // );
-
-    // const stylesCustomPath = vscode.Uri.joinPath(
-    //   this._extensionUri,
-    //   "media",
-    //   "custom.css"
-    // );
-
-    // const saveSvgUri = webview.asWebviewUri(
-    //   vscode.Uri.joinPath(this._extensionUri, "media", "save.svg")
-    // );
-
-    // // console.log("saveSvgUri", saveSvgUri);
-    // const resetSvgUri = webview.asWebviewUri(
-    //   vscode.Uri.joinPath(this._extensionUri, "media", "reset.svg")
-    // );
 
     // Uri to load styles into webview
     const reactStylesResetUri = webview.asWebviewUri(reactStyleResetPath);
-    // const stylesResetUri = webview.asWebviewUri(styleResetPath);
     const iconStylesUri = webview.asWebviewUri(iconsStylePath);
-    // const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
-    // const stylesAccordionUri = webview.asWebviewUri(stylesAccordionPath);
-    // const stylesLoaderUri = webview.asWebviewUri(stylesLoaderPath);
-    // const stylesModalUri = webview.asWebviewUri(stylesModalPath);
-    // const stylesCustomUri = webview.asWebviewUri(stylesCustomPath);
 
-    /*
-    				<link href="${stylesLoaderUri}" rel="stylesheet">
-				<link href="${stylesModalUri}" rel="stylesheet">
-				<link href="${stylesCustomUri}" rel="stylesheet">
-				<link href="${stylesResetUri}" rel="stylesheet">
-				<link href="${stylesMainUri}" rel="stylesheet">
-        <!--h2 id="theme-name">${activeTheme}</h2>
-        <p>hey / / ${scriptUri} </p>
-        <hr/>
-				<h3 id="colors">
-          <div class="loader-wrapper">
-            <span class="loader"></span>
-          </div>
-        </h3>
-        <script nonce="${nonce}" >
-          const saveIconUri = "${saveSvgUri}";
-          const resetIconUri = "${resetSvgUri}";
-        </script>
-				<script nonce="${nonce}" src="${scriptUri}"></script-->
-        */
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
-
-    // <script nonce="${nonce}" type="module" src="${reactScript}"></script>
-    // <link href="${iconStylesUri}" rel="stylesheet">
 
     return `<!DOCTYPE html>
 			<html lang="en">

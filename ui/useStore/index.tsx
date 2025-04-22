@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { colorMap } from "../../types";
+import { type ColorMap } from "../../types";
 
 interface ThemeContextType {
   title: string | null;
   colors: string[];
-  colorMap: colorMap;
+  colorMap: ColorMap;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
