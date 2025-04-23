@@ -1,12 +1,12 @@
 import { type FC } from "react";
-import { colorMap } from "../../../types";
+import { type ColorMap } from "../../../types";
 import AccordionContent from "./AccordionContent";
 import styles from "./accordion.module.css";
 // import "./accordion.css";
 
 interface AccordionProps {
   color: string;
-  colormaps: colorMap;
+  colormaps: ColorMap;
 }
 
 const Accordion: FC<AccordionProps> = ({ color, colormaps }) => {

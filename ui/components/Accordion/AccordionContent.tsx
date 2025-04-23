@@ -1,5 +1,5 @@
 import { useState, type FC } from "react";
-import { colorMap } from "../../../types";
+import { type ColorMap } from "../../../types";
 import { vscode } from "../../useStore";
 import TypeList from "../TypeList";
 import Modal from "../Modal";
@@ -7,7 +7,7 @@ import styles from "./content.module.css";
 
 interface AccordionContentProps {
   color: string;
-  colormaps: colorMap;
+  colormaps: ColorMap;
 }
 
 const AccordionContent: FC<AccordionContentProps> = ({ color, colormaps }) => {
