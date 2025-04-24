@@ -1,7 +1,7 @@
 export type ThemeJson = {
   name: string;
   type?: string;
-  colors?: Record<string, string>;
+  colors?: SimpleColorStructure;
   tokenColors?: TextMateRule[];
   // tokenColors?: {
   //   name?: string;
@@ -12,14 +12,26 @@ export type ThemeJson = {
   //     fontStyle?: string;
   //   };
   // }[];
-  syntax?: Record<string, string>;
+  syntax?: SimpleColorStructure;
+};
+export type FullThemeJson = {
+  name: string;
+  type?: string;
+  colors?: SimpleColorStructure;
+  tokenColors?: ScopeMap;
+  syntax?: SimpleColorStructure;
 };
 
+export type SimpleColorStructure = Record<string, string>;
 export type ColorStructure = Record<string, string[]>;
 // export type ColorUsageMap = Record<string, string[]>;
 // export type SyntaxMap = Record<string, string[]>;
 export type TokenColor = { scope: string[]; type: "foreground" | "background" };
 export type TokenColorMap = Record<string, TokenColor>; // {"value": {scope: '', type: 'foreground'}}
+export type ScopeMap = Record<
+  string,
+  Record<"foreground" | "background", string>
+>; // "text.html meta.embedded source.js string": {"foreground": "#96E072" }
 
 export interface ColorMap {
   colorsMap: ColorStructure;
@@ -29,8 +41,18 @@ export interface ColorMap {
 
 // Define types for global settings
 export interface GlobalCustomizations {
-  colors: Record<string, string>;
-  tokenColors: TextMateRule[];
+  colors: SimpleColorStructure;
+  tokenColors: {
+    textMateRules?: TextMateRule[];
+    // tmp
+    comments?: string;
+    keywords?: string;
+    strings?: string;
+    numbers?: string;
+    types?: string;
+    functions?: string;
+    variables?: string;
+  };
   // tokenColors: Array<{
   //   scope: string[];
   //   settings: { foreground?: string; background?: string };
@@ -50,12 +72,13 @@ export interface TokenColorCustomization {
   [customScope: string]: any; // allow propeties not defined as "textMateRules"
 }
 
+export type Settings = {
+  foreground?: string;
+  background?: string;
+  fontStyle?: string;
+};
 export interface TextMateRule {
   name?: string;
   scope: string | string[];
-  settings: {
-    foreground?: string;
-    background?: string;
-    fontStyle?: string;
-  };
+  settings: Settings;
 }

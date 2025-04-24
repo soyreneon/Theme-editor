@@ -5,10 +5,10 @@ import * as vscode from "vscode";
 //import stripJsonComments from 'strip-json-comments';
 
 //const { parse } = require("jsonc-parser");
-import { parse } from "jsonc-parser";
 // import * as fs from "fs";
 import {
   type ThemeJson,
+  type FullThemeJson,
   // type ColorUsageMap,
   type TokenColorMap,
   type ColorStructure,
@@ -18,7 +18,14 @@ import {
   type TokenColorCustomization,
   type TextMateRule,
 } from "../types";
-import { normalizeColor, updateTokenColorCustomization } from "./utils";
+import {
+  normalizeColor,
+  updateTokenColorCustomization,
+  getThemeJsonByName,
+  mergeSyntaxThemes,
+  // mergeTextMateRules,
+  mapTextMateRules,
+} from "./utils";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -116,7 +123,7 @@ class ThemeEditorPanel {
   private themeName: string = "";
   private globalSettings: GlobalCustomizations = {
     colors: {},
-    tokenColors: [],
+    tokenColors: {},
   };
 
   public static createOrShow(extensionUri: vscode.Uri) {
@@ -270,81 +277,7 @@ class ThemeEditorPanel {
     */
   };
 
-  public async getThemeJsonByName(themeName: string): Promise<{
-    themeJson: ThemeJson;
-    globalCustomizations: GlobalCustomizations;
-  } | null> {
-    // const globalSettingsPath = vscode.Uri.file(
-    //   process.platform === "darwin"
-    //     ? `${process.env.HOME}/Library/Application Support/Code/User/settings.json`
-    //     : `${process.env.HOME}/.config/Code/User/settings.json`
-    // );
-
-    const homeDir = process.env.HOME || process.env.USERPROFILE; // compatible en todas las plataformas
-
-    const globalSettingsPath = vscode.Uri.file(
-      process.platform === "darwin"
-        ? `${homeDir}/Library/Application Support/Code/User/settings.json`
-        : process.platform === "win32"
-        ? `${homeDir}\\AppData\\Roaming\\Code\\User\\settings.json`
-        : `${homeDir}/.config/Code/User/settings.json`
-    );
-
-    let globalSettings: any = {};
-    try {
-      const settingsContent = await vscode.workspace.fs.readFile(
-        globalSettingsPath
-      );
-      globalSettings = parse(settingsContent.toString());
-    } catch (err) {
-      console.error("Error reading global settings.json:", err);
-    }
-
-    for (const ext of vscode.extensions.all) {
-      const contributes = ext.packageJSON.contributes;
-
-      if (contributes && contributes.themes) {
-        for (const theme of contributes.themes) {
-          if (
-            theme.label === themeName ||
-            theme.id === themeName ||
-            theme.name === themeName
-          ) {
-            const themePath = vscode.Uri.joinPath(ext.extensionUri, theme.path);
-
-            try {
-              const themeContent = await vscode.workspace.fs.readFile(
-                themePath
-              );
-              const decoded = Buffer.from(themeContent).toString("utf8");
-              const json: ThemeJson = parse(decoded);
-
-              return {
-                themeJson: json,
-                globalCustomizations: {
-                  colors:
-                    globalSettings["workbench.colorCustomizations"][
-                      `[${themeName}]`
-                    ] || {},
-                  tokenColors:
-                    globalSettings["editor.tokenColorCustomizations"][
-                      `[${themeName}]`
-                    ]?.textMateRules || [],
-                },
-              };
-            } catch (err) {
-              console.error("Error reading theme JSON:", err);
-            }
-          }
-        }
-      }
-    }
-
-    vscode.window.showWarningMessage(`Theme "${themeName}" not found.`);
-    return null;
-  }
-
-  public getColorUsage(theme: ThemeJson): {
+  public getColorUsage(theme: FullThemeJson): {
     colorsMap: ColorStructure;
     tokenColorsMap: TokenColorMap;
     syntaxMap: ColorStructure;
@@ -363,44 +296,31 @@ class ThemeEditorPanel {
     }
 
     // Process tokenColors
-    const processedScopes = new Set<string>();
-    for (const token of theme.tokenColors ?? []) {
-      const { foreground, background } = token.settings;
-      const scope = Array.isArray(token.scope)
-        ? token.scope
-        : token.scope
-        ? [token.scope]
-        : ["global"];
+    console.log("token", Object.entries(theme.tokenColors ?? {}));
+    for (const [scope, tokenData] of Object.entries(theme.tokenColors ?? {})) {
+      const { foreground, background } = tokenData;
 
-      scope.forEach((s) => {
-        if (foreground) {
-          const normalizedForeground = normalizeColor(foreground);
-          if (!processedScopes.has(`${s}-foreground`)) {
-            if (!tokenColorsMap[normalizedForeground]) {
-              tokenColorsMap[normalizedForeground] = {
-                scope: [],
-                type: "foreground",
-              };
-            }
-            tokenColorsMap[normalizedForeground].scope.push(s);
-            processedScopes.add(`${s}-foreground`);
-          }
+      if (foreground) {
+        const normalizedForeground = normalizeColor(foreground);
+        if (!tokenColorsMap[normalizedForeground]) {
+          tokenColorsMap[normalizedForeground] = {
+            scope: [],
+            type: "foreground",
+          };
         }
+        tokenColorsMap[normalizedForeground].scope.push(scope);
+      }
 
-        if (background) {
-          const normalizedBackground = normalizeColor(background);
-          if (!processedScopes.has(`${s}-background`)) {
-            if (!tokenColorsMap[normalizedBackground]) {
-              tokenColorsMap[normalizedBackground] = {
-                scope: [],
-                type: "background",
-              };
-            }
-            tokenColorsMap[normalizedBackground].scope.push(s);
-            processedScopes.add(`${s}-background`);
-          }
+      if (background) {
+        const normalizedBackground = normalizeColor(background);
+        if (!tokenColorsMap[normalizedBackground]) {
+          tokenColorsMap[normalizedBackground] = {
+            scope: [],
+            type: "background",
+          };
         }
-      });
+        tokenColorsMap[normalizedBackground].scope.push(scope);
+      }
     }
 
     // Process syntax
@@ -481,7 +401,7 @@ class ThemeEditorPanel {
         .getConfiguration("workbench")
         .get<string>("colorTheme") ?? "";
 
-    this.getThemeJsonByName(this.themeName as string).then((result) => {
+    getThemeJsonByName(this.themeName as string).then((result) => {
       if (result) {
         const { themeJson, globalCustomizations } = result;
         this.themeObj = themeJson;
@@ -495,7 +415,7 @@ class ThemeEditorPanel {
         );
         */
         // console.log("themejason", JSON.stringify(themeJson));
-        // console.log("themejason", JSON.stringify(themeJson));
+        // console.log("global", JSON.stringify(globalCustomizations));
         // console.log("maptypes", JSON.stringify(maptypes));
         /*
         // Merge global customizations
@@ -509,26 +429,56 @@ class ThemeEditorPanel {
           ...globalCustomizations.tokenColors,
         ];
         */
-        const fullThemeJson: ThemeJson = {
+        const { textMateRules, ...syntaxCustomizations } =
+          globalCustomizations.tokenColors ?? {};
+
+        const { scopeMap, nameColorMap } = mapTextMateRules(
+          themeJson.tokenColors || [],
+          textMateRules || []
+        );
+
+        const fullThemeJson: FullThemeJson = {
           ...themeJson,
           colors: {
             ...themeJson.colors,
             ...globalCustomizations.colors,
           },
-          tokenColors: [
-            ...(themeJson.tokenColors || []),
-            ...globalCustomizations.tokenColors,
-          ],
-          syntax: {
-            ...(themeJson.syntax || {}),
-          },
+          // tokenColors: [],
+          tokenColors: scopeMap,
+
+          // tokenColors: mergeTextMateRules(
+          //   [...(themeJson.tokenColors || [])],
+          //   textMateRules || []
+          // ),
+          // tokenColors: [
+          //   ...(themeJson.tokenColors || []),
+          //   ...(textMateRules || []),
+          // ],
+          syntax: mergeSyntaxThemes(
+            themeJson.syntax || {},
+            syntaxCustomizations
+          ),
         };
 
+        // console.log(
+        //   "global",
+        //   JSON.stringify(themeJson.tokenColors),
+        //   JSON.stringify(textMateRules),
+        //   JSON.stringify(fullThemeJson.tokenColors)
+        // );
+        // console.log("global", JSON.stringify(scopeMap));
         this.colormaps = this.getColorUsage(fullThemeJson);
+        console.log(
+          "global",
+          JSON.stringify(this.colormaps)
+          // JSON.stringify(scopeMap),
+          // JSON.stringify(nameColorMap)
+        );
+        // console.log("global", JSON.stringify(this.colormaps));
 
         // Color list without transparency
         const colors: string[] = this.sortColorsByAppereances(this.colormaps);
-        console.log("**", this.colormaps);
+        // console.log("**", this.colormaps);
         this._panel?.webview.postMessage({
           type: "themeChanged",
           theme: this.themeName,
@@ -540,6 +490,7 @@ class ThemeEditorPanel {
     });
   }
 
+  /*
   private mergeThemeAndCustomizations(
     themeJson: ThemeJson,
     globalCustomizations: GlobalCustomizations
@@ -619,6 +570,7 @@ class ThemeEditorPanel {
 
     return result;
   }
+  */
 
   private _update() {
     const webview = this._panel.webview;
