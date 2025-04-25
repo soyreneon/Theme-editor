@@ -341,7 +341,6 @@ export const mapTextMateRules = (
   nameColorMap: SimpleColorStructure;
 } => {
   const scopeMap: ScopeMap = {};
-  // const scopeMap: ScopeMap | {} = {};
   const nameColorMap: SimpleColorStructure = {};
 
   const processRules = (rules: TextMateRule[]) => {
@@ -350,35 +349,22 @@ export const mapTextMateRules = (
 
       // Handle global settings (no scope)
       if (!scope) {
-        // unnecesary
-        if (!scopeMap["global"]) {
-          scopeMap["global"] = {};
-        }
-        if (settings.foreground) {
-          scopeMap["global"].foreground = settings.foreground;
-        }
-        if (settings.background) {
-          scopeMap["global"].background = settings.background;
-        }
-        if (name && settings.foreground) {
-          nameColorMap[name] = settings.foreground;
-        }
+        scopeMap["global"] = {
+          ...scopeMap["global"],
+          ...(settings.foreground && { foreground: settings.foreground }),
+          ...(settings.background && { background: settings.background }),
+        };
         continue;
       }
 
       // Normalize scope to an array
       const scopes = Array.isArray(scope) ? scope : [scope];
-
       for (const singleScope of scopes) {
-        if (!scopeMap[singleScope]) {
-          scopeMap[singleScope] = {};
-        }
-        if (settings.foreground) {
-          scopeMap[singleScope].foreground = settings.foreground;
-        }
-        if (settings.background) {
-          scopeMap[singleScope].background = settings.background;
-        }
+        scopeMap[singleScope] = {
+          ...scopeMap[singleScope],
+          ...(settings.foreground && { foreground: settings.foreground }),
+          ...(settings.background && { background: settings.background }),
+        };
       }
 
       // Map name to color

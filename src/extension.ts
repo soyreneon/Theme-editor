@@ -470,9 +470,9 @@ class ThemeEditorPanel {
         this.colormaps = this.getColorUsage(fullThemeJson);
         console.log(
           "global",
-          JSON.stringify(this.colormaps)
-          // JSON.stringify(scopeMap),
-          // JSON.stringify(nameColorMap)
+          // JSON.stringify(this.colormaps)
+          JSON.stringify(scopeMap),
+          JSON.stringify(nameColorMap)
         );
         // console.log("global", JSON.stringify(this.colormaps));
 
