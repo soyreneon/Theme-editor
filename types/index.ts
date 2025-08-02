@@ -27,10 +27,10 @@ export type ColorStructure = Record<string, string[]>;
 // export type ColorUsageMap = Record<string, string[]>;
 // export type SyntaxMap = Record<string, string[]>;
 export type TokenColor = { scope: string[]; type: "foreground" | "background" };
-export type TokenColorMap = Record<string, TokenColor>; // {"value": {scope: '', type: 'foreground'}}
+export type TokenColorMap = Record<string, TokenColor & Settings>; // {"value": {scope: '', type: 'foreground'}}
 export type ScopeMap = Record<
   string,
-  Record<"foreground" | "background", string>
+  Partial<Record<"foreground" | "background" | "fontStyle", string>>
 >; // "text.html meta.embedded source.js string": {"foreground": "#96E072" }
 
 export interface ColorMap {
@@ -79,6 +79,6 @@ export type Settings = {
 };
 export interface TextMateRule {
   name?: string;
-  scope: string | string[];
+  scope: string | string[]; // edge scenario ?
   settings: Settings;
 }

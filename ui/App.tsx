@@ -13,7 +13,8 @@ export function App() {
 
   return (
     <>
-      <h1>{title}</h1>
+      <hr className="vscode-divider" />
+      <h3>{title}</h3>
       <hr className="vscode-divider" />
       {colors.map((color) => (
         <Accordion color={color} colormaps={colorMap} key={color} />
