@@ -1,0 +1,41 @@
+/* Contenedor del Tooltip */
+.tooltipContainer {
+  /* background-color: red; */
+  position: relative;
+  text-align: center;
+  display: inline-block;
+}
+
+/* Show tooltips*/
+.tooltipContainer:hover .tooltip {
+  display: block;
+}
+
+.tooltip {
+  background-color: var(--vscode-input-background);
+  border: solid 1px var(--vscode-button-background);
+  color: var(--vscode-input-foreground);
+  border-radius: 3px;
+  font-size: 0.8em;
+  display: none;
+  min-width: 90px;
+  padding: 4px 10px;
+  padding-bottom: 6px;
+  position: absolute;
+}
+.tooltip.top {
+  transform: translateX(-45%);
+  top: -25px;
+}
+.tooltip.bottom {
+  transform: translateX(-34%);
+  bottom: -25px;
+}
+.tooltip.left {
+  left: -94px;
+  top: 0;
+}
+.tooltip.right {
+  right: -94px;
+  top: 0;
+}

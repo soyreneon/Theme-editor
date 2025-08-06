@@ -1,11 +1,11 @@
 import { json } from "stream/consumers";
 import {
   // type ThemeJson,
-  // type GlobalCustomizations,
   type TokenColorMap,
   type ColorStructure,
   // type SyntaxMap,
   type FullThemeJson,
+  type GlobalCustomizations,
   type TokenColorCustomization,
   type TextMateRule,
   type TokenColor,
@@ -37,20 +37,11 @@ export const updateTokenColorCustomization = (
         ruleScopes.includes(s)
       );
 
-      console.log(
-        "** before",
-        hasMatchingScope,
-        currentTypeColor,
-        previousColor,
-        newColor
-      );
-
       if (
         hasMatchingScope &&
         currentTypeColor &&
         currentTypeColor.toLowerCase() === previousColor.toLowerCase()
       ) {
-        console.log("** skip");
         return; // skip (i.e., "remove" this rule)
       }
 
@@ -59,8 +50,6 @@ export const updateTokenColorCustomization = (
         currentTypeColor &&
         currentTypeColor.toLowerCase() === newColor.toLowerCase()
       ) {
-        console.log("** new");
-
         const mergedScopes = Array.from(
           new Set([...ruleScopes, ...settingsTokenKeys.scope])
         );
@@ -95,9 +84,9 @@ export const updateTokenColorCustomization = (
 // Helper function to normalize color to 6-digit hex without alpha and lowercase
 export const normalizeColor = (color: string): string => {
   if (color.length === 4) {
-    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toUpperCase();
+    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toLowerCase();
   } else if (color.length === 5) {
-    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toUpperCase();
+    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toLowerCase();
   } else if (color.length === 9) {
     return color.substring(0, 7).toLowerCase();
   }
@@ -124,59 +113,13 @@ export const buildColorCustomizations = (
   color: string,
   themeObjColors?: SimpleColorStructure
 ): SimpleColorStructure => {
-  // console.log(
-  //   "*** colorCustomizations1",
-  //   JSON.stringify(themeColorCustomizations)
-  // );
-  // console.log("*** hola", settingsColorKeys);
-  //recorro cada prop (e.g. terminal.ansiCyan, etc)
   // generate new colors
   colorKeys.forEach((setting) => {
-    // console.log("*** setting", setting);
-    /*
-      let alpha = "";
-      // la prop ya existe en settings
-      if (themeColorCustomizations[setting]) {
-        alpha = getAlpha(themeColorCustomizations[setting]);
-        // la obtengo del tema
-      } else if (this.themeObj.colors?.[setting]) {
-        alpha = getAlpha(this.themeObj.colors?.[setting]);
-      }
-      */
     const currentColor =
       themeColorCustomizations[setting] ?? themeObjColors?.[setting];
     const alpha = getAlpha(currentColor);
 
-    // debig color nomalized to save it , try with override or not
-    // console.log("###COLR", currentColor, normalizeColor(newColor), alpha);
     themeColorCustomizations[setting] = `${normalizeColor(color)}${alpha}`;
-
-    // console.log(
-    //   "alpha",
-    //   alpha,
-    //   normalizeColor(`${newColor}`),
-    //   normalizeColor(this.themeObj.colors?.[setting] || ""),
-    //   normalizeColor(this.themeObj.colors?.[setting] || "") ===
-    //     normalizeColor(newColor)
-    // );
-    /*
-      if (
-        themeColorCustomizations[setting] &&
-        normalizeColor(this.themeObj.colors?.[setting] || "") !==
-          normalizeColor(newColor)
-      ) {
-        console.log("hola pero");
-        const key = this.themeObj.colors?.[setting] as string;
-        const { [key]: extracted, ...rest } = themeColorCustomizations[setting];
-        themeColorCustomizations[setting] = rest;
-      } else if (
-        normalizeColor(this.themeObj.colors?.[setting] || "") ===
-        normalizeColor(newColor)
-      ) {
-        console.log("hola gato");
-        themeColorCustomizations[setting] = `${newColor}${alpha}`;
-      }
-      */
   });
   return themeColorCustomizations;
 };
@@ -187,24 +130,14 @@ export const buildTokenColorCustomizations = (
   color: string // new color
   // themeObjTokenColors?: TextMateRule[] // from theme.json (to remove redundant colors)
 ): TokenColorCustomization | null => {
-  // ): Record<string, any> => {
   const { scopeMap } = mapTextMateRules(
     themeTokenColorCustomizations.textMateRules as TextMateRule[],
     // themeObjTokenColors as TextMateRule[]
     [{ scope: tokenKeys.scope, settings: { [tokenKeys.type]: color } }],
     true
   );
-  /*
-   * token section
-   */
-  // Object.keys(settingsTokenKeys.scope).forEach((setting) => {
-  // tokenKeys.scope.forEach((setting) => {
-  //   console.log(setting);
-  //   themeTokenColorCustomizations;
-  // });
 
   return compactTokenColorParse(scopeMap);
-  // return themeTokenColorCustomizations;
 };
 
 export const buildSyntaxColorCustomizations = (
@@ -238,7 +171,6 @@ export const buildSyntaxColorCustomizations = (
     result[key] = overrideColor;
   }
 
-  // console.log("#$%", JSON.stringify(result));
   return result;
 };
 
@@ -266,8 +198,6 @@ export const removeTokenColorCustomizations = (
   color: string // new color
   // themeObjTokenColors?: TextMateRule[] // from theme.json (to remove redundant colors)
 ): TokenColorCustomization | null => {
-  // console.log("#$%", JSON.stringify(tokenKeys));
-  // ): Record<string, any> => {
   const { scopeMap } = mapTextMateRules(
     tokenKeys.textMateRules as TextMateRule[],
     // themeObjTokenColors as TextMateRule[]
@@ -277,7 +207,7 @@ export const removeTokenColorCustomizations = (
 
   const result: ScopeMap = {};
   for (const [key, settings] of Object.entries(scopeMap)) {
-    // Copiamos solo las entradas que no coinciden con `val`
+    // Copy only when it doesn't match with `val`
     const filtered = Object.fromEntries(
       Object.entries(settings).filter(([key, currentcolor]) =>
         key === "foreground" || key === "background"
@@ -291,14 +221,8 @@ export const removeTokenColorCustomizations = (
       result[key] = filtered;
     }
   }
-  // console.log(
-  //   "*****",
-  //   JSON.stringify(result)
-  //   // JSON.stringify(compactTokenColorParse(scopeMap))
-  //   // JSON.stringify(themeTokenColorCustomizations)
-  // );
+
   return compactTokenColorParse(result);
-  // return null;
 };
 
 export const removeSyntaxColorCustomizations = (
@@ -500,15 +424,8 @@ export const mapTextMateRules = (
     }
   };
 
-  // Process both rule sets, with mateRules2 overriding mateRules1
-  // console.log("WW***");
-  // console.log("WW*** process", JSON.stringify(mateRules1));
-  // console.log("WW***");
-  // console.log(JSON.stringify(mateRules2));
   mateRules1 && processRules(mateRules1);
   mateRules2 && processRules(mateRules2);
-  // console.log("on here");
-  // console.log(JSON.stringify(nameColorMap));
   return { scopeMap, nameColorMap };
 };
 
@@ -534,7 +451,6 @@ const getTokenColorsMap = (
   addExtraSettings?: boolean
 ): TokenColorMap => {
   const tokenColorsMap: TokenColorMap = {};
-  // console.log(JSON.stringify(themeTokenColors));
 
   for (const [scope, tokenData] of Object.entries(themeTokenColors ?? {})) {
     const { foreground, background, ...restSettings } = tokenData;
@@ -603,7 +519,7 @@ export const getColorUsage = (
 };
 
 /*
- * Funcitons to build TextMate rules from ScopeMap
+ * Functions to build TextMate rules from ScopeMap
  * simpleTokenColorParse: creates TextMate rules with individual scopes (possibly remoedv in the future)
  * compactTokenColorParse: groups scopes with the same settings into a single TextMate rule
  */
@@ -629,7 +545,6 @@ const compactTokenColorParse = (
 
   if (scopeObj.global && Object.keys(scopeObj.global).length > 0) {
     // if (scopeObj.global) {
-    console.log("hola", JSON.stringify(scopeObj));
     tokenColors.push({ settings: scopeObj.global } as TextMateRule);
   }
 
@@ -658,4 +573,33 @@ const compactTokenColorParse = (
     });
   }
   return tokenColors.length > 0 ? { textMateRules: tokenColors } : null;
+};
+
+/*
+ * Get custom colors on settings.json to show on frontend
+ */
+export const getCustomColors = (global: GlobalCustomizations): string[] => {
+  const colorList = new Set<string>();
+  // colors
+  for (const [_, value] of Object.entries(global.colors)) {
+    colorList.add(normalizeColor(value));
+  }
+
+  const { textMateRules, ...rest } = global.tokenColors;
+  // tokens
+  textMateRules?.map((rule) => {
+    if (rule.settings.background) {
+      colorList.add(normalizeColor(rule.settings.background));
+    }
+    if (rule.settings.foreground) {
+      colorList.add(normalizeColor(rule.settings.foreground));
+    }
+  });
+
+  // syntax
+  for (const [_, value] of Object.entries(rest)) {
+    colorList.add(normalizeColor(value));
+  }
+
+  return Array.from(colorList.values());
 };

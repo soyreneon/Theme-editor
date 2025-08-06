@@ -7,9 +7,14 @@ import styles from "./accordion.module.css";
 interface AccordionProps {
   color: string;
   colormaps: ColorMap;
+  customColorList: string[];
 }
 
-const Accordion: FC<AccordionProps> = ({ color, colormaps }) => {
+const Accordion: FC<AccordionProps> = ({
+  color,
+  colormaps,
+  customColorList,
+}) => {
   const getColorLength = (arr: any[]) => (arr ?? []).length;
 
   const count =
@@ -26,7 +31,10 @@ const Accordion: FC<AccordionProps> = ({ color, colormaps }) => {
             className={styles.colorPreview}
             style={{ backgroundColor: color }}
           />
-          {color}
+          <span className={styles.colorheader}>
+            {color}
+            {customColorList.includes(color) ? "*" : ""}
+          </span>
         </h2>
         <div className={styles.badgeContainer}>
           <span className="vscode-badge activity-bar-counter">{count}</span>

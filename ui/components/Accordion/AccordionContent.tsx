@@ -17,7 +17,6 @@ const AccordionContent: FC<AccordionContentProps> = ({ color, colormaps }) => {
 
   const handleSave = () => {
     if (color === inputValue) return;
-    console.log("Saved color:", inputValue);
     vscode.postMessage({
       command: "save",
       old: color,
@@ -74,7 +73,12 @@ const AccordionContent: FC<AccordionContentProps> = ({ color, colormaps }) => {
           <span className="vscode-button__text">Reset</span>
         </button>
       </div>
-      {isModalShown && <Modal onAccept={handleModal} />}
+      {isModalShown && (
+        <Modal
+          onAccept={handleModal}
+          message="Are you sure you want to reset this color?, it will revert to the default theme value."
+        />
+      )}
       <div className={styles.typesContainer}>
         <TypeList
           list={colorsMap[color]}

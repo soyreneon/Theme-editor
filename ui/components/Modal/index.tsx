@@ -3,15 +3,17 @@ import styles from "./modal.module.css";
 
 interface FullscreenModalProps {
   onAccept: (isAccepted: boolean) => void;
+  message: string;
 }
 
-const FullscreenModal: React.FC<FullscreenModalProps> = ({ onAccept }) => {
+const FullscreenModal: React.FC<FullscreenModalProps> = ({
+  onAccept,
+  message,
+}) => {
   return (
     <div className={styles.fullscreenModal}>
       <div className={styles.modalContent}>
-        <h3 className={styles.disclaimer}>
-          Are you sure you want to reset the color?
-        </h3>
+        <h4 className={styles.disclaimer}>{message}</h4>
         <div className={styles.btnWrapper}>
           <button
             className="vscode-button secondary"

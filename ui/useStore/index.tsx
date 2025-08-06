@@ -5,6 +5,7 @@ interface ThemeContextType {
   title: string | null;
   colors: string[];
   colorMap: ColorMap;
+  customColorList: string[];
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -14,6 +15,7 @@ const initialState: ThemeContextType = {
   title: null,
   colors: [],
   colorMap: { colorsMap: {}, tokenColorsMap: {}, syntaxMap: {} },
+  customColorList: [],
 };
 
 let globalState = initialState;
@@ -29,6 +31,7 @@ const handleMessage = (event: MessageEvent) => {
       title: message.theme,
       colors: message.colors,
       colorMap: message.colormaps,
+      customColorList: message.customColorList,
     };
 
     if (setGlobalState) {

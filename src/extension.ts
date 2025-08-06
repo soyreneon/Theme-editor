@@ -26,6 +26,7 @@ import {
   // mergeTextMateRules,
   mapTextMateRules,
   getAlpha,
+  getCustomColors,
   getColorUsage,
   buildColorCustomizations,
   buildTokenColorCustomizations,
@@ -46,7 +47,7 @@ import {
 export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "themeeditor" is now active!');
+  console.log('Extension "themeeditor" now active!');
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
@@ -182,17 +183,18 @@ class ThemeEditorPanel {
     // This happens when the user closes the panel or when the panel is closed programmatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-    // Update the content based on view changes
-    // this._panel.onDidChangeViewState(
-    //   () => {
-    //     if (this._panel.visible) {
-    //       this._update();
-    //     }
-    //   },
-    //   null,
-    //   this._disposables
-    // );
+    // Update the content based on view changes (tab switching, etc.)
+    this._panel.onDidChangeViewState(
+      () => {
+        if (this._panel.visible) {
+          this.loadCurrentTheme();
+        }
+      },
+      null,
+      this._disposables
+    );
 
+    // on switching theme
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration("workbench.colorTheme")) {
         this.loadCurrentTheme();
@@ -204,19 +206,31 @@ class ThemeEditorPanel {
       (message) => {
         switch (message.command) {
           case "save":
-            vscode.window.showErrorMessage(`${message.color}, ${message.old}`);
+            // vscode.window.showErrorMessage(`${message.color}, ${message.old}`);
             // new method: get older color, search on this.colormaps and replace to the new color on settings
             // if it's already in the original theme do nothing, if not add it or change it
             // this.colormaps
-            this.updateColor(message.old, message.color);
+            this.updateColor(message.old, message.color).then(() => {
+              this.loadCurrentTheme();
+            });
             return;
           case "reset":
-            vscode.window.showErrorMessage(message.color);
-            this.resetColor(message.color);
+            this.resetColor(message.color).then(() => {
+              this.loadCurrentTheme();
+            });
             return;
-          case "alert":
-            vscode.window.showErrorMessage(message.text);
+          case "resetTheme":
+            vscode.window.showInformationMessage("Reset theme");
+            this.resetThemeColor().then(() => {
+              this.loadCurrentTheme();
+            });
             return;
+          case "refreshTheme":
+            this.loadCurrentTheme();
+            return;
+          // case "alert":
+          //   vscode.window.showErrorMessage(message.text);
+          //   return;
         }
       },
       null,
@@ -226,9 +240,16 @@ class ThemeEditorPanel {
 
   /*
    *
+   * Reset theme
+   */
+  public resetThemeColor = async () => {
+    await saveTheme(this.themeName, {}, {});
+  };
+
+  /*
+   *
    * Reset single color in the theme
    */
-
   public resetColor = async (color: string) => {
     // get custom values from settings
     const themeColorCustomizations = await getGlobalColorCustomizations(
@@ -256,8 +277,13 @@ class ThemeEditorPanel {
 
     //
 
-    saveTheme(this.themeName, colorCustomizations, tokenColorCustomizations);
+    await saveTheme(
+      this.themeName,
+      colorCustomizations,
+      tokenColorCustomizations
+    );
   };
+
   /*
    *
    * Update color in the theme
@@ -349,7 +375,7 @@ class ThemeEditorPanel {
     // colorCustomizations[`[${this.themeName}]`] = themeColorCustomizations;
 
     // return;
-    saveTheme(
+    await saveTheme(
       this.themeName,
       // themeColorCustomizations,
       colorCustomizations,
@@ -437,6 +463,7 @@ class ThemeEditorPanel {
         const { themeJson, globalCustomizations } = result;
         this.themeObj = themeJson;
         this.globalSettings = globalCustomizations;
+        const customColorList = getCustomColors(globalCustomizations);
 
         // probably won't need this
         /*
@@ -445,9 +472,6 @@ class ThemeEditorPanel {
           globalCustomizations
         );
         */
-        // console.log("themejason", JSON.stringify(themeJson));
-        // console.log("global", JSON.stringify(globalCustomizations));
-        // console.log("maptypes", JSON.stringify(maptypes));
         /*
         // Merge global customizations
         themeJson.colors = {
@@ -461,7 +485,7 @@ class ThemeEditorPanel {
         ];
         */
         const { textMateRules, ...syntaxCustomizations } =
-          globalCustomizations.tokenColors ?? {};
+          globalCustomizations.tokenColors ?? {}; // here
 
         const { scopeMap, nameColorMap } = mapTextMateRules(
           themeJson.tokenColors || [],
@@ -472,9 +496,8 @@ class ThemeEditorPanel {
           ...themeJson,
           colors: {
             ...themeJson.colors,
-            ...globalCustomizations.colors,
+            ...globalCustomizations.colors, // get here custom color list
           },
-          // tokenColors: [],
           tokenColors: scopeMap,
 
           // tokenColors: mergeTextMateRules(
@@ -491,117 +514,21 @@ class ThemeEditorPanel {
           ),
         };
 
-        // console.log(
-        //   "global",
-        //   JSON.stringify(themeJson.tokenColors),
-        //   JSON.stringify(textMateRules),
-        //   JSON.stringify(fullThemeJson.tokenColors)
-        // );
-        // console.log("global", JSON.stringify(scopeMap));
         this.colormaps = getColorUsage(fullThemeJson);
-        // console.log(
-        //   "global",
-        //   // JSON.stringify(this.colormaps)
-        //   JSON.stringify(scopeMap),
-        //   JSON.stringify(nameColorMap)
-        // );
-        // console.log("global", JSON.stringify(this.colormaps));
 
         // Color list without transparency
         const colors: string[] = this.sortColorsByAppereances(this.colormaps);
-        // console.log("**", this.colormaps, themeJson, colors);
         this._panel?.webview.postMessage({
           type: "themeChanged",
           theme: this.themeName,
           json: themeJson, // not using now
           colormaps: this.colormaps,
+          customColorList: customColorList,
           colors: colors,
         });
       }
     });
   }
-
-  /*
-  private mergeThemeAndCustomizations(
-    themeJson: ThemeJson,
-    globalCustomizations: GlobalCustomizations
-  ) {
-    const result: Record<string, { color: string; override?: string }> = {};
-
-    // Process colors from themeJson
-    for (const [property, color] of Object.entries(themeJson.colors || {})) {
-      result[property] = { color };
-    }
-
-    // Process tokenColors from themeJson
-    for (const token of themeJson.tokenColors || []) {
-      const { foreground, background } = token.settings;
-      const scope = Array.isArray(token.scope)
-        ? token.scope
-        : token.scope
-        ? [token.scope]
-        : ["global"];
-
-      if (foreground) {
-        scope.forEach((s) => {
-          result[s] = result[s] || { color: foreground };
-        });
-      }
-
-      if (background) {
-        scope.forEach((s) => {
-          result[s] = result[s] || { color: background };
-        });
-      }
-    }
-
-    // Process syntax from themeJson
-    for (const [categories, color] of Object.entries(themeJson.syntax || {})) {
-      const scopes = categories.split(",").map((item) => item.trim());
-      scopes.forEach((scope) => {
-        result[scope] = result[scope] || { color };
-      });
-    }
-
-    // Process globalCustomizations
-    for (const [property, overrideColor] of Object.entries(
-      globalCustomizations.colors || {}
-    )) {
-      if (result[property]) {
-        result[property].override = overrideColor as string;
-      } else {
-        result[property] = { color: overrideColor as string };
-      }
-    }
-
-    for (const token of globalCustomizations.tokenColors || []) {
-      const { foreground, background } = token.settings;
-      const scope = token.scope || ["global"];
-
-      if (foreground) {
-        (scope as string[]).forEach((s: any) => {
-          if (result[s]) {
-            result[s].override = foreground;
-          } else {
-            result[s] = { color: foreground };
-          }
-        });
-      }
-
-      if (background) {
-        (scope as string[]).forEach((s: any) => {
-          if (result[s]) {
-            result[s].override = background;
-          } else {
-            result[s] = { color: background };
-          }
-        });
-      }
-    }
-
-    return result;
-  }
-  */
 
   private _update() {
     const webview = this._panel.webview;
@@ -613,7 +540,6 @@ class ThemeEditorPanel {
     // Local path to main script run in the webview
     // let all = await vscode.workspace.getConfiguration();
     const workSpaceConfig = vscode.workspace.getConfiguration("workbench");
-    //console.log(workSpaceConfig.get("colorTheme"));
     const activeTheme = workSpaceConfig.get("colorTheme");
 
     const reactScriptPathOnDisk = vscode.Uri.joinPath(

@@ -6,19 +6,24 @@ import "@vscode-elements/elements-lite/components/collapsible/collapsible.css";
 import "./App.css";
 import { useTheme } from "./useStore";
 import Accordion from "./components/Accordion";
+import Header from "./components/Header";
 
 export function App() {
   const theme = useTheme();
-  const { title, colors, colorMap } = theme;
+  const { title, colors, colorMap, customColorList } = theme;
 
   return (
     <>
-      <hr className="vscode-divider" />
-      <h3>{title}</h3>
-      <hr className="vscode-divider" />
+      <Header title={title} />
       {colors.map((color) => (
-        <Accordion color={color} colormaps={colorMap} key={color} />
+        <Accordion
+          color={color}
+          colormaps={colorMap}
+          key={color}
+          customColorList={customColorList}
+        />
       ))}
+      <hr className="vscode-divider" />
     </>
   );
 }

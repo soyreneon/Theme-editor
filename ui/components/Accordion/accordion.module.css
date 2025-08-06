@@ -2,6 +2,9 @@
   margin-left: auto;
   margin-right: 3px;
 }
+.colorheader {
+  font-family: monospace;
+}
 .colorPreview {
   display: inline-block;
   width: 40px;
