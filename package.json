@@ -1,7 +1,7 @@
 {
   "name": "themeeditor",
   "displayName": "ThemeEditor",
-  "description": "vscode themes editor",
+  "description": "%extension.description%",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.99.0"
@@ -13,11 +13,12 @@
     "onWebviewPanel:themeEditor"
   ],
   "main": "./dist/extension.js",
+  "l10n": "./l10n",
   "contributes": {
     "commands": [
       {
         "command": "themeeditor.openThemeEditor",
-        "title": "Open Theme Editor"
+        "title": "%command.openThemeEditor.title%"
       }
     ]
   },
@@ -43,6 +44,7 @@
     "@types/vscode": "^1.99.0",
     "@typescript-eslint/eslint-plugin": "^8.28.0",
     "@typescript-eslint/parser": "^8.28.0",
+    "@vscode/l10n-dev": "^0.0.35",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
     "esbuild": "^0.25.1",
@@ -55,6 +57,7 @@
     "@types/vscode-webview": "^1.57.5",
     "@vscode-elements/elements-lite": "^0.3.0",
     "@vscode/codicons": "^0.0.36",
+    "@vscode/l10n": "^0.0.18",
     "jsonc-parser": "^3.3.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

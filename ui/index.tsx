@@ -1,14 +1,14 @@
 import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import { App } from "./App";
-import { ThemeProvider } from "./useStore";
+import { StoreProvider } from "./useStore";
 
 let container = document.getElementById("app")!;
 let root = createRoot(container);
 root.render(
   <StrictMode>
-    <ThemeProvider>
+    <StoreProvider>
       <App />
-    </ThemeProvider>
+    </StoreProvider>
   </StrictMode>
 );

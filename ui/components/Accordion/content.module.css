@@ -30,6 +30,7 @@
   flex: 1;
   margin-right: 5px;
   background-color: inherit;
+  cursor: pointer;
   padding: 0;
 }
 .colorLabel {
@@ -43,4 +44,26 @@
 .colorValue {
   font-family: monospace;
   text-transform: uppercase;
+}
+.brightness {
+  display: flex;
+  flex-direction: row;
+  border: solid var(--vscode-focusBorder) 0.4px;
+  border-radius: 2px;
+  padding: 2px 4px;
+}
+.brightness div button i {
+  font-size: 10px !important;
+  padding: 0 2px !important;
+  color: greenyellow;
+}
+
+@media (max-width: 320px) {
+  .colorContainer {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .colorContainer input[type="color"] {
+    flex-basis: 100%;
+  }
 }

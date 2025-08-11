@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./modal.module.css";
+import { useStore } from "../../useStore";
 
 interface FullscreenModalProps {
   onAccept: (isAccepted: boolean) => void;
@@ -10,6 +11,8 @@ const FullscreenModal: React.FC<FullscreenModalProps> = ({
   onAccept,
   message,
 }) => {
+  const store = useStore();
+  const { translations } = store;
   return (
     <div className={styles.fullscreenModal}>
       <div className={styles.modalContent}>
@@ -19,10 +22,10 @@ const FullscreenModal: React.FC<FullscreenModalProps> = ({
             className="vscode-button secondary"
             onClick={() => onAccept(false)}
           >
-            Cancel
+            {translations["Cancel"]}
           </button>
           <button className="vscode-button" onClick={() => onAccept(true)}>
-            Apply
+            {translations["Apply"]}
           </button>
         </div>
       </div>

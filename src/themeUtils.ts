@@ -32,8 +32,6 @@ export const getThemeJsonByName = async (
     tokenColors: tokenColorCustomizations[`[${themeName}]`] || [],
   };
 
-  // console.log("obj", JSON.stringify(obj));
-
   // const homeDir = process.env.HOME || process.env.USERPROFILE; // compatible en todas las plataformas
 
   // const globalSettingsPath = vscode.Uri.file(
@@ -94,7 +92,9 @@ export const getThemeJsonByName = async (
     }
   }
 
-  vscode.window.showWarningMessage(`Theme "${themeName}" not found.`);
+  vscode.window.showWarningMessage(
+    vscode.l10n.t("Theme {0} not found.", themeName)
+  );
   return null;
 };
 
@@ -107,12 +107,6 @@ export const getGlobalColorCustomizations = async (
     configuration.get<Record<string, any>>("workbench.colorCustomizations") ||
     {};
 
-  // console.log(
-  //   "SSS",
-  //   themeName,
-  //   colorCustomizations,
-  //   colorCustomizations[`[${themeName}]`]
-  // );
   return colorCustomizations[`[${themeName}]`] || {};
 };
 
@@ -135,13 +129,13 @@ export const saveTheme = async (
 ): Promise<void> => {
   const configuration = vscode.workspace.getConfiguration();
 
-  // override colors
+  // overwrite colors
   const colorCustomizations =
     configuration.get<Record<string, any>>("workbench.colorCustomizations") ||
     {};
   colorCustomizations[`[${themeName}]`] = themeColorCustomizations;
 
-  // override tokens
+  // overwrite tokens
   const tokenColorCustomizations =
     configuration.get<TokenColorCustomization>(
       "editor.tokenColorCustomizations"
@@ -154,7 +148,7 @@ export const saveTheme = async (
       colorCustomizations,
       vscode.ConfigurationTarget.Global
     );
-    // console.log("themeColorCustomizations", themeColorCustomizations);
+
     if (themeTokenColorCustomizations) {
       await configuration.update(
         "editor.tokenColorCustomizations",
@@ -162,10 +156,9 @@ export const saveTheme = async (
         vscode.ConfigurationTarget.Global
       );
     }
-    vscode.window.showInformationMessage(
-      `Updated color for ${themeName} successfully!`
-    );
   } catch (error: any) {
-    vscode.window.showErrorMessage(`Failed to update color: ${error.message}`);
+    vscode.window.showErrorMessage(
+      vscode.l10n.t("Failed to update theme {0}.", error.message)
+    );
   }
 };

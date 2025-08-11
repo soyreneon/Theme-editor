@@ -4,17 +4,32 @@ import "@vscode-elements/elements-lite/components/action-button/action-button.cs
 import "@vscode-elements/elements-lite/components/badge/badge.css";
 import "@vscode-elements/elements-lite/components/collapsible/collapsible.css";
 import "./App.css";
-import { useTheme } from "./useStore";
+import { useEffect } from "react";
+import { useStore, vscode } from "./useStore";
+import captions from "./language";
 import Accordion from "./components/Accordion";
+import Loader from "./components/Loader";
 import Header from "./components/Header";
 
 export function App() {
-  const theme = useTheme();
-  const { title, colors, colorMap, customColorList } = theme;
+  const store = useStore();
+  const { title, colors, colorMap, customColorList } = store;
+
+  useEffect(() => {
+    // call vscode api when ui is ready
+    vscode.postMessage({
+      command: "ui-ready",
+      captions,
+    });
+  }, []);
+
+  if (title === null) {
+    return <Loader />;
+  }
 
   return (
     <>
-      <Header title={title} />
+      <Header title={title} count={colors.length} />
       {colors.map((color) => (
         <Accordion
           color={color}

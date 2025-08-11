@@ -1,4 +1,4 @@
-import { json } from "stream/consumers";
+// import { json } from "stream/consumers";
 import {
   // type ThemeJson,
   type TokenColorMap,
@@ -13,73 +13,6 @@ import {
   type SimpleColorStructure,
   type ScopeMap,
 } from "../types/";
-
-export const updateColor = () => {};
-
-// ? possibly deprecated
-export const updateTokenColorCustomization = (
-  themeTokenColorCustomizations: TokenColorCustomization,
-  settingsTokenKeys: TokenColor,
-  previousColor: string,
-  newColor: string
-): TokenColorCustomization => {
-  // revisar esto
-  const updatedRules: TextMateRule[] = [];
-  let merged = false;
-
-  (themeTokenColorCustomizations?.textMateRules as TextMateRule[]).forEach(
-    (rule) => {
-      const currentTypeColor = rule.settings[settingsTokenKeys.type];
-      const ruleScopes = Array.isArray(rule.scope) ? rule.scope : [rule.scope];
-
-      // Si la regla tiene el color anterior y alguno de los scopes, la eliminamos
-      const hasMatchingScope = settingsTokenKeys.scope.some((s) =>
-        ruleScopes.includes(s)
-      );
-
-      if (
-        hasMatchingScope &&
-        currentTypeColor &&
-        currentTypeColor.toLowerCase() === previousColor.toLowerCase()
-      ) {
-        return; // skip (i.e., "remove" this rule)
-      }
-
-      // Si tiene el mismo color nuevo, añadimos los nuevos scopes
-      if (
-        currentTypeColor &&
-        currentTypeColor.toLowerCase() === newColor.toLowerCase()
-      ) {
-        const mergedScopes = Array.from(
-          new Set([...ruleScopes, ...settingsTokenKeys.scope])
-        );
-        updatedRules.push({
-          ...rule,
-          scope: mergedScopes,
-        });
-        merged = true;
-        return;
-      }
-
-      updatedRules.push(rule);
-    }
-  );
-
-  // Si no se encontró ninguna coincidencia con el nuevo color, se crea una nueva regla
-  if (!merged) {
-    updatedRules.push({
-      name: `Updated ${settingsTokenKeys.type} color`,
-      scope: settingsTokenKeys.scope,
-      settings: {
-        [settingsTokenKeys.type]: newColor,
-      },
-    });
-  }
-
-  return {
-    textMateRules: updatedRules,
-  };
-};
 
 // Helper function to normalize color to 6-digit hex without alpha and lowercase
 export const normalizeColor = (color: string): string => {
@@ -97,7 +30,6 @@ export const normalizeColor = (color: string): string => {
 export const getAlpha = (color: string): string => {
   if (color.length === 5) {
     return `${color[4]}`.toUpperCase();
-    // return `${color[4]}${color[4]}`.toUpperCase();
   } else if (color.length === 9) {
     return color.substring(7, 9).toUpperCase();
   }
@@ -242,7 +174,7 @@ export const removeSyntaxColorCustomizations = (
 };
 
 /*
- *
+ * Merge colors
  */
 export const mergeSyntaxThemes = (
   syntax1: SimpleColorStructure,
@@ -260,123 +192,10 @@ export const mergeSyntaxThemes = (
   };
 
   expandAndAssign(syntax1);
-  expandAndAssign(syntax2); // overwite if exists
+  expandAndAssign(syntax2); // overwrite if exists
 
   return result;
 };
-
-/*
-export const mergeTextMateRules = (
-  mateRules1: TextMateRule[],
-  mateRules2: TextMateRule[]
-): TextMateRule[] => {
-  const result: TextMateRule[] = [];
-
-  // Clonar para no mutar los originales
-  // const allRules = [...mateRules1];
-  const allRules = mateRules1.map((rule) => ({
-    name: rule.name,
-    scope: Array.isArray(rule.scope) ? [...rule.scope] : rule.scope,
-    settings: { ...rule.settings },
-  }));
-
-  // Mapeo para acceder rápido por color y tipo
-  const scopeMap = new Map<string, TextMateRule>();
-
-  const getKey = (scope: string, type: "foreground" | "background") =>
-    `${type}:${scope}`;
-
-  // Indexar reglas existentes
-  for (const rule of allRules) {
-    if (!rule.scope) {
-      continue;
-    }
-
-    const scopes = Array.isArray(rule.scope) ? rule.scope : [rule.scope];
-    const types: ("foreground" | "background")[] = [];
-
-    if (rule.settings.foreground) {
-      types.push("foreground");
-    }
-    if (rule.settings.background) {
-      types.push("background");
-    }
-
-    for (const scope of scopes) {
-      for (const type of types) {
-        const key = getKey(scope, type);
-        scopeMap.set(key, rule);
-      }
-    }
-  }
-
-  for (const newRule of mateRules2) {
-    // Reglas globales (sin scope ni name)
-    if (!newRule.scope && !newRule.name) {
-      result.push(newRule);
-      continue;
-    }
-
-    const scopes = Array.isArray(newRule.scope)
-      ? newRule.scope
-      : [newRule.scope];
-    const types: ("foreground" | "background")[] = [];
-
-    if (newRule.settings.foreground) types.push("foreground");
-    if (newRule.settings.background) types.push("background");
-
-    let matched = false;
-
-    for (const scope of scopes) {
-      for (const type of types) {
-        const key = getKey(scope, type);
-        const existing = scopeMap.get(key);
-
-        if (existing) {
-          matched = true;
-          // Actualizar el color del tipo correspondiente
-          existing.settings[type] = newRule.settings[type];
-
-          // Agregar nuevos scopes si vienen con nombre diferente
-          if (newRule.name && existing.name !== newRule.name) {
-            existing.name = newRule.name;
-          }
-
-          const existingScopes = new Set(
-            Array.isArray(existing.scope) ? existing.scope : [existing.scope]
-          );
-          existingScopes.add(scope);
-          existing.scope = Array.from(existingScopes);
-        } else {
-          // Si no hay coincidencia, agregar la regla
-          scopeMap.set(key, newRule);
-        }
-      }
-    }
-
-    // Si no hizo match con nadie, agregarla como nueva
-    if (!matched) {
-      for (const scope of scopes) {
-        for (const type of types) {
-          const key = getKey(scope, type);
-          scopeMap.set(key, newRule);
-        }
-      }
-    }
-  }
-
-  // Asegurarnos de agregar las reglas indexadas (únicas o combinadas)
-  const seen = new Set<TextMateRule>();
-  for (const rule of scopeMap.values()) {
-    if (!seen.has(rule)) {
-      seen.add(rule);
-      result.push(rule);
-    }
-  }
-
-  return result;
-};
-*/
 
 export const mapTextMateRules = (
   mateRules1: TextMateRule[],
@@ -520,7 +339,7 @@ export const getColorUsage = (
 
 /*
  * Functions to build TextMate rules from ScopeMap
- * simpleTokenColorParse: creates TextMate rules with individual scopes (possibly remoedv in the future)
+ * simpleTokenColorParse: creates TextMate rules with individual scopes (possibly removed in the future)
  * compactTokenColorParse: groups scopes with the same settings into a single TextMate rule
  */
 const simpleTokenColorParse = (scopeObj: ScopeMap): TokenColorCustomization => {
