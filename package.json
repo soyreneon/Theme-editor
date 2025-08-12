@@ -6,8 +6,21 @@
   "engines": {
     "vscode": "^1.99.0"
   },
+  "icon": "media/logo.png",
   "categories": [
+    "Themes",
+    "Visualization",
     "Other"
+  ],
+  "keywords": [
+    "color-theme",
+    "vsc-theme",
+    "theme",
+    "theme-editor",
+    "theme-customiser",
+    "customization",
+    "style",
+    "custom-theme"
   ],
   "activationEvents": [
     "onWebviewPanel:themeEditor"

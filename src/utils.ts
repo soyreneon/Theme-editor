@@ -1,9 +1,6 @@
-// import { json } from "stream/consumers";
 import {
-  // type ThemeJson,
   type TokenColorMap,
   type ColorStructure,
-  // type SyntaxMap,
   type FullThemeJson,
   type GlobalCustomizations,
   type TokenColorCustomization,
@@ -203,14 +200,15 @@ export const mapTextMateRules = (
   addExtraSettings?: boolean
 ): {
   scopeMap: ScopeMap;
-  nameColorMap: SimpleColorStructure;
+  // nameColorMap: SimpleColorStructure;
 } => {
   const scopeMap: ScopeMap = {};
-  const nameColorMap: SimpleColorStructure = {};
+  // const nameColorMap: SimpleColorStructure = {};
 
   const processRules = (rules: TextMateRule[]) => {
     for (const rule of rules) {
-      const { scope, settings, name } = rule;
+      // const { scope, settings, name } = rule;
+      const { scope, settings } = rule;
 
       // Handle global settings (no scope)
       if (!scope) {
@@ -235,17 +233,18 @@ export const mapTextMateRules = (
       }
 
       // Map name to color
-      if (name && settings.foreground) {
-        nameColorMap[name] = settings.foreground;
-      } else if (settings.foreground) {
-        nameColorMap[settings.foreground] = settings.foreground;
-      }
+      // if (name && settings.foreground) {
+      //   nameColorMap[name] = settings.foreground;
+      // } else if (settings.foreground) {
+      //   nameColorMap[settings.foreground] = settings.foreground;
+      // }
     }
   };
 
   mateRules1 && processRules(mateRules1);
   mateRules2 && processRules(mateRules2);
-  return { scopeMap, nameColorMap };
+  // return { scopeMap, nameColorMap };
+  return { scopeMap };
 };
 
 /*
@@ -421,4 +420,47 @@ export const getCustomColors = (global: GlobalCustomizations): string[] => {
   }
 
   return Array.from(colorList.values());
+};
+
+/*
+ * Functions to build TextMate rules from ScopeMap
+ * simpleTokenColorParse: creates TextMate rules with individual scopes (possibly removed in the future)
+ * compactTokenColorParse: groups scopes with the same settings into a single TextMate rule
+ */
+export const sortColorsByAppereances = (colormaps: {
+  colorsMap: ColorStructure;
+  tokenColorsMap: TokenColorMap;
+  syntaxMap: ColorStructure;
+}) => {
+  // Create a unified colorCounts object
+  const colorCounts: Record<string, { count: number }> = {};
+
+  // Count elements in colorsMap
+  for (const [color, properties] of Object.entries(colormaps.colorsMap)) {
+    if (!colorCounts[color]) {
+      colorCounts[color] = { count: 0 };
+    }
+    colorCounts[color].count += properties.length;
+  }
+
+  // Count elements in tokenColorsMap (based on scope length)
+  for (const [color, tokenData] of Object.entries(colormaps.tokenColorsMap)) {
+    if (!colorCounts[color]) {
+      colorCounts[color] = { count: 0 };
+    }
+    colorCounts[color].count += tokenData.scope.length;
+  }
+
+  // Count elements in syntaxMap
+  for (const [color, categories] of Object.entries(colormaps.syntaxMap)) {
+    if (!colorCounts[color]) {
+      colorCounts[color] = { count: 0 };
+    }
+    colorCounts[color].count += categories.length;
+  }
+
+  // Sort colors by count in descending order and return as an array of color keys
+  return Object.entries(colorCounts)
+    .sort((a, b) => b[1].count - a[1].count) // More elements first
+    .map(([color]) => color);
 };

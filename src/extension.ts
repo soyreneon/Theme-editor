@@ -1,12 +1,5 @@
 import * as vscode from "vscode";
-import {
-  type ThemeJson,
-  type FullThemeJson,
-  type TokenColorMap,
-  type ColorStructure,
-  type ColorMap,
-  // type GlobalCustomizations,
-} from "../types";
+import { type ThemeJson, type FullThemeJson, type ColorMap } from "../types";
 import {
   mergeSyntaxThemes,
   mapTextMateRules,
@@ -18,6 +11,7 @@ import {
   removeColorCustomizations,
   removeTokenColorCustomizations,
   removeSyntaxColorCustomizations,
+  sortColorsByAppereances,
 } from "./utils";
 import {
   getThemeJsonByName,
@@ -339,44 +333,6 @@ class ThemeEditorPanel {
     }
   }
 
-  public sortColorsByAppereances(colormaps: {
-    colorsMap: ColorStructure;
-    tokenColorsMap: TokenColorMap;
-    syntaxMap: ColorStructure;
-  }) {
-    // Create a unified colorCounts object
-    const colorCounts: Record<string, { count: number }> = {};
-
-    // Count elements in colorsMap
-    for (const [color, properties] of Object.entries(colormaps.colorsMap)) {
-      if (!colorCounts[color]) {
-        colorCounts[color] = { count: 0 };
-      }
-      colorCounts[color].count += properties.length;
-    }
-
-    // Count elements in tokenColorsMap (based on scope length)
-    for (const [color, tokenData] of Object.entries(colormaps.tokenColorsMap)) {
-      if (!colorCounts[color]) {
-        colorCounts[color] = { count: 0 };
-      }
-      colorCounts[color].count += tokenData.scope.length;
-    }
-
-    // Count elements in syntaxMap
-    for (const [color, categories] of Object.entries(colormaps.syntaxMap)) {
-      if (!colorCounts[color]) {
-        colorCounts[color] = { count: 0 };
-      }
-      colorCounts[color].count += categories.length;
-    }
-
-    // Sort colors by count in descending order and return as an array of color keys
-    return Object.entries(colorCounts)
-      .sort((a, b) => b[1].count - a[1].count) // More elements first
-      .map(([color]) => color);
-  }
-
   private loadCurrentTheme(): void {
     this.themeName =
       vscode.workspace
@@ -393,7 +349,7 @@ class ThemeEditorPanel {
         const { textMateRules, ...syntaxCustomizations } =
           globalCustomizations.tokenColors ?? {}; // here
 
-        const { scopeMap, nameColorMap } = mapTextMateRules(
+        const { scopeMap } = mapTextMateRules(
           themeJson.tokenColors || [],
           textMateRules || []
         );
@@ -414,11 +370,11 @@ class ThemeEditorPanel {
         this.colormaps = getColorUsage(fullThemeJson);
 
         // Color list without transparency
-        const colors: string[] = this.sortColorsByAppereances(this.colormaps);
+        const colors: string[] = sortColorsByAppereances(this.colormaps);
         this._panel?.webview.postMessage({
           type: "themeChanged",
           theme: this.themeName,
-          json: themeJson, // not using now
+          // json: themeJson, // not using now
           colormaps: this.colormaps,
           customColorList: customColorList,
           colors: colors,
