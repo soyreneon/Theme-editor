@@ -6,7 +6,7 @@ Theme editor is a tool to change/fix color in your current theme. It scans all t
 
 Press (`Cmd+Shift+P` on macOS or `Ctrl+Shift+P` on Windows and Linux) and search for `Open Theme Editor`.
 
-![test](media/demo.png)
+![test](media/demo.mp4)
 ![test](media/demo.gif)
 
 Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
