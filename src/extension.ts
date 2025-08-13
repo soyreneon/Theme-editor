@@ -72,14 +72,14 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
 
     // And restrict the webview to only loading content from our extension's `media` directory.
     localResourceRoots: [
-      vscode.Uri.joinPath(extensionUri, "media"),
+      vscode.Uri.joinPath(extensionUri, "media", "codicons"),
       vscode.Uri.joinPath(extensionUri, "dist"),
-      vscode.Uri.joinPath(
-        extensionUri,
-        "node_modules",
-        "@vscode/codicons",
-        "dist"
-      ),
+      // vscode.Uri.joinPath(
+      //   extensionUri,
+      //   "node_modules",
+      //   "@vscode/codicons",
+      //   "dist"
+      // ),
     ],
   };
 }
@@ -412,11 +412,17 @@ class ThemeEditorPanel {
 
     const iconsStylePath = vscode.Uri.joinPath(
       this._extensionUri,
-      "node_modules",
-      "@vscode/codicons",
-      "dist",
+      "media",
+      "codicons",
       "codicon.css"
     );
+    // const iconsStylePath = vscode.Uri.joinPath(
+    //   this._extensionUri,
+    //   "node_modules",
+    //   "@vscode/codicons",
+    //   "dist",
+    //   "codicon.css"
+    // );
 
     // Uri to load styles into webview
     const reactStylesResetUri = webview.asWebviewUri(reactStyleResetPath);

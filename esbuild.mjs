@@ -1,9 +1,26 @@
 // const esbuild = require("esbuild");
-import * as esbuild from 'esbuild';
+import * as esbuild from "esbuild";
+import fs from "fs";
+import path from "path";
 
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
 import CssModulesPlugin from "esbuild-css-modules-plugin";
+
+// copy codicons to media directory to be used in production webview
+const codiconSrcDir = path.resolve("node_modules/@vscode/codicons/dist");
+const codiconDestDir = path.resolve("media/codicons");
+
+if (!fs.existsSync(codiconDestDir)) {
+  fs.mkdirSync(codiconDestDir, { recursive: true });
+}
+
+["codicon.css", "codicon.ttf"].forEach((file) => {
+  fs.copyFileSync(
+    path.join(codiconSrcDir, file),
+    path.join(codiconDestDir, file)
+  );
+});
 
 /**
  * @type {import('esbuild').Plugin}
@@ -41,7 +58,7 @@ async function main() {
     platform: "node",
     outfile: "dist/extension.js",
     external: ["vscode"],
-    mainFields:["module", "main"],
+    mainFields: ["module", "main"],
     logLevel: "silent",
     plugins: [
       /* add to the end of plugins array */

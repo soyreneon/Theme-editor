@@ -1,6 +1,7 @@
 out
 dist
 node_modules
+media/codicons
 .vscode-test/
 *.vsix
 **/*.module.css.d.ts
