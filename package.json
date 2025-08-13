@@ -1,10 +1,15 @@
 {
   "name": "themeeditor",
   "displayName": "ThemeEditor",
+  "publisher": "soyreneon",
   "description": "%extension.description%",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.99.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soyreneon/Theme-editor"
   },
   "icon": "media/logo.png",
   "categories": [
