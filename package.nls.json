@@ -1,4 +1,4 @@
 {
   "extension.description": "This is an vscode extension to change colors in themes. It scan your current theme and list all the color available",
-  "command.openThemeEditor.title": "Open Theme Editor"
+  "command.openThemeEditor.title": "ThemeTuner: Open ThemeTuner"
 }

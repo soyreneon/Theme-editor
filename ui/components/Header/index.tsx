@@ -11,7 +11,7 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ title, count }) => {
   const store = useStore();
-  const { translations } = store;
+  const { translations, setLoading } = store;
   const [isModalShown, setIsModalShown] = useState<boolean>(false);
   const handleModal = (isAccepted: boolean) => {
     if (isAccepted) {
@@ -27,16 +27,21 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
   };
 
   const handleRefresh = () => {
-    vscode.postMessage({
-      command: "refreshTheme",
-    });
+    setLoading(true);
+    setTimeout(() => {
+      vscode.postMessage({
+        command: "refreshTheme",
+      });
+    }, 800);
   };
 
   return (
     <header>
       <hr className="vscode-divider" />
       <div className={styles.headline}>
-        <h3>{title}</h3>
+        <h4>
+          {translations["Theme"]}: {title}
+        </h4>
         <div>
           <Tooltip caption={translations["reset theme"]} direction="bottom">
             <button

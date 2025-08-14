@@ -1,7 +1,5 @@
 import React, {
   createContext,
-  // Dispatch,
-  // SetStateAction,
   useContext,
   useState,
   useEffect,
@@ -12,23 +10,22 @@ import captions from "../language";
 
 type CaptionKeys = (typeof captions)[number];
 interface StoreContextType {
-  // language: string;
   title: string | null;
   colors: string[];
+  loading: boolean;
   colorMap: ColorMap;
   customColorList: string[];
   translations: Record<CaptionKeys, string>;
-  // setTranslation: Dispatch<SetStateAction<StoreContextType>>;
+  setLoading: (loading: boolean) => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 export const vscode = acquireVsCodeApi();
 
-const initialState: StoreContextType = {
-  // const initialState: Omit<StoreContextType, "setTranslation"> = {
+const initialState = {
   title: null,
   colors: [],
-  // language: "",
+  loading: true,
   colorMap: { colorsMap: {}, tokenColorsMap: {}, syntaxMap: {} },
   customColorList: [],
   translations: captions.reduce(
@@ -40,28 +37,42 @@ const initialState: StoreContextType = {
 export const StoreProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [state, setState] = useState<StoreContextType>(initialState);
+  const [state, setState] = useState(initialState);
+
+  // Add setLoading function
+  const setLoading = (loading: boolean) => {
+    // setTimeout(() => {
+    setState((prev) => ({
+      ...prev,
+      loading,
+    }));
+    // }, 500);
+  };
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
 
       if (message.type === "themeChanged") {
-        // console.log("theme!!!", message);
         setState((prev) => ({
           ...prev,
           title: message.theme,
           colors: message.colors,
           colorMap: message.colormaps,
           customColorList: message.customColorList,
+          loading: false,
         }));
       }
       if (message.type === "language") {
-        console.log("lang!!!", message.translations);
         setState((prev) => ({
           ...prev,
-          // language: message.language,
           translations: message.translations,
+        }));
+      }
+      if (message.type === "refresh") {
+        setState((prev) => ({
+          ...prev,
+          loading: message.loading,
         }));
       }
     };
@@ -71,7 +82,9 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   return (
-    <StoreContext.Provider value={state}>{children}</StoreContext.Provider>
+    <StoreContext.Provider value={{ ...state, setLoading }}>
+      {children}
+    </StoreContext.Provider>
   );
 };
 

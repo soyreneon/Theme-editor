@@ -23,6 +23,7 @@
   padding-bottom: 6px;
   position: absolute;
   pointer-events: none;
+  z-index: 1;
 }
 .tooltip.top {
   transform: translateX(-45%);

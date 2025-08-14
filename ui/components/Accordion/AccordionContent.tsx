@@ -3,15 +3,21 @@ import { type ColorMap } from "../../../types";
 import { vscode, useStore } from "../../useStore";
 import TypeList from "../TypeList";
 import Modal from "../Modal";
+import ColorPicker from "../ColorPicker";
 import styles from "./content.module.css";
 import Tooltip from "../Tooltip";
 
 interface AccordionContentProps {
   color: string;
   colormaps: ColorMap;
+  hasCustomizations: boolean;
 }
 
-const AccordionContent: FC<AccordionContentProps> = ({ color, colormaps }) => {
+const AccordionContent: FC<AccordionContentProps> = ({
+  color,
+  colormaps,
+  hasCustomizations,
+}) => {
   const store = useStore();
   const { translations } = store;
   const { colorsMap, tokenColorsMap, syntaxMap } = colormaps;
@@ -91,90 +97,107 @@ const AccordionContent: FC<AccordionContentProps> = ({ color, colormaps }) => {
 
   return (
     <div className={styles.content}>
-      <label htmlFor="colopicker" className={styles.colorLabel}>
-        {translations["Choose a new color"]}:
-      </label>
-      <div className={styles.colorContainer}>
-        <input
-          type="color"
-          name="colopicker"
-          value={inputValue}
-          className="color-input"
-          onChange={(e) => setInputValue(e.target.value)}
-        />
-        <span className={styles.colorValue}>{inputValue}</span>
-        <section className={styles.brightness}>
-          <i className="codicon codicon-lightbulb"></i>
-          <div>
-            <Tooltip
-              caption={translations["less brightness"]}
-              direction="bottom"
-            >
-              <button
-                type="button"
-                className="vscode-action-button"
-                onClick={() => handleBrightness(false)}
+      <div className={styles.form}>
+        <label htmlFor="colopicker" className={styles.colorLabel}>
+          {translations["Choose a new color"]}:
+        </label>
+        <div className={styles.colorContainer}>
+          <input
+            type="color"
+            name="colopicker"
+            value={inputValue}
+            className="color-input"
+            onChange={(e) => setInputValue(e.target.value)}
+          />
+          <span className={styles.colorValue}>{inputValue}</span>
+          <section className={styles.brightness}>
+            <i className="codicon codicon-lightbulb"></i>
+            <div>
+              <Tooltip
+                caption={translations["less brightness"]}
+                direction="bottom"
               >
-                <i className="codicon codicon-chrome-minimize"></i>
-              </button>
-            </Tooltip>
-            <Tooltip
-              caption={translations["more brightness"]}
-              direction="bottom"
-            >
-              <button
-                type="button"
-                className="vscode-action-button"
-                onClick={() => handleBrightness(true)}
+                <button
+                  type="button"
+                  className="vscode-action-button"
+                  onClick={() => handleBrightness(false)}
+                >
+                  <i className="codicon codicon-chrome-minimize"></i>
+                </button>
+              </Tooltip>
+              <Tooltip
+                caption={translations["more brightness"]}
+                direction="bottom"
               >
-                <i className="codicon codicon-add"></i>
-              </button>
-            </Tooltip>
-          </div>
-        </section>
-
-        <Tooltip caption={translations["reload color"]} direction="bottom">
+                <button
+                  type="button"
+                  className="vscode-action-button"
+                  onClick={() => handleBrightness(true)}
+                >
+                  <i className="codicon codicon-add"></i>
+                </button>
+              </Tooltip>
+            </div>
+          </section>
+          <ColorPicker
+            color={color}
+            onColorSelected={(colorSelected) => setInputValue(colorSelected)}
+          />
+          <Tooltip caption={translations["reload color"]} direction="bottom">
+            <button
+              type="button"
+              className="vscode-action-button"
+              onClick={onResetColorPicker}
+            >
+              <i className="codicon codicon-refresh"></i>
+            </button>
+          </Tooltip>
+        </div>
+        <div className={styles.btnContainer}>
           <button
-            type="button"
-            className="vscode-action-button"
-            onClick={onResetColorPicker}
+            className="vscode-button secondary block"
+            onClick={handleSave}
+            disabled={color === inputValue}
           >
-            <i className="codicon codicon-refresh"></i>
+            <span className="vscode-button__text">{translations["Save"]}</span>
           </button>
-        </Tooltip>
+          <button
+            className="vscode-button block"
+            onClick={handleReset}
+            disabled={!hasCustomizations}
+          >
+            <span className="vscode-button__text">{translations["Reset"]}</span>
+          </button>
+        </div>
+        {isModalShown && (
+          <Modal
+            onAccept={handleModal}
+            message={
+              translations[
+                "Are you sure you want to reset this color?, it will revert to the default theme value."
+              ]
+            }
+          />
+        )}
       </div>
-      <div className={styles.btnContainer}>
-        <button className="vscode-button secondary block" onClick={handleSave}>
-          <span className="vscode-button__text">{translations["Save"]}</span>
-        </button>
-        <button className="vscode-button block" onClick={handleReset}>
-          <span className="vscode-button__text">{translations["Reset"]}</span>
-        </button>
-      </div>
-      {isModalShown && (
-        <Modal
-          onAccept={handleModal}
-          message={
-            translations[
-              "Are you sure you want to reset this color?, it will revert to the default theme value."
-            ]
-          }
-        />
-      )}
+
       <div className={styles.typesContainer}>
         <TypeList
+          color={color}
           list={colorsMap[color]}
           link="https://code.visualstudio.com/api/references/theme-color"
           title={translations["Colors"]}
         />
         {tokenColorsMap[color] && (
           <TypeList
+            color={color}
             list={tokenColorsMap[color].scope}
             link="https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide"
             title={translations["Token Colors"]}
           />
         )}
         <TypeList
+          color={color}
           list={syntaxMap[color]}
           link="https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide"
           title={translations["Syntax Colors"]}

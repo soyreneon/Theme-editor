@@ -1,0 +1,23 @@
+.colorContainer {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+  /* justify-content: space-evenly; */
+}
+.colorContainer section {
+  flex-grow: 1;
+  width: 12%;
+  flex-grow: 0;
+}
+.colorContainer section button {
+  height: 20px;
+  width: -webkit-fill-available;
+  min-width: 50%;
+}
+
+.colorBtn.checked {
+  border: 1px solid var(--vscode-focusBorder);
+  box-shadow: 3px 3px 1px 0px var(--vscode-terminal-ansiGreen);
+}

@@ -11,5 +11,6 @@
   height: 1em;
   margin-bottom: -3px;
   margin-right: 10px;
-  border: 1px solid var(--vscode-focusBorder);
+  border: solid var(--vscode-focusBorder);
+  border-width: 0 1px 1px 0;
 }

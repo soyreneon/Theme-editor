@@ -1,29 +1,35 @@
 .content {
-  border: 1px solid var(--vscode-focusBorder);
   /* border-top: none; */
   padding: 10px 0;
 }
 
 .typesContainer {
   margin: 0 5px;
-  margin-top: 25px;
+  margin-top: 10px;
   padding-top: 15px;
-  border-top: 1px groove var(--vscode-focusBorder);
 }
 
 /* .colorContainer {
   margin: 0 10px;
 } */
 
+.form {
+  border: solid 0.1px var(--vscode-input-foreground);
+  margin: 5px;
+  padding: 15px 10px;
+  border-radius: 2px;
+}
+
 .colorContainer,
 .btnContainer {
   margin: 0 10px;
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
   column-gap: 10px;
 }
-
+.btnContainer {
+  margin-top: 15px;
+}
 .colorContainer input[type="color"] {
   width: 80px;
   height: 35px;
@@ -58,7 +64,7 @@
   color: greenyellow;
 }
 
-@media (max-width: 320px) {
+@media (max-width: 400px) {
   .colorContainer {
     flex-wrap: wrap;
     justify-content: space-between;

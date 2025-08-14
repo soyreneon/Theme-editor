@@ -128,31 +128,57 @@ export const saveTheme = async (
   themeTokenColorCustomizations: TokenColorCustomization | null
 ): Promise<void> => {
   const configuration = vscode.workspace.getConfiguration();
+  const isEmpty = (obj: {}) => {
+    for (const prop in obj) {
+      if (Object.hasOwn(obj, prop)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const setCustomizations = (
+    customizations: Record<string, any>,
+    result: Record<string, any>
+  ) => {
+    if (isEmpty(customizations)) {
+      const { [`[${themeName}]`]: _, ...rest } = result;
+      return rest;
+    }
+    result[`[${themeName}]`] = customizations;
+    return result;
+  };
 
   // overwrite colors
   const colorCustomizations =
     configuration.get<Record<string, any>>("workbench.colorCustomizations") ||
     {};
-  colorCustomizations[`[${themeName}]`] = themeColorCustomizations;
+  const finalColors = setCustomizations(
+    themeColorCustomizations || {},
+    colorCustomizations
+  );
 
   // overwrite tokens
   const tokenColorCustomizations =
     configuration.get<TokenColorCustomization>(
       "editor.tokenColorCustomizations"
     ) || {};
-  tokenColorCustomizations[`[${themeName}]`] = themeTokenColorCustomizations;
+  const finalTokens = setCustomizations(
+    themeTokenColorCustomizations || {},
+    tokenColorCustomizations
+  );
 
   try {
     await configuration.update(
       "workbench.colorCustomizations",
-      colorCustomizations,
+      finalColors,
       vscode.ConfigurationTarget.Global
     );
 
     if (themeTokenColorCustomizations) {
       await configuration.update(
         "editor.tokenColorCustomizations",
-        tokenColorCustomizations,
+        finalTokens,
         vscode.ConfigurationTarget.Global
       );
     }

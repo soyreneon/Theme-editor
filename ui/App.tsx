@@ -13,7 +13,7 @@ import Header from "./components/Header";
 
 export function App() {
   const store = useStore();
-  const { title, colors, colorMap, customColorList } = store;
+  const { title, colors, colorMap, customColorList, loading } = store;
 
   useEffect(() => {
     // call vscode api when ui is ready
@@ -23,7 +23,7 @@ export function App() {
     });
   }, []);
 
-  if (title === null) {
+  if (loading) {
     return <Loader />;
   }
 

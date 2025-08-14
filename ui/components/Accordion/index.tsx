@@ -21,6 +21,7 @@ const Accordion: FC<AccordionProps> = ({
     getColorLength(colormaps.colorsMap[color]) +
     getColorLength(colormaps.tokenColorsMap[color]?.scope) +
     getColorLength(colormaps.syntaxMap[color]);
+  const hasCustomizations = customColorList.includes(color);
 
   return (
     <details className="vscode-collapsible">
@@ -33,7 +34,7 @@ const Accordion: FC<AccordionProps> = ({
           />
           <span className={styles.colorheader}>
             {color}
-            {customColorList.includes(color) ? "*" : ""}
+            {hasCustomizations ? " *" : ""}
           </span>
         </h2>
         <div className={styles.badgeContainer}>
@@ -41,7 +42,11 @@ const Accordion: FC<AccordionProps> = ({
         </div>
       </summary>
       <div>
-        <AccordionContent color={color} colormaps={colormaps} />
+        <AccordionContent
+          color={color}
+          colormaps={colormaps}
+          hasCustomizations={hasCustomizations}
+        />
       </div>
     </details>
   );

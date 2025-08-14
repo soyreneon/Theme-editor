@@ -1,18 +1,35 @@
 .typeContainer {
   margin-bottom: 10px;
-  padding: 0 3px;
+  padding: 15px 10px;
+  border: solid 0.1px var(--vscode-input-foreground);
+  border-left: solid 6px;
+  border-radius: 2px;
 }
 .typeContainer .header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
+  margin-bottom: 12px;
+  border-bottom: 0.01px solid #7777;
+}
+.typeContainer .header h4 {
+  display: inline-block;
+  font-size: 1.1em;
+  padding-bottom: 8px;
 }
 .typeContainer a {
+  display: flex;
   font-size: 0.8em;
   color: var(--vscode-foreground);
   margin-right: 7px;
+  text-decoration: none;
+}
+.typeContainer a:hover {
+  text-decoration: underline;
+}
+.typeContainer a i {
+  margin-top: -1px;
 }
 .typeContainer li {
-  font-size: 0.8em;
+  font-size: 0.85em;
   overflow-x: hidden;
 }

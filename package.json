@@ -1,9 +1,9 @@
 {
   "name": "themeeditor",
-  "displayName": "ThemeEditor",
+  "displayName": "ThemeTuner — Real-Time Theme Editor",
   "publisher": "soyreneon",
   "description": "%extension.description%",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -22,6 +22,10 @@
     "vsc-theme",
     "theme",
     "theme-editor",
+    "tema",
+    "editor",
+    "theme-tuner",
+    "color",
     "theme-customiser",
     "customization",
     "style",

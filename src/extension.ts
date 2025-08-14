@@ -25,7 +25,7 @@ import {
 export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('Extension "themeeditor" now active!');
+  console.log('Extension "themeTuner" now active!');
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
@@ -129,7 +129,7 @@ class ThemeEditorPanel {
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
       ThemeEditorPanel.viewType,
-      "Theme Editor",
+      "ThemeTuner — Real-Time Theme Editor",
       column || vscode.ViewColumn.One,
       getWebviewOptions(extensionUri)
     );
@@ -215,6 +215,10 @@ class ThemeEditorPanel {
             return;
           case "refreshTheme":
             this.loadCurrentTheme();
+            this._panel?.webview.postMessage({
+              type: "refresh",
+              loading: false,
+            });
             return;
         }
       },
