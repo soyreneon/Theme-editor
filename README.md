@@ -4,13 +4,13 @@ ThemeTuner is a tool to change/fix colors in your current theme. It scans all th
 
 ## How to use it
 
-Install ThemeTuner, then press (`Cmd+Shift+P` on macOS or `Ctrl+Shift+P` on Windows and Linux) and search for `ThemeTuner: Open ThemeTuner`. We recommend to split the editor to a better experience watching changes.
-
-To modify a diferent theme, switch theme using `Cmd+K+T` on macOS or `Ctrl+K+T` on Windows and Linux. It will re-scan the new theme.
+Install ThemeTuner, then press (`Cmd+Shift+P` on macOS or `Ctrl+Shift+P` on Windows and Linux) and type `ThemeTuner: Open ThemeTuner` and ThemeTuner will scan your current color palette automatically. We recommend to split the editor for a better experience debuging changes.
 
 Once you do this you can see something like this:
 
 ![How to preview](media/img_preview.png)
+
+To modify a diferent theme, switch to another theme using `Cmd+K+T` on macOS or `Ctrl+K+T` on Windows and Linux. It will re-scan the new theme.
 
 # Interface:
 
@@ -43,14 +43,17 @@ Click the color picker and choose the color you prefer:
 
 The `*` mark indicates these color has been customized
 
+![Color customized](media/img-customized.png)
+
 ## See in action
 
 ![ThemeTuner in action](media/demo.gif)
-![Color customized](media/img-customized.png)
 
 # Considerations
 
 If you need to customize separate properties, go to settings.json to do it manually(Press `Ctrl+,` or `Cmd+,` to go to settings).
+
+ThemeTuner only show a list of the properties defined in your theme. If some property is missing, that means it is not defined and you have to add it manually.
 
 # Future features
 
@@ -59,5 +62,11 @@ Depending on demand, some features are coming(don't forget to rate it):
 - property filter
 - individual color change
 - alpha/transparency modification
+- add new filter
+- set custom color names
 
-  **Enjoy!**
+# License
+
+MIT
+
+**Enjoy!**

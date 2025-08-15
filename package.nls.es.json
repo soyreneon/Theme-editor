@@ -1,4 +1,4 @@
 {
-  "extension.description": "Es una extensión de vscode para cambiar color en los temas. Escanéa el tema actual y muestra los colores disponibles",
+  "extension.description": "Personaliza tus temas con una inferfaz amigable. Aplica cambios en tiempo real y restaura a su configuración inicial cuando quieras.",
   "command.openThemeEditor.title": "ThemeTuner: Abrir ThemeTuner(Editor de temas)"
 }
