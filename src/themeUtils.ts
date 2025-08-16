@@ -188,3 +188,45 @@ export const saveTheme = async (
     );
   }
 };
+
+/*
+// Reads a custom object property from settings.json
+export const getCustomSetting = async (
+  propertyName: string
+): Promise<Record<string, any> | null> => {
+  const configuration = vscode.workspace.getConfiguration();
+  return configuration.get<Record<string, any>>(propertyName) || null;
+};
+
+// Writes a custom object property to settings.json
+export const setCustomSetting = async (
+  propertyName: string,
+  value: Record<string, any>
+): Promise<void> => {
+  const configuration = vscode.workspace.getConfiguration();
+  try {
+    await configuration.update(
+      propertyName,
+      value,
+      vscode.ConfigurationTarget.Global
+    );
+  } catch (error: any) {
+    vscode.window.showErrorMessage(
+      vscode.l10n.t(
+        "Failed to update setting {0}: {1}",
+        propertyName,
+        error.message
+      )
+    );
+  }
+};
+
+  "themeTuner.colors": { "[One Hunter Theme Material]": { "#456": "name" } },
+
+
+// Read
+const myObject = await getCustomSetting("myExtension.customObject");
+
+// Write
+await setCustomSetting("myExtension.customObject", { foo: "bar", theme: "One Hunter Theme Material" });
+*/
