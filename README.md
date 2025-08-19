@@ -62,7 +62,7 @@ Depending on demand, some features are coming(don't forget to rate it):
 - property filter
 - individual color change
 - alpha/transparency modification
-- add new filter
+- add new property
 - set custom color names
 
 # License
