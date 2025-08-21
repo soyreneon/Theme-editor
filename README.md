@@ -1,6 +1,6 @@
 # ThemeTuner
 
-ThemeTuner is a tool to change/fix colors in your current theme. It scans all the colors defined in the theme and list it sorted by number of appearences.
+ThemeTuner is a tool to change/fix colors globally in the settings.json file in your current theme. It scans all the colors defined(even those defined without this extension) and list it sorted by number of appearences.
 
 ## How to use it
 
