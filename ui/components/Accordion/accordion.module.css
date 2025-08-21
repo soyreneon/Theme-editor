@@ -5,6 +5,9 @@
 .colorheader {
   font-family: monospace;
 }
+.colorheader span:first-child {
+  text-transform: initial;
+}
 .colorPreview {
   display: inline-block;
   width: 40px;

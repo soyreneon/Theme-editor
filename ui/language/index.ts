@@ -18,6 +18,8 @@ const captions = [
   "Token Colors",
   "Syntax Colors",
   "Theme",
+  "set name",
+  "pin/unpin",
 ] as const;
 
 export default captions;

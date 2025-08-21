@@ -17,7 +17,10 @@ import {
   getThemeJsonByName,
   getGlobalColorCustomizations,
   getGlobalTokenColorCustomizations,
+  resetTunerColorSettings,
+  resetTunerThemeSettings,
   saveTheme,
+  setTunerSetting,
 } from "./themeUtils";
 
 // This method is called when your extension is activated
@@ -190,15 +193,35 @@ class ThemeEditorPanel {
           case "save":
             // new method: get older color, search on this.colormaps and replace to the new color on settings
             // if it's already in the original theme do nothing, if not add it or change it
-            this.updateColor(message.old, message.color).then(() => {
+            this.updateColor(message.old, message.color).then(async () => {
+              await setTunerSetting(
+                this.themeName,
+                message.old,
+                {},
+                message.color
+              );
               this.loadCurrentTheme();
               vscode.window.showInformationMessage(
                 vscode.l10n.t("Color updated")
               );
             });
             return;
+          case "colorName":
+            setTunerSetting(this.themeName, message.color, {
+              name: message.name,
+            }).then(() => {
+              this.loadCurrentTheme();
+            });
+            return;
+          case "togglePin":
+            setTunerSetting(this.themeName, message.color, {
+              togglePinned: true,
+            }).then(() => this.loadCurrentTheme());
+            return;
+          // reset color
           case "reset":
-            this.resetColor(message.color).then(() => {
+            this.resetColor(message.color).then(async () => {
+              await resetTunerColorSettings(this.themeName, message.color);
               this.loadCurrentTheme();
               vscode.window.showInformationMessage(
                 vscode.l10n.t("Color {0} reset", this.themeName)
@@ -206,7 +229,8 @@ class ThemeEditorPanel {
             });
             return;
           case "resetTheme":
-            this.resetThemeColor().then(() => {
+            this.resetThemeColor().then(async () => {
+              await resetTunerThemeSettings(this.themeName);
               this.loadCurrentTheme();
               vscode.window.showInformationMessage(
                 vscode.l10n.t("Theme reset succesfully")
@@ -342,6 +366,10 @@ class ThemeEditorPanel {
       vscode.workspace
         .getConfiguration("workbench")
         .get<string>("colorTheme") ?? "";
+    const custom = vscode.workspace
+      .getConfiguration("themeTuner")
+      .get<Record<string, any>>("colors");
+    const customNames = custom?.[`[${this.themeName}]`];
 
     getThemeJsonByName(this.themeName as string).then((result) => {
       if (result) {
@@ -382,6 +410,7 @@ class ThemeEditorPanel {
           colormaps: this.colormaps,
           customColorList: customColorList,
           colors: colors,
+          tunerSettings: customNames,
         });
       }
     });

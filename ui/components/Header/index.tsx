@@ -1,7 +1,7 @@
 import { useState, type FC } from "react";
 import { vscode, useStore } from "../../useStore";
+import ActionButton from "../ActionButton";
 import Modal from "../Modal";
-import Tooltip from "../Tooltip";
 import styles from "./header.module.css";
 
 interface HeaderProps {
@@ -43,24 +43,18 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
           {translations["Theme"]}: {title}
         </h4>
         <div>
-          <Tooltip caption={translations["reset theme"]} direction="bottom">
-            <button
-              type="button"
-              className="vscode-action-button"
-              onClick={handleReset}
-            >
-              <i className="codicon codicon-clear-all"></i>
-            </button>
-          </Tooltip>
-          <Tooltip caption={translations["refresh"]} direction="bottom">
-            <button
-              type="button"
-              className="vscode-action-button"
-              onClick={handleRefresh}
-            >
-              <i className="codicon codicon-refresh"></i>
-            </button>
-          </Tooltip>
+          <ActionButton
+            caption={translations["reset theme"]}
+            direction="bottom"
+            icon="clear-all"
+            onClick={handleReset}
+          />
+          <ActionButton
+            caption={translations["refresh"]}
+            direction="bottom"
+            icon="refresh"
+            onClick={handleRefresh}
+          />
         </div>
       </div>
       <h5>

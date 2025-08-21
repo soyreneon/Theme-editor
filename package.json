@@ -46,7 +46,17 @@
         "command": "themeeditor.openThemeEditor",
         "title": "%command.openThemeEditor.title%"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "ThemeTuner Settings",
+      "properties": {
+        "themeTuner.colors": {
+          "type": "object",
+          "default": {},
+          "description": "Save custom names settings per theme."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

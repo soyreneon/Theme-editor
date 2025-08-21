@@ -54,7 +54,7 @@
 .brightness {
   display: flex;
   flex-direction: row;
-  border: solid var(--vscode-focusBorder) 0.4px;
+  border: solid var(--vscode-input-foreground) 0.4px;
   border-radius: 2px;
   padding: 2px 4px;
 }
@@ -64,7 +64,7 @@
   color: greenyellow;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
   .colorContainer {
     flex-wrap: wrap;
     justify-content: space-between;

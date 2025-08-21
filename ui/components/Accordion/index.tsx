@@ -1,19 +1,20 @@
 import { type FC } from "react";
-import { type ColorMap } from "../../../types";
+import { type ColorMap, type TunerSettings } from "../../../types";
 import AccordionContent from "./AccordionContent";
 import styles from "./accordion.module.css";
-// import "./accordion.css";
 
 interface AccordionProps {
   color: string;
   colormaps: ColorMap;
   customColorList: string[];
+  settings: TunerSettings;
 }
 
 const Accordion: FC<AccordionProps> = ({
   color,
   colormaps,
   customColorList,
+  settings,
 }) => {
   const getColorLength = (arr: any[]) => (arr ?? []).length;
 
@@ -32,9 +33,19 @@ const Accordion: FC<AccordionProps> = ({
             className={styles.colorPreview}
             style={{ backgroundColor: color }}
           />
+          {settings?.[color]?.pinned ? (
+            <>
+              <i className="codicon codicon-pin"></i>
+              &nbsp;
+            </>
+          ) : null}
           <span className={styles.colorheader}>
-            {color}
-            {hasCustomizations ? " *" : ""}
+            {settings?.[color]?.name ? (
+              <span>{settings?.[color]?.name}</span>
+            ) : (
+              color
+            )}
+            {hasCustomizations ? " * " : " "}
           </span>
         </h2>
         <div className={styles.badgeContainer}>
@@ -46,6 +57,7 @@ const Accordion: FC<AccordionProps> = ({
           color={color}
           colormaps={colormaps}
           hasCustomizations={hasCustomizations}
+          // name={settings[color]?.name}
         />
       </div>
     </details>

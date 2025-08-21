@@ -1,7 +1,7 @@
 import { type FC, type PropsWithChildren } from "react";
 import styles from "./tooltip.module.css";
 
-interface TooltipProps {
+export interface TooltipProps {
   caption: string | null;
   direction: "top" | "bottom" | "left" | "right";
   extraPadding?: number;

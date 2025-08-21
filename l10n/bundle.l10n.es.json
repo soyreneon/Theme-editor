@@ -4,6 +4,7 @@
   "Color updated": "Color actualizado",
   "Color {0} reset": "Tema {0} restaurado",
   "Theme reset succesfully": "Tema restaurado con éxito",
+  "Failed to update color {0}: {1}": "Fallo al actualizar el color {0}: {1}",
   "Color count": "Número de colores",
   "reset theme": "restaurar tema",
   "refresh": "refrescar",
@@ -22,5 +23,7 @@
   "Colors": "Colores",
   "Token Colors": "Colores de token",
   "Syntax Colors": "Colores de sintáxis",
-  "Theme": "Tema"
+  "Theme": "Tema",
+  "pin/unpin": "anclar/desanclar",
+  "set name": "Nombrar color"
 }

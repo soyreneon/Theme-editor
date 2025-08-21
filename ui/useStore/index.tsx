@@ -5,7 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { type ColorMap } from "../../types";
+import { type ColorMap, type TunerSettings } from "../../types";
 import captions from "../language";
 
 type CaptionKeys = (typeof captions)[number];
@@ -15,6 +15,7 @@ interface StoreContextType {
   loading: boolean;
   colorMap: ColorMap;
   customColorList: string[];
+  tunerSettings: TunerSettings;
   translations: Record<CaptionKeys, string>;
   setLoading: (loading: boolean) => void;
 }
@@ -28,6 +29,7 @@ const initialState = {
   loading: true,
   colorMap: { colorsMap: {}, tokenColorsMap: {}, syntaxMap: {} },
   customColorList: [],
+  tunerSettings: {},
   translations: captions.reduce(
     (acc, caption) => ({ ...acc, [caption]: caption }),
     {} as Record<CaptionKeys, string>
@@ -60,6 +62,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
           colors: message.colors,
           colorMap: message.colormaps,
           customColorList: message.customColorList,
+          tunerSettings: message.tunerSettings ?? {},
           loading: false,
         }));
       }

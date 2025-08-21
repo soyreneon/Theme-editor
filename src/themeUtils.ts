@@ -3,6 +3,7 @@ import { parse } from "jsonc-parser";
 import {
   type ThemeJson,
   type GlobalCustomizations,
+  type ThemeTunerSettings,
   type TokenColorCustomization,
   type SimpleColorStructure,
 } from "../types/";
@@ -189,44 +190,112 @@ export const saveTheme = async (
   }
 };
 
-/*
-// Reads a custom object property from settings.json
-export const getCustomSetting = async (
-  propertyName: string
-): Promise<Record<string, any> | null> => {
+// remove theme obj from tuner settings
+export const resetTunerColorSettings = async (
+  themeName: string,
+  color: string
+): Promise<Record<string, any> | void> => {
   const configuration = vscode.workspace.getConfiguration();
-  return configuration.get<Record<string, any>>(propertyName) || null;
+  const custom = vscode.workspace
+    .getConfiguration("themeTuner")
+    .get<ThemeTunerSettings>("colors");
+
+  if (custom?.[`[${themeName}]`]) {
+    const { [color]: _, ...rest } = custom[`[${themeName}]`];
+    try {
+      await configuration.update(
+        "themeTuner.colors",
+        { ...custom, [`[${themeName}]`]: rest },
+        vscode.ConfigurationTarget.Global
+      );
+    } catch (error: any) {
+      vscode.window.showErrorMessage(
+        vscode.l10n.t("Failed to update theme {0}.", error.message)
+      );
+    }
+  }
 };
 
-// Writes a custom object property to settings.json
-export const setCustomSetting = async (
-  propertyName: string,
-  value: Record<string, any>
+// remove theme obj from tuner settings
+export const resetTunerThemeSettings = async (
+  themeName: string
+): Promise<Record<string, any> | void> => {
+  const configuration = vscode.workspace.getConfiguration();
+  const custom = vscode.workspace
+    .getConfiguration("themeTuner")
+    .get<ThemeTunerSettings>("colors");
+
+  if (custom?.[`[${themeName}]`]) {
+    const { [`[${themeName}]`]: _, ...rest } = custom;
+    try {
+      await configuration.update(
+        "themeTuner.colors",
+        rest,
+        vscode.ConfigurationTarget.Global
+      );
+    } catch (error: any) {
+      vscode.window.showErrorMessage(
+        vscode.l10n.t("Failed to update theme {0}.", error.message)
+      );
+    }
+  }
+};
+
+// add single color property to tuner settings
+export const setTunerSetting = async (
+  themeName: string,
+  color: string,
+  value: { name?: string; togglePinned?: boolean },
+  newColor?: string
 ): Promise<void> => {
   const configuration = vscode.workspace.getConfiguration();
+  const custom = vscode.workspace
+    .getConfiguration("themeTuner")
+    .get<ThemeTunerSettings>("colors");
+  let customNames = custom?.[`[${themeName}]`] ?? {};
+  if (newColor) {
+    if (customNames[color]) {
+      const { [color]: old, ...rest } = customNames;
+      customNames = {
+        ...rest,
+        [newColor]: {
+          ...old,
+        },
+      };
+    }
+  } else {
+    customNames = {
+      ...customNames,
+      [color]: {
+        ...customNames[color],
+        ...(value.name && { name: value.name }),
+        ...(value.togglePinned && { pinned: !customNames[color]?.pinned }),
+      },
+    };
+
+    function cleanCustomNames(
+      customNames: Record<string, any>
+    ): Record<string, any> {
+      const result: Record<string, any> = {};
+      for (const [key, value] of Object.entries(customNames)) {
+        if (value?.name || value?.pinned !== false) {
+          result[key] = value;
+        }
+      }
+      return result;
+    }
+    customNames = cleanCustomNames(customNames);
+  }
+
   try {
     await configuration.update(
-      propertyName,
-      value,
+      "themeTuner.colors",
+      { ...custom, [`[${themeName}]`]: customNames },
       vscode.ConfigurationTarget.Global
     );
   } catch (error: any) {
     vscode.window.showErrorMessage(
-      vscode.l10n.t(
-        "Failed to update setting {0}: {1}",
-        propertyName,
-        error.message
-      )
+      vscode.l10n.t("Failed to update color {0}: {1}", color, error.message)
     );
   }
 };
-
-  "themeTuner.colors": { "[One Hunter Theme Material]": { "#456": "name" } },
-
-
-// Read
-const myObject = await getCustomSetting("myExtension.customObject");
-
-// Write
-await setCustomSetting("myExtension.customObject", { foo: "bar", theme: "One Hunter Theme Material" });
-*/

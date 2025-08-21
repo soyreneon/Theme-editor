@@ -12,7 +12,7 @@ Once you do this you can see something like this:
 
 To modify a diferent theme, switch to another theme using `Cmd+K+T` on macOS or `Ctrl+K+T` on Windows and Linux. It will re-scan the new theme.
 
-# Interface:
+# Interface
 
 This extension has the following structure:
 

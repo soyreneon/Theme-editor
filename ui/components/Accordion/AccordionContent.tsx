@@ -1,11 +1,12 @@
-import { useState, type FC } from "react";
+import { useState, useRef, type FC } from "react";
 import { type ColorMap } from "../../../types";
+import { hexToRgb, rgbToHex } from "../../utils";
 import { vscode, useStore } from "../../useStore";
 import TypeList from "../TypeList";
+import ActionButton from "../ActionButton";
 import Modal from "../Modal";
 import ColorPicker from "../ColorPicker";
 import styles from "./content.module.css";
-import Tooltip from "../Tooltip";
 
 interface AccordionContentProps {
   color: string;
@@ -22,7 +23,11 @@ const AccordionContent: FC<AccordionContentProps> = ({
   const { translations } = store;
   const { colorsMap, tokenColorsMap, syntaxMap } = colormaps;
   const [inputValue, setInputValue] = useState(color);
-  const [isModalShown, setIsModalShown] = useState<boolean>(false);
+  const colorNameRef = useRef<HTMLInputElement>(null);
+  const [modalStatus, setModalStatus] = useState<{
+    status: boolean;
+    type: string;
+  }>({ status: false, type: "" });
 
   const handleSave = () => {
     if (color === inputValue) return;
@@ -34,37 +39,25 @@ const AccordionContent: FC<AccordionContentProps> = ({
     });
   };
 
-  const handleModal = (isAccepted: boolean) => {
+  const handleAcceptModalReset = (isAccepted: boolean) => {
     if (isAccepted) {
       vscode.postMessage({
         command: "reset",
         color: inputValue,
       });
     }
-    setIsModalShown(false);
+    setModalStatus({ status: false, type: "" });
   };
 
-  // .replace(
-  //   /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
-  //   (m, r, g, b) => "#" + r + r + g + g + b + b
-  // )
-  const hexToRgb = (hex: string): number[] =>
-    (hex.substring(1).match(/.{2}/g) ?? []).map((x) => parseInt(x, 16));
-
-  const rgbToHex = (r: number, g: number, b: number): string =>
-    "#" +
-    [setValidColor(r), setValidColor(g), setValidColor(b)]
-      .map((x) => x.toString(16).padStart(2, "0"))
-      .join("");
-
-  const setValidColor = (n: number) => {
-    if (n > 255) {
-      return 255;
+  const handleAcceptModalName = (isAccepted: boolean) => {
+    if (isAccepted && colorNameRef.current) {
+      vscode.postMessage({
+        command: "colorName",
+        color: inputValue,
+        name: colorNameRef.current?.value,
+      });
     }
-    if (n < 0) {
-      return 0;
-    }
-    return n;
+    setModalStatus({ status: false, type: "" });
   };
 
   const handleBrightness = (increase: boolean) => {
@@ -88,7 +81,18 @@ const AccordionContent: FC<AccordionContentProps> = ({
   };
 
   const handleReset = () => {
-    setIsModalShown(true);
+    setModalStatus({ status: true, type: "reset" });
+  };
+
+  const handleColorName = () => {
+    setModalStatus({ status: true, type: "name" });
+  };
+
+  const handlePin = () => {
+    vscode.postMessage({
+      command: "togglePin",
+      color: inputValue,
+    });
   };
 
   const onResetColorPicker = () => {
@@ -113,45 +117,42 @@ const AccordionContent: FC<AccordionContentProps> = ({
           <section className={styles.brightness}>
             <i className="codicon codicon-lightbulb"></i>
             <div>
-              <Tooltip
+              <ActionButton
                 caption={translations["less brightness"]}
                 direction="bottom"
-              >
-                <button
-                  type="button"
-                  className="vscode-action-button"
-                  onClick={() => handleBrightness(false)}
-                >
-                  <i className="codicon codicon-chrome-minimize"></i>
-                </button>
-              </Tooltip>
-              <Tooltip
+                icon="chrome-minimize"
+                onClick={() => handleBrightness(false)}
+              />
+              <ActionButton
                 caption={translations["more brightness"]}
                 direction="bottom"
-              >
-                <button
-                  type="button"
-                  className="vscode-action-button"
-                  onClick={() => handleBrightness(true)}
-                >
-                  <i className="codicon codicon-add"></i>
-                </button>
-              </Tooltip>
+                icon="add"
+                onClick={() => handleBrightness(true)}
+              />
             </div>
           </section>
           <ColorPicker
             color={color}
             onColorSelected={(colorSelected) => setInputValue(colorSelected)}
           />
-          <Tooltip caption={translations["reload color"]} direction="bottom">
-            <button
-              type="button"
-              className="vscode-action-button"
-              onClick={onResetColorPicker}
-            >
-              <i className="codicon codicon-refresh"></i>
-            </button>
-          </Tooltip>
+          <ActionButton
+            caption={translations["reload color"]}
+            direction="bottom"
+            icon="refresh"
+            onClick={onResetColorPicker}
+          />
+          <ActionButton
+            caption={translations["set name"]}
+            direction="bottom"
+            icon="comment"
+            onClick={handleColorName}
+          />
+          <ActionButton
+            caption={translations["pin/unpin"]}
+            direction="bottom"
+            icon="pinned"
+            onClick={handlePin}
+          />
         </div>
         <div className={styles.btnContainer}>
           <button
@@ -169,16 +170,33 @@ const AccordionContent: FC<AccordionContentProps> = ({
             <span className="vscode-button__text">{translations["Reset"]}</span>
           </button>
         </div>
-        {isModalShown && (
-          <Modal
-            onAccept={handleModal}
-            message={
-              translations[
-                "Are you sure you want to reset this color?, it will revert to the default theme value."
-              ]
-            }
-          />
-        )}
+        {modalStatus.status &&
+          (modalStatus.type === "reset" ? (
+            <Modal
+              onAccept={handleAcceptModalReset}
+              message={
+                translations[
+                  "Are you sure you want to reset this color?, it will revert to the default theme value."
+                ]
+              }
+            />
+          ) : (
+            <Modal
+              onAccept={handleAcceptModalName}
+              message={translations["set name"]}
+            >
+              <>
+                <hr className="vscode-divider" />
+                <input
+                  type="text"
+                  name="colorname"
+                  autoFocus
+                  placeholder={translations["set name"]}
+                  ref={colorNameRef}
+                />
+              </>
+            </Modal>
+          ))}
       </div>
 
       <div className={styles.typesContainer}>

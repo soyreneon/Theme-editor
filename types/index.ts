@@ -82,3 +82,11 @@ export interface TextMateRule {
   scope: string | string[]; // edge scenario ?
   settings: Settings;
 }
+
+type ColorInfo = {
+  name: string;
+  pinned: boolean;
+};
+
+export type TunerSettings = Record<string, ColorInfo>;
+export type ThemeTunerSettings = Record<string, TunerSettings>;
