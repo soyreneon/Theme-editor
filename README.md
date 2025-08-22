@@ -8,7 +8,7 @@ Install ThemeTuner, then press (`Cmd+Shift+P` on macOS or `Ctrl+Shift+P` on Wind
 
 Once you do this you can see something like this:
 
-![How to preview](media/img_preview.png)
+![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img_preview.png)
 
 To modify a diferent theme, switch to another theme using `Cmd+K+T` on macOS or `Ctrl+K+T` on Windows and Linux. It will re-scan the new theme.
 
@@ -24,7 +24,7 @@ This extension has the following structure:
 
 Check this reference image:
 
-![Overall interface](media/img_interface.png)
+![Overall interface](https://github.com/soyreneon/Theme-editor/raw/main/media/img_interface.png)
 
 # Tools
 
@@ -38,15 +38,15 @@ Clicking a color and you will see the available tools:
 - pin/unpin color to top of the list
 - detailed property list(includes colors with or without transparency)
 
-![Tools and details](media/img-colorcontent.png)
+![Tools and details](https://github.com/soyreneon/Theme-editor/raw/main/media/img-colorcontent.png)
 
 Click the color picker and choose the color you prefer:
 
-![Color picker](media/img_colorpicker.png)
+![Color picker](https://github.com/soyreneon/Theme-editor/raw/main/media/img_colorpicker.png)
 
 The `*` mark indicates these color has been customized
 
-![Color customized](media/img-customized.png)
+![Color customized](https://github.com/soyreneon/Theme-editor/raw/main/media/img-customized.png)
 
 ## See in action
 

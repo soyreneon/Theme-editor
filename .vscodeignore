@@ -3,6 +3,8 @@
 out/**
 node_modules/**
 src/**
+ui/**
+types/**
 .gitignore
 .yarnrc
 esbuild.js
@@ -12,4 +14,9 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
-media/demo.gif
+media/*.gif
+# Exclude all PNGs
+media/*.png
+# **/*.png
+# Include only these
+!media/logo.png
