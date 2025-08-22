@@ -50,7 +50,7 @@ The `*` mark indicates these color has been customized
 
 ## See in action
 
-![ThemeTuner in action](media/demo.gif)
+![ThemeTuner in action](https://github.com/soyreneon/Theme-editor/raw/main/media/demo.gif)
 
 # Considerations
 
