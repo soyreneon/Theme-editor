@@ -254,7 +254,21 @@ export const setTunerSetting = async (
     .get<ThemeTunerSettings>("colors");
   let customNames = custom?.[`[${themeName}]`] ?? {};
   if (newColor) {
-    if (customNames[color]) {
+    if (customNames[color] && customNames[newColor]) {
+      const { [color]: old, [newColor]: existingColor, ...rest } = customNames;
+      customNames = {
+        ...rest,
+        [newColor]: {
+          ...old,
+          ...(existingColor.name && {
+            name: `${existingColor.name} ${old.name}`,
+          }),
+          ...((existingColor.pinned || old.pinned) && {
+            pinned: true,
+          }),
+        },
+      };
+    } else if (customNames[color]) {
       const { [color]: old, ...rest } = customNames;
       customNames = {
         ...rest,

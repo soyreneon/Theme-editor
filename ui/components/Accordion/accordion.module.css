@@ -17,3 +17,13 @@
   border: solid var(--vscode-focusBorder);
   border-width: 0 1px 1px 0;
 }
+.pinned {
+  position: relative;
+}
+.pinned i {
+  position: absolute;
+  color: var(--vscode-terminal-ansiYellow);
+  transform: rotate(-45deg);
+  left: -5px;
+  margin-top: 2px;
+}

@@ -4,6 +4,14 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.1]
+
+- Update README, logo and CHANGELOG
+
+## [1.1.0]
+
+- Add new functionalities: set custom names and pin/unpin color to top.
+
 ## [1.0.1]
 
 - Fix typos and add descriptions

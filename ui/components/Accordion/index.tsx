@@ -34,10 +34,10 @@ const Accordion: FC<AccordionProps> = ({
             style={{ backgroundColor: color }}
           />
           {settings?.[color]?.pinned ? (
-            <>
+            <span className={styles.pinned}>
               <i className="codicon codicon-pin"></i>
-              &nbsp;
-            </>
+              &nbsp; &nbsp; &nbsp;
+            </span>
           ) : null}
           <span className={styles.colorheader}>
             {settings?.[color]?.name ? (

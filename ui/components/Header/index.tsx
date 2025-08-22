@@ -66,7 +66,7 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
           onAccept={handleModal}
           message={
             translations[
-              "Are you sure you want to reset this theme?, it will revert to the default theme values."
+              "Are you sure you want to reset this theme?, it will revert to the default theme values and removes custom names and pins."
             ]
           }
         />

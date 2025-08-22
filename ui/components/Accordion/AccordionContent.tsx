@@ -20,7 +20,7 @@ const AccordionContent: FC<AccordionContentProps> = ({
   hasCustomizations,
 }) => {
   const store = useStore();
-  const { translations } = store;
+  const { translations, colors } = store;
   const { colorsMap, tokenColorsMap, syntaxMap } = colormaps;
   const [inputValue, setInputValue] = useState(color);
   const colorNameRef = useRef<HTMLInputElement>(null);
@@ -31,12 +31,28 @@ const AccordionContent: FC<AccordionContentProps> = ({
 
   const handleSave = () => {
     if (color === inputValue) return;
-    vscode.postMessage({
-      command: "save",
-      old: color,
-      color: inputValue,
-      name: "",
-    });
+    if (colors.includes(inputValue)) {
+      setModalStatus({ status: true, type: "overwrite" });
+    } else {
+      vscode.postMessage({
+        command: "save",
+        old: color,
+        color: inputValue,
+        // name: "",
+      });
+    }
+  };
+
+  const handleAcceptColorMerge = (isAccepted: boolean) => {
+    if (isAccepted) {
+      vscode.postMessage({
+        command: "save",
+        old: color,
+        color: inputValue,
+        // name: "",
+      });
+    }
+    setModalStatus({ status: false, type: "" });
   };
 
   const handleAcceptModalReset = (isAccepted: boolean) => {
@@ -170,33 +186,47 @@ const AccordionContent: FC<AccordionContentProps> = ({
             <span className="vscode-button__text">{translations["Reset"]}</span>
           </button>
         </div>
-        {modalStatus.status &&
-          (modalStatus.type === "reset" ? (
-            <Modal
-              onAccept={handleAcceptModalReset}
-              message={
-                translations[
-                  "Are you sure you want to reset this color?, it will revert to the default theme value."
-                ]
-              }
-            />
-          ) : (
-            <Modal
-              onAccept={handleAcceptModalName}
-              message={translations["set name"]}
-            >
-              <>
-                <hr className="vscode-divider" />
-                <input
-                  type="text"
-                  name="colorname"
-                  autoFocus
-                  placeholder={translations["set name"]}
-                  ref={colorNameRef}
-                />
-              </>
-            </Modal>
-          ))}
+        {modalStatus.status && (
+          <>
+            {modalStatus.type === "reset" && (
+              <Modal
+                onAccept={handleAcceptModalReset}
+                message={
+                  translations[
+                    "Are you sure you want to reset this color?, it will revert to the default theme value and remove its custom names and color pin in case it exists."
+                  ]
+                }
+              />
+            )}
+            {modalStatus.type === "overwrite" && (
+              <Modal
+                onAccept={handleAcceptColorMerge}
+                message={
+                  translations[
+                    "This color already exists, it will merge two colors into one. Do you want to continue?"
+                  ]
+                }
+              />
+            )}
+            {modalStatus.type === "name" && (
+              <Modal
+                onAccept={handleAcceptModalName}
+                message={translations["set name"]}
+              >
+                <>
+                  <hr className="vscode-divider" />
+                  <input
+                    type="text"
+                    name="colorname"
+                    autoFocus
+                    placeholder={translations["set name"]}
+                    ref={colorNameRef}
+                  />
+                </>
+              </Modal>
+            )}
+          </>
+        )}
       </div>
 
       <div className={styles.typesContainer}>

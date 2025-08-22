@@ -1,6 +1,6 @@
 # ThemeTuner
 
-ThemeTuner is a tool to change/fix colors globally in the settings.json file in your current theme. It scans all the colors defined(even those defined without this extension) and list it sorted by number of appearences.
+ThemeTuner is a tool to change/fix colors globally in settings.json file in your current theme. It scans all the colors defined(even those defined without this extension) and list it sorted by number of appearences.
 
 ## How to use it
 
@@ -34,6 +34,9 @@ Clicking a color and you will see the available tools:
 - brightness controls
 - choose a existing color
 - reset color to the original
+- set custom name to find it easily
+- pin/unpin color to top of the list
+- detailed property list(includes colors with or without transparency)
 
 ![Tools and details](media/img-colorcontent.png)
 
@@ -53,17 +56,18 @@ The `*` mark indicates these color has been customized
 
 If you need to customize separate properties, go to settings.json to do it manually(Press `Ctrl+,` or `Cmd+,` to go to settings).
 
-ThemeTuner only show a list of the properties defined in your theme. If some property is missing, that means it is not defined and you have to add it manually.
+ThemeTuner only show a list of the properties defined in your theme (when a prop is not defined, it takes the default vscode value). If some property is missing, that means it is not defined and you have to add it manually.
+
+If you want to see a full list of your current color settings, use `Cmd+K+T` or `Ctrl+K+T` and type `developer: generate color theme from current settings`.
 
 # Future features
 
-Depending on demand, some features are coming(don't forget to rate it):
+Depending on demand, new features are coming(some features have being released but don't forget to rate it):
 
 - property filter
 - individual color change
 - alpha/transparency modification
 - add new property
-- set custom color names
 
 # License
 

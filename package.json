@@ -3,12 +3,12 @@
   "displayName": "ThemeTuner — Real-Time Theme Editor",
   "publisher": "soyreneon",
   "description": "%extension.description%",
-  "version": "1.0.2",
+  "version": "1.1.1",
   "engines": {
     "vscode": "^1.99.0"
   },
   "galleryBanner": {
-    "color": "#005c2f",
+    "color": "#00034f",
     "theme": "dark"
   },
   "repository": {
