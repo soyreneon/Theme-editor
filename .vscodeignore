@@ -20,3 +20,5 @@ media/*.png
 # **/*.png
 # Include only these
 !media/logo.png
+!media/icon-light.png
+!media/icon-dark.png
