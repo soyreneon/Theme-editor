@@ -75,7 +75,8 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
 
     // And restrict the webview to only loading content from our extension's `media` directory.
     localResourceRoots: [
-      vscode.Uri.joinPath(extensionUri, "media", "codicons"),
+      vscode.Uri.joinPath(extensionUri, "media"),
+      // vscode.Uri.joinPath(extensionUri, "media", "codicons"),
       vscode.Uri.joinPath(extensionUri, "dist"),
       // vscode.Uri.joinPath(
       //   extensionUri,
@@ -119,9 +120,12 @@ class ThemeEditorPanel {
   // };
 
   public static createOrShow(extensionUri: vscode.Uri) {
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
+    // open only in one column
+    // const column = vscode.window.activeTextEditor
+    //   ? vscode.window.activeTextEditor.viewColumn
+    //   : undefined;
+    // Always open in the second column
+    const column = vscode.ViewColumn.Two;
 
     // If we already have a panel, show it.
     if (ThemeEditorPanel.currentPanel) {
@@ -133,9 +137,15 @@ class ThemeEditorPanel {
     const panel = vscode.window.createWebviewPanel(
       ThemeEditorPanel.viewType,
       "ThemeTuner — Real-Time Theme Editor",
-      column || vscode.ViewColumn.One,
+      // column || vscode.ViewColumn.One,
+      column,
       getWebviewOptions(extensionUri)
     );
+
+    panel.iconPath = {
+      light: vscode.Uri.joinPath(extensionUri, "media", "icon-light.png"),
+      dark: vscode.Uri.joinPath(extensionUri, "media", "icon-dark.png"),
+    };
 
     ThemeEditorPanel.currentPanel = new ThemeEditorPanel(panel, extensionUri);
   }
