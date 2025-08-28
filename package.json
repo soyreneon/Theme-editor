@@ -3,7 +3,7 @@
   "displayName": "ThemeTuner — Real-Time Theme Editor",
   "publisher": "soyreneon",
   "description": "%extension.description%",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -30,10 +30,14 @@
     "editor",
     "theme-tuner",
     "color",
-    "theme-customiser",
+    "theme-customizer",
     "customization",
     "style",
-    "custom-theme"
+    "custom-theme",
+    "design",
+    "designer",
+    "creator",
+    "creation"
   ],
   "activationEvents": [
     "onWebviewPanel:themeEditor"

@@ -4,6 +4,10 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.1]
+
+- Add extra metadata tags for SEO purpouses
+
 ## [1.2.0]
 
 - Fixed icon, tab icon for theme tuner editor addded (dark and light mode), new color picker design.
