@@ -28,21 +28,17 @@ Check this reference image:
 
 # Tools
 
-Clicking a color and you will see the available tools:
+Click a color and you will see the available tools:
 
 - color picker
 - brightness controls
-- choose a existing color
+- existing color palette
 - reset color to the original
 - set custom name to find it easily
 - pin/unpin color to top of the list
-- detailed property list(includes colors with or without transparency)
+- detailed property list (includes colors with or without transparency)
 
 ![Tools and details](https://github.com/soyreneon/Theme-editor/raw/main/media/img-colorcontent.png)
-
-Click the color picker and choose the color you prefer:
-
-![Color picker](https://github.com/soyreneon/Theme-editor/raw/main/media/img_colorpicker.png)
 
 The `*` mark indicates these color has been customized
 
