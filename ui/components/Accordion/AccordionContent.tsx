@@ -4,8 +4,9 @@ import { hexToRgb, rgbToHex } from "../../utils";
 import { vscode, useStore } from "../../useStore";
 import TypeList from "../TypeList";
 import ActionButton from "../ActionButton";
+import ColorBox from "../ColorBox";
 import Modal from "../Modal";
-import ColorPicker from "../ColorPicker";
+import ColorPickerModal from "../ColorPickerModal";
 import styles from "./content.module.css";
 
 interface AccordionContentProps {
@@ -111,7 +112,7 @@ const AccordionContent: FC<AccordionContentProps> = ({
     });
   };
 
-  const onResetColorPicker = () => {
+  const onResetColorPickerModal = () => {
     setInputValue(color);
   };
 
@@ -119,17 +120,10 @@ const AccordionContent: FC<AccordionContentProps> = ({
     <div className={styles.content}>
       <div className={styles.form}>
         <label htmlFor="colopicker" className={styles.colorLabel}>
-          {translations["Choose a new color"]}:
+          {translations["choose a new color"]}
         </label>
+        <ColorBox value={inputValue} setValue={(e) => setInputValue(e)} />
         <div className={styles.colorContainer}>
-          <input
-            type="color"
-            name="colopicker"
-            value={inputValue}
-            className="color-input"
-            onChange={(e) => setInputValue(e.target.value)}
-          />
-          <span className={styles.colorValue}>{inputValue}</span>
           <section className={styles.brightness}>
             <i className="codicon codicon-lightbulb"></i>
             <div>
@@ -147,7 +141,7 @@ const AccordionContent: FC<AccordionContentProps> = ({
               />
             </div>
           </section>
-          <ColorPicker
+          <ColorPickerModal
             color={color}
             onColorSelected={(colorSelected) => setInputValue(colorSelected)}
           />
@@ -155,7 +149,7 @@ const AccordionContent: FC<AccordionContentProps> = ({
             caption={translations["reload color"]}
             direction="bottom"
             icon="refresh"
-            onClick={onResetColorPicker}
+            onClick={onResetColorPickerModal}
           />
           <ActionButton
             caption={translations["set name"]}

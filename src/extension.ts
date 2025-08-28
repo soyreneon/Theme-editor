@@ -124,8 +124,11 @@ class ThemeEditorPanel {
     // const column = vscode.window.activeTextEditor
     //   ? vscode.window.activeTextEditor.viewColumn
     //   : undefined;
+    const column = vscode.window.activeTextEditor
+      ? vscode.ViewColumn.Two
+      : undefined;
     // Always open in the second column
-    const column = vscode.ViewColumn.Two;
+    // const column = vscode.ViewColumn.Two;
 
     // If we already have a panel, show it.
     if (ThemeEditorPanel.currentPanel) {
@@ -137,8 +140,8 @@ class ThemeEditorPanel {
     const panel = vscode.window.createWebviewPanel(
       ThemeEditorPanel.viewType,
       "ThemeTuner — Real-Time Theme Editor",
-      // column || vscode.ViewColumn.One,
-      column,
+      column || vscode.ViewColumn.One,
+      // column,
       getWebviewOptions(extensionUri)
     );
 

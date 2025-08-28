@@ -2,7 +2,7 @@ const captions = [
   "reset theme",
   "refresh",
   "Color count",
-  "Choose a new color",
+  "choose a new color",
   "reload color",
   "less brightness",
   "more brightness",

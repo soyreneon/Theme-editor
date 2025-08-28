@@ -1,0 +1,16 @@
+.colorBoxPicker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.swatch .w-color-editable-input input,
+.swatch input {
+  color: var(--vscode-editor-foreground) !important;
+  box-shadow: var(--vscode-editor-foreground) 0px 0px 0px 1px inset !important;
+}
+.swatch > div:last-of-type > div:last-child:hover {
+  background-color: var(--vscode-editorWidget-background) !important;
+}
+.swatch > div:last-of-type > div:last-child svg path {
+  fill: var(--vscode-editor-foreground) !important;
+}

@@ -1,5 +1,4 @@
 .content {
-  /* border-top: none; */
   padding: 10px 0;
 }
 
@@ -8,10 +7,6 @@
   margin-top: 10px;
   padding-top: 15px;
 }
-
-/* .colorContainer {
-  margin: 0 10px;
-} */
 
 .form {
   border: solid 0.1px var(--vscode-input-foreground);
@@ -27,39 +22,27 @@
   align-items: center;
   column-gap: 10px;
 }
+.colorContainer {
+  justify-content: space-evenly;
+}
 .btnContainer {
   margin-top: 15px;
-}
-.colorContainer input[type="color"] {
-  width: 80px;
-  height: 35px;
-  flex: 1;
-  margin-right: 5px;
-  background-color: inherit;
-  cursor: pointer;
-  padding: 0;
 }
 .colorLabel {
   display: block;
   margin: 0 10px;
   font-size: 1em;
   margin-bottom: 5px;
-  /* font-size: 0.85em; */
-  /* text-align: center; */
-}
-.colorValue {
-  font-family: monospace;
-  text-transform: uppercase;
 }
 .brightness {
   display: flex;
   flex-direction: row;
-  border: solid var(--vscode-input-foreground) 0.4px;
+  border: solid #7777 0.4px;
   border-radius: 2px;
-  padding: 2px 4px;
+  padding: 0 2px;
 }
 .brightness div button i {
-  font-size: 10px !important;
+  font-size: 14px !important;
   padding: 0 2px !important;
   color: greenyellow;
 }
@@ -68,8 +51,5 @@
   .colorContainer {
     flex-wrap: wrap;
     justify-content: space-between;
-  }
-  .colorContainer input[type="color"] {
-    flex-basis: 100%;
   }
 }
