@@ -14,10 +14,6 @@ ThemeTuner is a tool to change/fix colors globally in settings.json file for you
 
 ![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-after.png)
 
-| Before                                                                                     |                                           After                                           |
-| ------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------: |
-| ![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-before.png) | ![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-after.png) |
-
 ## How to use it
 
 Install ThemeTuner, then press `Cmd+Shift+P` on macOS or `Ctrl+Shift+P` on Windows and Linux and type `ThemeTuner: Open ThemeTuner` and ThemeTuner will scan your current color palette automatically. It will open an editor in a second tab for a better debuging experience.
