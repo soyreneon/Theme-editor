@@ -53,9 +53,7 @@ The `*` mark indicates these color has been customized
 
 If you need to customize separate properties, go to settings.json to do it manually(Press `Ctrl+,` or `Cmd+,` to go to settings).
 
-_ThemeTuner **only shows a list of the properties defined in your theme** (when a prop is not defined, it takes the default vscode core value). If some property is missing, that means it is not defined and you have to add it manually. **THAT MEANS YOU COULD NOT FIND THE COLOR YOU'RE LOOKING FOR. e.g. if you swith to Default Dark+, you will only see token colors, background editor and other color will be taken from vscode core settings**_
-
-If you want to see a full list of your current color settings, use `Cmd+K+T` or `Ctrl+K+T` and type `developer: generate color theme from current settings`.
+_ThemeTuner **only shows a list of the properties defined in your theme** (when a prop is not defined, it takes the default vscode core value). If some property is missing, then is not defined and you have to add it manually. **THAT MEANS YOU COULD NOT FIND THE PROPERTY COLOR YOU'RE LOOKING FOR. e.g. if you switch to `Default Dark+` theme, you will only see token colors, background editor and other colors will be taken from vscode core settings**_
 
 # Future features
 
