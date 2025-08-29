@@ -15,6 +15,7 @@ vsc-extension-quickstart.md
 **/*.ts
 **/.vscode-test.*
 media/*.gif
+media/*.mp4
 # Exclude all PNGs
 media/*.png
 # **/*.png

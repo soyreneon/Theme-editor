@@ -168,16 +168,17 @@ class ThemeEditorPanel {
     // This happens when the user closes the panel or when the panel is closed programmatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
+    // We might not need this
     // Update the content based on view changes (tab switching, etc.)
-    this._panel.onDidChangeViewState(
-      () => {
-        if (this._panel.visible) {
-          this.loadCurrentTheme();
-        }
-      },
-      null,
-      this._disposables
-    );
+    // this._panel.onDidChangeViewState(
+    //   () => {
+    //     if (this._panel.visible) {
+    //       this.loadCurrentTheme();
+    //     }
+    //   },
+    //   null,
+    //   this._disposables
+    // );
 
     // on switching theme
     vscode.workspace.onDidChangeConfiguration((event) => {
