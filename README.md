@@ -8,15 +8,15 @@ ThemeTuner is a tool to change/fix colors globally in settings.json file for you
 
 # Before
 
-![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img_before.png)
+![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-before.png)
 
 # Before
 
-![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img_after.png)
+![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-after.png)
 
 | Before                                                                                     |                                           After                                           |
 | ------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------: |
-| ![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img_before.png) | ![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img_after.png) |
+| ![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-before.png) | ![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-after.png) |
 
 ## How to use it
 
