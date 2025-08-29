@@ -255,11 +255,14 @@ export const mapTextMateRules = (
 const getColorsMap = (themeColors?: SimpleColorStructure): ColorStructure => {
   const colorsMap: ColorStructure = {};
   for (const [property, value] of Object.entries(themeColors ?? {})) {
-    const normalizedColor = normalizeColor(value);
-    if (!colorsMap[normalizedColor]) {
-      colorsMap[normalizedColor] = [];
+    // if (!Array.isArray(value)) {
+    if (typeof value === "string") {
+      const normalizedColor = normalizeColor(value);
+      if (!colorsMap[normalizedColor]) {
+        colorsMap[normalizedColor] = [];
+      }
+      colorsMap[normalizedColor].push(property);
     }
-    colorsMap[normalizedColor].push(property);
   }
   return colorsMap;
 };
@@ -400,7 +403,10 @@ export const getCustomColors = (global: GlobalCustomizations): string[] => {
   const colorList = new Set<string>();
   // colors
   for (const [_, value] of Object.entries(global.colors)) {
-    colorList.add(normalizeColor(value));
+    if (typeof value === "string") {
+      // if (!Array.isArray(value)) {
+      colorList.add(normalizeColor(value));
+    }
   }
 
   const { textMateRules, ...rest } = global.tokenColors;

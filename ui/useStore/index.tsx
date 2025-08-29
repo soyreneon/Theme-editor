@@ -17,6 +17,7 @@ interface StoreContextType {
   customColorList: string[];
   tunerSettings: TunerSettings;
   translations: Record<CaptionKeys, string>;
+  error: string;
   setLoading: (loading: boolean) => void;
 }
 
@@ -34,6 +35,7 @@ const initialState = {
     (acc, caption) => ({ ...acc, [caption]: caption }),
     {} as Record<CaptionKeys, string>
   ),
+  error: "",
 };
 
 export const StoreProvider: React.FC<{ children: ReactNode }> = ({
@@ -63,6 +65,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
           colorMap: message.colormaps,
           customColorList: message.customColorList,
           tunerSettings: message.tunerSettings ?? {},
+          error: message.error,
           loading: false,
         }));
       }
@@ -70,6 +73,13 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
         setState((prev) => ({
           ...prev,
           translations: message.translations,
+        }));
+      }
+      if (message.type === "error") {
+        setState((_) => ({
+          ...initialState,
+          loading: false,
+          error: message.error,
         }));
       }
       if (message.type === "refresh") {

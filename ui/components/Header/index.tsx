@@ -34,6 +34,11 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
       });
     }, 800);
   };
+  const handleExport = () => {
+    vscode.postMessage({
+      command: "exportTheme",
+    });
+  };
 
   return (
     <header>
@@ -54,6 +59,12 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
             direction="bottom"
             icon="refresh"
             onClick={handleRefresh}
+          />
+          <ActionButton
+            caption={translations["export theme"]}
+            direction="bottom"
+            icon="export"
+            onClick={handleExport}
           />
         </div>
       </div>

@@ -4,6 +4,10 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.2]
+
+- Export button and fix bug when reading strange values from theme
+
 ## [1.2.1]
 
 - Add extra metadata tags for SEO purpouses

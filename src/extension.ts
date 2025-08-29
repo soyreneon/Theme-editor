@@ -182,6 +182,10 @@ class ThemeEditorPanel {
     // on switching theme
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration("workbench.colorTheme")) {
+        this._panel?.webview.postMessage({
+          type: "refresh",
+          loading: true,
+        });
         this.loadCurrentTheme();
       }
     });
@@ -256,6 +260,11 @@ class ThemeEditorPanel {
               type: "refresh",
               loading: false,
             });
+            return;
+          case "exportTheme":
+            vscode.commands.executeCommand(
+              "workbench.action.generateColorTheme"
+            );
             return;
         }
       },
@@ -386,45 +395,56 @@ class ThemeEditorPanel {
 
     getThemeJsonByName(this.themeName as string).then((result) => {
       if (result) {
-        const { themeJson, globalCustomizations } = result;
-        this.themeObj = themeJson;
-        // this.globalSettings = globalCustomizations;
-        const customColorList = getCustomColors(globalCustomizations);
+        try {
+          const { themeJson, globalCustomizations } = result;
+          this.themeObj = themeJson;
+          // this.globalSettings = globalCustomizations;
+          const customColorList = getCustomColors(globalCustomizations);
 
-        const { textMateRules, ...syntaxCustomizations } =
-          globalCustomizations.tokenColors ?? {}; // here
+          const { textMateRules, ...syntaxCustomizations } =
+            globalCustomizations.tokenColors ?? {}; // here
 
-        const { scopeMap } = mapTextMateRules(
-          themeJson.tokenColors || [],
-          textMateRules || []
-        );
+          const { scopeMap } = mapTextMateRules(
+            themeJson.tokenColors || [],
+            textMateRules || []
+          );
 
-        const fullThemeJson: FullThemeJson = {
-          ...themeJson,
-          colors: {
-            ...themeJson.colors,
-            ...globalCustomizations.colors, // get here custom color list
-          },
-          tokenColors: scopeMap,
-          syntax: mergeSyntaxThemes(
-            themeJson.syntax || {},
-            syntaxCustomizations
-          ),
-        };
+          const fullThemeJson: FullThemeJson = {
+            ...themeJson,
+            colors: {
+              ...themeJson.colors,
+              ...globalCustomizations.colors, // get here custom color list
+            },
+            tokenColors: scopeMap,
+            syntax: mergeSyntaxThemes(
+              themeJson.syntax || {},
+              syntaxCustomizations
+            ),
+          };
 
-        this.colormaps = getColorUsage(fullThemeJson);
+          this.colormaps = getColorUsage(fullThemeJson);
 
-        // Color list without transparency
-        const colors: string[] = sortColorsByAppereances(this.colormaps);
-        this._panel?.webview.postMessage({
-          type: "themeChanged",
-          theme: this.themeName,
-          // json: themeJson, // not using now
-          colormaps: this.colormaps,
-          customColorList: customColorList,
-          colors: colors,
-          tunerSettings: customNames,
-        });
+          // Color list without transparency
+          const colors: string[] = sortColorsByAppereances(this.colormaps);
+          this._panel?.webview.postMessage({
+            type: "themeChanged",
+            theme: this.themeName,
+            // json: themeJson, // not using now
+            colormaps: this.colormaps,
+            customColorList: customColorList,
+            colors: colors,
+            error: "",
+            tunerSettings: customNames,
+          });
+        } catch (error) {
+          this._panel?.webview.postMessage({
+            type: "error",
+            error: vscode.l10n.t(
+              `Couldn't read {0} or its customizations, check you settings.json for some issues or maybe this theme has invalid data`,
+              this.themeName
+            ),
+          });
+        }
       }
     });
   }

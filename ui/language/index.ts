@@ -1,6 +1,7 @@
 const captions = [
   "reset theme",
   "refresh",
+  "export theme",
   "Color count",
   "choose a new color",
   "reload color",

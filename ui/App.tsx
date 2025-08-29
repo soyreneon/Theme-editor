@@ -10,12 +10,20 @@ import captions from "./language";
 import Accordion from "./components/Accordion";
 import Loader from "./components/Loader";
 import Header from "./components/Header";
+import Error from "./components/Error";
 
 export function App() {
   const store = useStore();
   const [list, setList] = useState<string[]>([]);
-  const { title, colors, colorMap, customColorList, loading, tunerSettings } =
-    store;
+  const {
+    title,
+    colors,
+    colorMap,
+    customColorList,
+    loading,
+    tunerSettings,
+    error,
+  } = store;
 
   useEffect(() => {
     // call vscode api when ui is ready
@@ -38,6 +46,9 @@ export function App() {
 
   if (loading) {
     return <Loader />;
+  }
+  if (error !== "") {
+    return <Error error={error} />;
   }
 
   return (
