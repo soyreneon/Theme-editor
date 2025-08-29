@@ -6,11 +6,11 @@ ThemeTuner is a tool to change/fix colors globally in settings.json file for you
 
 ![ThemeTuner in action](https://github.com/soyreneon/Theme-editor/raw/main/media/demo.mp4)
 
-# Before
+### Before
 
 ![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-before.png)
 
-# Before
+### After
 
 ![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-after.png)
 
