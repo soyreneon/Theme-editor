@@ -4,7 +4,7 @@ ThemeTuner is a tool to change/fix colors globally in settings.json file for you
 
 ## Demo
 
-[!Watch ThemeTuner Demo](https://github.com/soyreneon/Theme-editor/raw/main/media/demo.gif)
+![Watch ThemeTuner Demo](https://github.com/soyreneon/Theme-editor/raw/main/media/demo.gif)
 
 Watch a full demo on [youtube](https://www.youtube.com/watch?v=6rxlV-PZwBo).
 
