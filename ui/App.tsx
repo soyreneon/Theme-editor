@@ -64,6 +64,8 @@ export function App() {
         />
       ))}
       <hr className="vscode-divider" />
+      <hr className="vscode-divider" />
+      <hr className="vscode-divider" />
     </>
   );
 }

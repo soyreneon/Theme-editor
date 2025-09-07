@@ -6,6 +6,7 @@ import {
   type TokenColorCustomization,
   type TextMateRule,
   type TokenColor,
+  type SemanticTokenColors,
   type Settings,
   type SimpleColorStructure,
   type ScopeMap,
@@ -31,6 +32,16 @@ export const getAlpha = (color: string): string => {
     return color.substring(7, 9).toUpperCase();
   }
   return "";
+};
+
+// check if an object is empty
+export const isEmpty = (obj: {}) => {
+  for (const prop in obj) {
+    if (Object.hasOwn(obj, prop)) {
+      return false;
+    }
+  }
+  return true;
 };
 
 /*
@@ -103,6 +114,30 @@ export const buildSyntaxColorCustomizations = (
   return result;
 };
 
+export const buildSemanticTokenColorCustomizations = (
+  semanticKeys: string[],
+  themeTokenColorCustomizations: SemanticTokenColors,
+  color: string
+): SemanticTokenColors => {
+  const result: SemanticTokenColors = {
+    ...JSON.parse(JSON.stringify(themeTokenColorCustomizations)),
+  };
+
+  semanticKeys.forEach((key) => {
+    if (result[key]) {
+      if (typeof result[key] === "object" && result[key] !== null) {
+        result[key] = { ...result[key], foreground: color };
+      } else {
+        result[key] = { foreground: color };
+      }
+    } else {
+      result[key] = { foreground: color };
+    }
+  });
+
+  return result;
+};
+
 /*
  * Reset colors
  */
@@ -170,6 +205,33 @@ export const removeSyntaxColorCustomizations = (
   return result;
 };
 
+export const removeSemanticTokenColorCustomizations = (
+  tokenKeys: SemanticTokenColors,
+  color: string
+): SemanticTokenColors | null => {
+  console.log(tokenKeys, color);
+  const result: SemanticTokenColors = {};
+
+  for (const [key, value] of Object.entries(tokenKeys)) {
+    if (
+      typeof value === "string" &&
+      normalizeColor(value) !== normalizeColor(color)
+    ) {
+      result[key] = { foreground: value };
+    } else if (typeof value === "object" && value?.foreground) {
+      if (normalizeColor(value?.foreground || "") !== normalizeColor(color)) {
+        result[key] = value as any;
+      } else {
+        const { foreground, ...rest } = value;
+        if (!isEmpty(rest)) {
+          result[key] = rest;
+        }
+      }
+    }
+  }
+  return result;
+};
+
 /*
  * Merge colors
  */
@@ -191,6 +253,28 @@ export const mergeSyntaxThemes = (
   expandAndAssign(syntax1);
   expandAndAssign(syntax2); // overwrite if exists
 
+  return result;
+};
+
+export const mergeSemanticTokens = (
+  stokens1: SemanticTokenColors,
+  stokens2: SemanticTokenColors
+) => {
+  const result: SemanticTokenColors = {};
+
+  const expandAndAssign = (source: SemanticTokenColors) => {
+    // ? normalize color??
+    for (const [key, value] of Object.entries(source)) {
+      if (typeof value === "string") {
+        result[key] = { foreground: value };
+      } else {
+        result[key] = value as any;
+      }
+    }
+  };
+
+  expandAndAssign(stokens1);
+  expandAndAssign(stokens2); // overwrite if exists
   return result;
 };
 
@@ -325,18 +409,40 @@ const getSyntaxMap = (themeSyntax?: SimpleColorStructure): ColorStructure => {
   return syntaxMap;
 };
 
+const getSemanticMap = (themeSemantic: SemanticTokenColors): ColorStructure => {
+  const semanticMap: ColorStructure = {};
+
+  for (const [name, obj] of Object.entries(
+    themeSemantic as SemanticTokenColors
+  )) {
+    if (typeof obj === "object" && obj !== null && obj?.foreground) {
+      const normalizedColor = normalizeColor(obj?.foreground as string);
+      if (!semanticMap[normalizedColor]) {
+        semanticMap[normalizedColor] = [];
+      }
+      semanticMap[normalizedColor].push(name);
+    }
+  }
+
+  return semanticMap;
+};
+
 export const getColorUsage = (
   theme: FullThemeJson
 ): {
   colorsMap: ColorStructure;
   tokenColorsMap: TokenColorMap;
   syntaxMap: ColorStructure;
+  semanticTokenColorMap: ColorStructure;
 } => {
   const colorsMap = getColorsMap(theme.colors);
   const tokenColorsMap = getTokenColorsMap(theme.tokenColors);
   const syntaxMap = getSyntaxMap(theme.syntax);
+  const semanticTokenColorMap = getSemanticMap(
+    theme.semanticTokenColors as SemanticTokenColors
+  );
 
-  return { colorsMap, tokenColorsMap, syntaxMap };
+  return { colorsMap, tokenColorsMap, syntaxMap, semanticTokenColorMap };
 };
 
 /*
@@ -425,6 +531,15 @@ export const getCustomColors = (global: GlobalCustomizations): string[] => {
     colorList.add(normalizeColor(value));
   }
 
+  // semantic tokens
+  for (const [_, value] of Object.entries(global.semanticTokenColors || {})) {
+    if (typeof value === "string") {
+      colorList.add(normalizeColor(value));
+    } else if (value?.foreground) {
+      colorList.add(normalizeColor(value?.foreground as string));
+    }
+  }
+
   return Array.from(colorList.values());
 };
 
@@ -437,6 +552,7 @@ export const sortColorsByAppereances = (colormaps: {
   colorsMap: ColorStructure;
   tokenColorsMap: TokenColorMap;
   syntaxMap: ColorStructure;
+  semanticTokenColorMap: ColorStructure;
 }) => {
   // Create a unified colorCounts object
   const colorCounts: Record<string, { count: number }> = {};
@@ -459,6 +575,16 @@ export const sortColorsByAppereances = (colormaps: {
 
   // Count elements in syntaxMap
   for (const [color, categories] of Object.entries(colormaps.syntaxMap)) {
+    if (!colorCounts[color]) {
+      colorCounts[color] = { count: 0 };
+    }
+    colorCounts[color].count += categories.length;
+  }
+
+  // Count elements in semanticTokenColorMap
+  for (const [color, categories] of Object.entries(
+    colormaps.semanticTokenColorMap
+  )) {
     if (!colorCounts[color]) {
       colorCounts[color] = { count: 0 };
     }

@@ -36,7 +36,7 @@ const ColorBox: FC<ColorBoxProps> = ({ value, setValue, hasAlpha = false }) => {
         placement={GithubPlacement.TopLeft}
         showAlpha={hasAlpha}
         onChange={(color) => {
-          setValue(color.hex);
+          setValue(hasAlpha ? color.hexa : color.hex);
         }}
       />
     </div>

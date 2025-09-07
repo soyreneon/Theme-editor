@@ -5,8 +5,11 @@ import {
   type GlobalCustomizations,
   type ThemeTunerSettings,
   type TokenColorCustomization,
+  type SemanticTokenColors,
+  type CustomSemanticTokenColors,
   type SimpleColorStructure,
 } from "../types/";
+import { isEmpty } from "./utils";
 
 export const getThemeJsonByName = async (
   themeName: string
@@ -28,9 +31,39 @@ export const getThemeJsonByName = async (
   const tokenColorCustomizations: TokenColorCustomization =
     config.get("editor.tokenColorCustomizations") || {};
 
+  const semanticTokenColorCustomizations: CustomSemanticTokenColors =
+    config.get("editor.semanticTokenColorCustomizations") || {};
+
+  // not now
+  const normalizeSemanticTokenColors = (
+    semanticObject: SemanticTokenColors | undefined
+  ): SemanticTokenColors | undefined => {
+    if (!semanticObject) {
+      return;
+    }
+    let result: SemanticTokenColors = {};
+
+    for (const [key, value] of Object.entries(semanticObject)) {
+      if (typeof value === "string") {
+        result = { ...result, [key]: { foreground: value } };
+      } else {
+        result = { ...result, [key]: value };
+      }
+    }
+    return result;
+  };
+
   const globalCustomizations: GlobalCustomizations = {
     colors: colorCustomizations[`[${themeName}]`] || {},
     tokenColors: tokenColorCustomizations[`[${themeName}]`] || [],
+    ...(semanticTokenColorCustomizations[`[${themeName}]`]?.enabled && {
+      semanticHighlighting:
+        semanticTokenColorCustomizations[`[${themeName}]`]?.enabled,
+    }),
+    ...(semanticTokenColorCustomizations[`[${themeName}]`]?.rules && {
+      semanticTokenColors:
+        semanticTokenColorCustomizations[`[${themeName}]`]?.rules,
+    }),
   };
 
   // const homeDir = process.env.HOME || process.env.USERPROFILE; // compatible en todas las plataformas
@@ -123,20 +156,25 @@ export const getGlobalTokenColorCustomizations = async (
   return tokenColorCustomizations[`[${themeName}]`] || {};
 };
 
+export const getGlobalSemanticTokenColorCustomizations = async (
+  themeName: string
+): Promise<SemanticTokenColors> => {
+  const configuration = vscode.workspace.getConfiguration();
+  const semanticTokenColorCustomizations =
+    configuration.get<CustomSemanticTokenColors>(
+      "editor.semanticTokenColorCustomizations"
+    ) || {};
+
+  return semanticTokenColorCustomizations[`[${themeName}]`]?.rules || {};
+};
+
 export const saveTheme = async (
   themeName: string,
   themeColorCustomizations: SimpleColorStructure | null,
-  themeTokenColorCustomizations: TokenColorCustomization | null
+  themeTokenColorCustomizations: TokenColorCustomization | null,
+  themeSemanticTokenColorCustomizations: SemanticTokenColors | null
 ): Promise<void> => {
   const configuration = vscode.workspace.getConfiguration();
-  const isEmpty = (obj: {}) => {
-    for (const prop in obj) {
-      if (Object.hasOwn(obj, prop)) {
-        return false;
-      }
-    }
-    return true;
-  };
 
   const setCustomizations = (
     customizations: Record<string, any>,
@@ -148,6 +186,21 @@ export const saveTheme = async (
     }
     result[`[${themeName}]`] = customizations;
     return result;
+  };
+
+  const setSemanticCustomizations = (
+    customizations: SemanticTokenColors,
+    result: CustomSemanticTokenColors
+  ) => {
+    return JSON.parse(
+      JSON.stringify({
+        ...result,
+        [`[${themeName}]`]: {
+          ...result[`[${themeName}]`],
+          rules: customizations,
+        },
+      })
+    );
   };
 
   // overwrite colors
@@ -169,6 +222,36 @@ export const saveTheme = async (
     tokenColorCustomizations
   );
 
+  // overwrite semantic tokens
+  const semanticTokenColorCustomizations =
+    configuration.get<TokenColorCustomization>(
+      "editor.semanticTokenColorCustomizations"
+    ) || {};
+
+  const finalSemanticTokens = setSemanticCustomizations(
+    themeSemanticTokenColorCustomizations || {},
+    semanticTokenColorCustomizations
+  );
+
+  // pending bug, error trying to save semantic tokens with the structure
+  // *.declaration: { bold: true, foreground: "#00faff" },
+  // only with objects, but hardcoded objects works
+  // const test = {
+  //   "[Cobalt2]": {
+  //     enabled: false,
+  //     rules: {
+  //       "*.declaration": { bold: true, foreground: "#00faff" },
+  //       variable: {
+  //         bold: true,
+  //         foreground: "#fdf",
+  //       },
+  //       function: {
+  //         foreground: "#c1e60f",
+  //       },
+  //     },
+  //   },
+  // };
+
   try {
     await configuration.update(
       "workbench.colorCustomizations",
@@ -183,6 +266,11 @@ export const saveTheme = async (
         vscode.ConfigurationTarget.Global
       );
     }
+    await configuration.update(
+      "editor.semanticTokenColorCustomizations",
+      finalSemanticTokens,
+      vscode.ConfigurationTarget.Global
+    );
   } catch (error: any) {
     vscode.window.showErrorMessage(
       vscode.l10n.t("Failed to update theme {0}.", error.message)
@@ -302,9 +390,23 @@ export const setTunerSetting = async (
   }
 
   try {
+    let newSettings: ThemeTunerSettings = {};
+    if (isEmpty(customNames)) {
+      for (const [key, value] of Object.entries(custom ?? {})) {
+        if (key !== `[${themeName}]`) {
+          newSettings[key] = value;
+        }
+      }
+    } else {
+      newSettings = {
+        ...custom,
+        [`[${themeName}]`]: customNames,
+      };
+    }
+
     await configuration.update(
       "themeTuner.colors",
-      { ...custom, [`[${themeName}]`]: customNames },
+      newSettings,
       vscode.ConfigurationTarget.Global
     );
   } catch (error: any) {

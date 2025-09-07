@@ -28,7 +28,12 @@ const initialState = {
   title: null,
   colors: [],
   loading: true,
-  colorMap: { colorsMap: {}, tokenColorsMap: {}, syntaxMap: {} },
+  colorMap: {
+    colorsMap: {},
+    tokenColorsMap: {},
+    syntaxMap: {},
+    semanticTokenColorMap: {},
+  },
   customColorList: [],
   tunerSettings: {},
   translations: captions.reduce(

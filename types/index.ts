@@ -1,17 +1,10 @@
 export type ThemeJson = {
   name: string;
   type?: string;
+  semanticHighlighting?: boolean | "configuredByTheme";
+  semanticTokenColors?: SemanticTokenColors;
   colors?: SimpleColorStructure;
   tokenColors?: TextMateRule[];
-  // tokenColors?: {
-  //   name?: string;
-  //   scope?: string | string[];
-  //   settings: {
-  //     foreground?: string;
-  //     background?: string;
-  //     fontStyle?: string;
-  //   };
-  // }[];
   syntax?: SimpleColorStructure;
 };
 export type FullThemeJson = {
@@ -20,10 +13,33 @@ export type FullThemeJson = {
   colors?: SimpleColorStructure;
   tokenColors?: ScopeMap;
   syntax?: SimpleColorStructure;
+  semanticHighlighting?: boolean | "configuredByTheme";
+  semanticTokenColors?: SemanticTokenColors;
 };
 
 export type SimpleColorStructure = Record<string, string>;
 export type ColorStructure = Record<string, string[]>;
+
+export type CustomSemanticTokenColors = Record<
+  string,
+  CustomSemanticTokenObject
+>;
+type CustomSemanticTokenObject = {
+  enabled?: boolean | "configuredByTheme";
+  rules?: SemanticTokenColors;
+};
+
+type SemanticTokenStyle =
+  | string
+  | {
+      foreground?: string;
+      [key: string]: unknown;
+    };
+
+export type SemanticTokenColors = {
+  [token: string]: SemanticTokenStyle;
+};
+
 // export type ColorUsageMap = Record<string, string[]>;
 // export type SyntaxMap = Record<string, string[]>;
 export type TokenColor = { scope: string[]; type: "foreground" | "background" };
@@ -37,6 +53,7 @@ export interface ColorMap {
   colorsMap: ColorStructure;
   tokenColorsMap: TokenColorMap;
   syntaxMap: ColorStructure;
+  semanticTokenColorMap: ColorStructure;
 }
 
 // Define types for global settings
@@ -44,7 +61,6 @@ export interface GlobalCustomizations {
   colors: SimpleColorStructure;
   tokenColors: {
     textMateRules?: TextMateRule[];
-    // tmp
     comments?: string;
     keywords?: string;
     strings?: string;
@@ -53,10 +69,8 @@ export interface GlobalCustomizations {
     functions?: string;
     variables?: string;
   };
-  // tokenColors: Array<{
-  //   scope: string[];
-  //   settings: { foreground?: string; background?: string };
-  // }>;
+  semanticHighlighting?: boolean | "configuredByTheme";
+  semanticTokenColors?: SemanticTokenColors;
 }
 
 // settings.json tokenColors

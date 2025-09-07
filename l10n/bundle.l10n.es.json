@@ -24,8 +24,9 @@
   "Cancel": "Cancelar",
   "Apply": "Aplicar",
   "Colors": "Colores",
-  "Token Colors": "Colores de token",
-  "Syntax Colors": "Colores de sintáxis",
+  "TextMate Token Colors": "Colores de token(TextMate Token Colors)",
+  "Syntax Colors": "Colores de sintáxis(Syntax Colors)",
+  "Semantic Token Colors": "Colores de token semántico(Semantic Token Colors)",
   "Theme": "Tema",
   "pin/unpin": "anclar/desanclar",
   "set name": "Nombrar color"

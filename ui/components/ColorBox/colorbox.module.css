@@ -14,3 +14,10 @@
 .swatch > div:last-of-type > div:last-child svg path {
   fill: var(--vscode-editor-foreground) !important;
 }
+/* .swatch > div:nth-child(4) > div:nth-child(2) {
+  background-image: var(--alpha-uri) !important;
+} */
+.swatch > div:nth-child(4) > div:nth-child(2),
+.swatch > div > div:nth-child(3) > div:nth-child(2) {
+  background-image: var(--alpha-uri) !important;
+}

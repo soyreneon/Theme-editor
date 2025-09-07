@@ -1,6 +1,6 @@
 # ThemeTuner
 
-ThemeTuner is a tool to change/fix colors globally in settings.json file for your current theme. It scans all the colors defined(even those defined without this extension) and list it sorted by number of appearences.
+ThemeTuner is a tool to change/fix colors globally in settings.json file for your current theme. It scans all the colors defined (even those defined without this extension) and displays them sorted by number of occurrences.
 
 ## Demo
 
@@ -8,13 +8,10 @@ ThemeTuner is a tool to change/fix colors globally in settings.json file for you
 
 Watch a full demo on [youtube](https://www.youtube.com/watch?v=6rxlV-PZwBo).
 
-### Before customizations
-
-![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-before.png)
-
-### After customizations
-
-![How to preview](https://github.com/soyreneon/Theme-editor/raw/main/media/img-after.png)
+| Before/after customizations                                                        |
+| ---------------------------------------------------------------------------------- |
+| ![Before](https://github.com/soyreneon/Theme-editor/raw/main/media/img-before.png) |
+| ![After](https://github.com/soyreneon/Theme-editor/raw/main/media/img-after.png)   |
 
 ## How to use it
 

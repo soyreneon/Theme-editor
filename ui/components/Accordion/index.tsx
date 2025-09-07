@@ -21,7 +21,8 @@ const Accordion: FC<AccordionProps> = ({
   const count =
     getColorLength(colormaps.colorsMap[color]) +
     getColorLength(colormaps.tokenColorsMap[color]?.scope) +
-    getColorLength(colormaps.syntaxMap[color]);
+    getColorLength(colormaps.syntaxMap[color]) +
+    getColorLength(colormaps.semanticTokenColorMap[color]);
   const hasCustomizations = customColorList.includes(color);
 
   return (
@@ -40,12 +41,12 @@ const Accordion: FC<AccordionProps> = ({
             </span>
           ) : null}
           <span className={styles.colorheader}>
-            {settings?.[color]?.name ? (
-              <span>{settings?.[color]?.name}</span>
-            ) : (
-              color
+            {color}
+            {settings?.[color]?.name && (
+              <span> ({settings?.[color]?.name})</span>
             )}
             {hasCustomizations ? " * " : " "}
+            {/* {getColorLength(colormaps.semanticTokenColorMap[color]) || " "} */}
           </span>
         </h2>
         <div className={styles.badgeContainer}>

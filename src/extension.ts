@@ -2,21 +2,25 @@ import * as vscode from "vscode";
 import { type ThemeJson, type FullThemeJson, type ColorMap } from "../types";
 import {
   mergeSyntaxThemes,
+  mergeSemanticTokens,
   mapTextMateRules,
   getCustomColors,
   getColorUsage,
   buildColorCustomizations,
   buildTokenColorCustomizations,
   buildSyntaxColorCustomizations,
+  buildSemanticTokenColorCustomizations,
   removeColorCustomizations,
   removeTokenColorCustomizations,
   removeSyntaxColorCustomizations,
+  removeSemanticTokenColorCustomizations,
   sortColorsByAppereances,
 } from "./utils";
 import {
   getThemeJsonByName,
   getGlobalColorCustomizations,
   getGlobalTokenColorCustomizations,
+  getGlobalSemanticTokenColorCustomizations,
   resetTunerColorSettings,
   resetTunerThemeSettings,
   saveTheme,
@@ -106,6 +110,7 @@ class ThemeEditorPanel {
     colorsMap: {},
     tokenColorsMap: {},
     syntaxMap: {},
+    semanticTokenColorMap: {},
   };
   private themeObj: ThemeJson = {
     name: "",
@@ -114,6 +119,7 @@ class ThemeEditorPanel {
     syntax: {},
   };
   private themeName: string = "";
+  private firstLoad: boolean = true;
   // private globalSettings: GlobalCustomizations = {
   //   colors: {},
   //   tokenColors: {},
@@ -196,6 +202,10 @@ class ThemeEditorPanel {
       (message) => {
         switch (message.command) {
           case "ui-ready":
+            if (this.firstLoad) {
+              this.firstLoad = false;
+              return;
+            }
             const translations: Record<string, string> = {};
             message.captions.map(
               (c: string) => (translations[c] = vscode.l10n.t(c))
@@ -279,7 +289,7 @@ class ThemeEditorPanel {
    * Reset theme
    */
   public resetThemeColor = async () => {
-    await saveTheme(this.themeName, {}, {});
+    await saveTheme(this.themeName, {}, {}, {});
   };
 
   /*
@@ -311,10 +321,21 @@ class ThemeEditorPanel {
       ...syntaxCustomizations,
     };
 
+    const themeSemanticTokenColorCustomizations =
+      await getGlobalSemanticTokenColorCustomizations(this.themeName);
+
+    //remove color from semantic tokens
+    const semanticTokenColorCustomizations =
+      removeSemanticTokenColorCustomizations(
+        themeSemanticTokenColorCustomizations,
+        color
+      );
+
     await saveTheme(
       this.themeName,
       colorCustomizations,
-      tokenColorCustomizations
+      tokenColorCustomizations,
+      semanticTokenColorCustomizations
     );
   };
 
@@ -327,6 +348,9 @@ class ThemeEditorPanel {
     const settingsTokenKeys =
       this.colormaps.tokenColorsMap[previousColor] || {};
     const settingsSyntaxKeys = this.colormaps.syntaxMap[previousColor] || [];
+    // semantic tokens
+    const settingsSemanticTokenKeys =
+      this.colormaps.semanticTokenColorMap[previousColor] || [];
 
     // get custom values from settings
     const themeColorCustomizations = await getGlobalColorCustomizations(
@@ -334,6 +358,8 @@ class ThemeEditorPanel {
     );
     const themeTokenColorCustomizations =
       await getGlobalTokenColorCustomizations(this.themeName);
+    const themeSemanticTokenColorCustomizations =
+      await getGlobalSemanticTokenColorCustomizations(this.themeName);
 
     // final colors object
     const colorCustomizations = buildColorCustomizations(
@@ -362,11 +388,20 @@ class ThemeEditorPanel {
       ...syntaxColorCustomizations,
     };
 
+    // final semantic token colors object
+    const semanticTokenColorCustomizations =
+      buildSemanticTokenColorCustomizations(
+        settingsSemanticTokenKeys,
+        themeSemanticTokenColorCustomizations,
+        newColor
+      );
+
     await saveTheme(
       this.themeName,
       // themeColorCustomizations,
       colorCustomizations,
-      tokenColorCustomizations
+      tokenColorCustomizations,
+      semanticTokenColorCustomizations
     );
   };
 
@@ -420,6 +455,10 @@ class ThemeEditorPanel {
             syntax: mergeSyntaxThemes(
               themeJson.syntax || {},
               syntaxCustomizations
+            ),
+            semanticTokenColors: mergeSemanticTokens(
+              themeJson.semanticTokenColors || {},
+              globalCustomizations.semanticTokenColors || {}
             ),
           };
 
@@ -495,6 +534,10 @@ class ThemeEditorPanel {
     const reactStylesResetUri = webview.asWebviewUri(reactStyleResetPath);
     const iconStylesUri = webview.asWebviewUri(iconsStylePath);
 
+    const alphaUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "media", "alpha.png")
+    );
+
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
@@ -502,7 +545,11 @@ class ThemeEditorPanel {
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
-
+        <style>
+          :root {
+            --alpha-uri: url('${alphaUri}');
+          }
+        </style>
         <!--
 					Use a content security policy to only allow loading images and svg icons from https or from our extension directory,
 					and only allow scripts that have a specific nonce.

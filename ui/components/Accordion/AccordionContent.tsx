@@ -22,7 +22,8 @@ const AccordionContent: FC<AccordionContentProps> = ({
 }) => {
   const store = useStore();
   const { translations, colors } = store;
-  const { colorsMap, tokenColorsMap, syntaxMap } = colormaps;
+  const { colorsMap, tokenColorsMap, syntaxMap, semanticTokenColorMap } =
+    colormaps;
   const [inputValue, setInputValue] = useState(color);
   const colorNameRef = useRef<HTMLInputElement>(null);
   const [modalStatus, setModalStatus] = useState<{
@@ -121,6 +122,7 @@ const AccordionContent: FC<AccordionContentProps> = ({
       <div className={styles.form}>
         <label htmlFor="colopicker" className={styles.colorLabel}>
           {translations["choose a new color"]}
+          {/* {translations["choose a new color"]} -- {inputValue} */}
         </label>
         <ColorBox value={inputValue} setValue={(e) => setInputValue(e)} />
         <div className={styles.colorContainer}>
@@ -235,7 +237,7 @@ const AccordionContent: FC<AccordionContentProps> = ({
             color={color}
             list={tokenColorsMap[color].scope}
             link="https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide"
-            title={translations["Token Colors"]}
+            title={translations["TextMate Token Colors"]}
           />
         )}
         <TypeList
@@ -243,6 +245,12 @@ const AccordionContent: FC<AccordionContentProps> = ({
           list={syntaxMap[color]}
           link="https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide"
           title={translations["Syntax Colors"]}
+        />
+        <TypeList
+          color={color}
+          list={semanticTokenColorMap[color]}
+          link="https://code.visualstudio.com/docs/configure/themes#_editor-semantic-highlighting"
+          title={translations["Semantic Token Colors"]}
         />
       </div>
     </div>
