@@ -119,7 +119,7 @@ class ThemeEditorPanel {
     syntax: {},
   };
   private themeName: string = "";
-  private firstLoad: boolean = true;
+  // private firstLoad: boolean = true;
   // private globalSettings: GlobalCustomizations = {
   //   colors: {},
   //   tokenColors: {},
@@ -202,10 +202,10 @@ class ThemeEditorPanel {
       (message) => {
         switch (message.command) {
           case "ui-ready":
-            if (this.firstLoad) {
-              this.firstLoad = false;
-              return;
-            }
+            // if (this.firstLoad) {
+            //   this.firstLoad = false;
+            //   return;
+            // }
             const translations: Record<string, string> = {};
             message.captions.map(
               (c: string) => (translations[c] = vscode.l10n.t(c))

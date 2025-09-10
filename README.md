@@ -1,8 +1,8 @@
-# ThemeTuner
+## ThemeTuner
 
 ThemeTuner is a tool to change/fix colors globally in `settings.json` file for your current theme. It scans all the colors defined (even those defined without this extension) and displays them sorted by number of occurrences.
 
-## Demo
+# Demo
 
 ![Watch ThemeTuner Demo](https://github.com/soyreneon/Theme-editor/raw/main/media/demo.gif)
 
@@ -60,12 +60,15 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 
 - Regarding property color classification, there are two broad divisions:
 
-  - colors: interface colors (text and background)
-  - textmate token colors, syntax and semantic token colors: code syntax
+| interface colors (text and background) |      code syntax      |
+| -------------------------------------- | :-------------------: |
+| colors                                 | textmate token colors |
+|                                        |        syntax         |
+|                                        | semantic token colors |
 
 # Considerations
 
-If you need to customize separate properties, go to settings.json to do it manually(Press `Ctrl+,` or `Cmd+,` to go to settings).
+If you need to customize separate properties, go to settings.json to do it manually (Press `Ctrl+,` or `Cmd+,` to go to settings).
 
 _ThemeTuner **only shows a list of the properties defined in your theme** (when a prop is not defined, it takes the default vscode core value). If some property is missing, then is not defined and you have to add it manually. **THAT MEANS YOU MIGHT NOT FIND THE PROPERTY COLOR YOU'RE LOOKING FOR. e.g. if you switch to `Dark+ (Default Dark+)` theme, you will only see token colors, background editor and other colors will be taken from vscode core settings**_
 

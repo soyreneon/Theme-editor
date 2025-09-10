@@ -4,6 +4,10 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.3.1]
+
+- Fix issue on first load
+
 ## [1.3.0]
 
 - Add support for semantic token colors, upgrade packages and fix transparency color picker
