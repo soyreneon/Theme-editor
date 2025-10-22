@@ -1,0 +1,39 @@
+.inlineFilter {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+.inlineFilter > span {
+  align-self: center !important;
+}
+.inputBox {
+  display: inline-flex;
+  gap: 15px;
+  width: 100%;
+}
+.inputBox input {
+  width: 100%;
+}
+.inputBox i {
+  border-left: solid 1px #4448;
+  background: var(--vscode-input-background);
+  color: var(--vscode-tab-inactiveForeground);
+  font-size: 1em;
+  padding: 5px 8px;
+}
+.inputBox .close {
+  border: none;
+  padding: 0px;
+  margin: 0px;
+  outline: none;
+  box-shadow: none;
+  outline: inherit;
+  background: var(--vscode-input-background);
+  color: var(--vscode-tab-inactiveForeground);
+  cursor: pointer;
+}
+
+.inputIcon {
+  display: inline-flex;
+  width: 100%;
+}

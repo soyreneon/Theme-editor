@@ -4,6 +4,10 @@
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: flex-start;
+  max-height: 330px;
+  overflow-y: scroll;
+  padding: 0 3px;
+  padding-bottom: 25px;
   /* justify-content: space-evenly; */
 }
 .colorContainer section {
@@ -20,4 +24,21 @@
 .colorBtn.checked {
   border: 1px solid var(--vscode-focusBorder);
   box-shadow: 3px 3px 1px 0px var(--vscode-terminal-ansiGreen);
+}
+.headerCompare {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+.compare {
+  display: flex;
+  border: solid 1px var(--vscode-focusBorder);
+}
+.compare div {
+  display: flex;
+  width: 50px;
+  height: 1.3em;
 }

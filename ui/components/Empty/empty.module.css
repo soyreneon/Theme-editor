@@ -1,0 +1,9 @@
+.empty {
+  text-align: center;
+}
+.empty .icon {
+  margin: auto !important;
+  display: block !important;
+  font-size: 5em !important;
+  background-color: var(--vscode-editor-background);
+}

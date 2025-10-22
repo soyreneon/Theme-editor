@@ -46,6 +46,14 @@
   padding: 0 2px !important;
   color: greenyellow;
 }
+.alert {
+  border: solid 2px var(--vscode-terminal-ansiGreen);
+  color: var(--vscode-editor-foreground);
+  padding: 12px 5px;
+  text-align: center;
+  margin-top: 10px;
+  border-radius: 5px;
+}
 
 @media (max-width: 600px) {
   .colorContainer {

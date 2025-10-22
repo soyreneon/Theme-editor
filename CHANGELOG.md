@@ -4,9 +4,15 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [1.3.2]
+## [1.10.0]
 
-- Logo update
+- Filter by property type
+- Eyedropper tool for searching
+- Search by text(color or property)
+- Check/uncheck color group for more control applying changes
+- Click property for individual color change (change transparency for workbench colors)
+- Add metadata for SEO optimization
+- Associated bugs
 
 ## [1.3.1]
 

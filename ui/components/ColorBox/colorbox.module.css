@@ -1,5 +1,6 @@
 .colorBoxPicker {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -20,4 +21,15 @@
 .swatch > div:nth-child(4) > div:nth-child(2),
 .swatch > div > div:nth-child(3) > div:nth-child(2) {
   background-image: var(--alpha-uri) !important;
+}
+
+.colorPalette {
+  background: var(--vscode-editor-background) !important;
+  border: solid 2px var(--vscode-editorWidget-background) !important;
+  color: var(--vscode-editor-foreground) !important;
+  width: 100% !important;
+}
+.colorPaletteBox > div input {
+  border: none !important;
+  color: var(--vscode-editor-foreground) !important;
 }

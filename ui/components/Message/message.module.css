@@ -1,0 +1,28 @@
+.message {
+  position: fixed;
+  bottom: 3%;
+  background-color: var(--vscode-editor-background);
+  border: solid 2px var(--vscode-terminal-ansiBrightBlue);
+  color: var(--vscode-editor-foreground);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  min-width: 80%;
+  border-radius: 5px;
+}
+.container {
+  padding: 10px 17px;
+  flex: 1;
+  position: relative;
+}
+.container button {
+  position: absolute;
+  right: 3px;
+  top: 5px;
+  color: var(--vscode-terminal-ansiBrightBlue);
+  padding: 2px;
+  margin: 2px;
+  background: none;
+  outline: none;
+  border: none;
+}

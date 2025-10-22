@@ -1,11 +1,23 @@
 import * as vscode from "vscode";
-import { type ThemeJson, type FullThemeJson, type ColorMap } from "../types";
+import {
+  type ThemeJson,
+  type FullThemeJson,
+  type ColorMap,
+  type Group,
+  type PropertyColor,
+  type SimpleColorStructure,
+} from "../types";
 import {
   mergeSyntaxThemes,
   mergeSemanticTokens,
   mapTextMateRules,
+  getAlphaProps,
   getCustomColors,
   getColorUsage,
+  buildPropertyColorCustomizations,
+  buildPropertyTokenColorCustomizations,
+  buildPropertySyntaxColorCustomizations,
+  buildPropertySemanticTokenColorCustomizations,
   buildColorCustomizations,
   buildTokenColorCustomizations,
   buildSyntaxColorCustomizations,
@@ -110,10 +122,12 @@ class ThemeEditorPanel {
     colorsMap: {},
     tokenColorsMap: {},
     syntaxMap: {},
-    semanticTokenColorMap: {},
+    semanticTokenColorsMap: {},
   };
+  private alphaColors: SimpleColorStructure[] = [];
   private themeObj: ThemeJson = {
     name: "",
+    type: "",
     colors: {},
     tokenColors: [],
     syntax: {},
@@ -221,48 +235,69 @@ class ThemeEditorPanel {
           case "save":
             // new method: get older color, search on this.colormaps and replace to the new color on settings
             // if it's already in the original theme do nothing, if not add it or change it
-            this.updateColor(message.old, message.color).then(async () => {
-              await setTunerSetting(
-                this.themeName,
-                message.old,
-                {},
-                message.color
-              );
-              this.loadCurrentTheme();
-              vscode.window.showInformationMessage(
-                vscode.l10n.t("Color updated")
-              );
+            this.updateColor(message.old, message.color, message.applyTo).then(
+              async () => {
+                if (message.isFullChange) {
+                  await setTunerSetting(
+                    this.themeName,
+                    message.old,
+                    {},
+                    message.color
+                  );
+                }
+                this.loadCurrentTheme(vscode.l10n.t("Color updated"));
+              }
+            );
+            return;
+          case "singleProp":
+            console.log("**", message.property, message.color, message.applyTo);
+            this.updatePropertyList(
+              [{ property: message.property, color: message.color }],
+              message.applyTo
+            ).then(async () => {
+              // if (message.isFullChange) {
+              //   await setTunerSetting(
+              //     this.themeName,
+              //     message.old,
+              //     {},
+              //     message.color
+              //   );
+              // }
+              this.loadCurrentTheme(vscode.l10n.t("Color updated"));
             });
+            // this.loadCurrentTheme(vscode.l10n.t("Property updated"));
+
             return;
           case "colorName":
             setTunerSetting(this.themeName, message.color, {
               name: message.name,
             }).then(() => {
-              this.loadCurrentTheme();
+              this.loadCurrentTheme(vscode.l10n.t("Name updated"));
             });
             return;
           case "togglePin":
             setTunerSetting(this.themeName, message.color, {
               togglePinned: true,
-            }).then(() => this.loadCurrentTheme());
+            }).then(() =>
+              this.loadCurrentTheme(vscode.l10n.t("Change applied"))
+            );
             return;
           // reset color
           case "reset":
-            this.resetColor(message.color).then(async () => {
+            this.resetColor(message.color, message.applyTo).then(async () => {
               await resetTunerColorSettings(this.themeName, message.color);
-              this.loadCurrentTheme();
-              vscode.window.showInformationMessage(
-                vscode.l10n.t("Color {0} reset", this.themeName)
+              this.loadCurrentTheme(
+                vscode.l10n.t("Color {0} reset", message.color)
               );
             });
             return;
           case "resetTheme":
             this.resetThemeColor().then(async () => {
               await resetTunerThemeSettings(this.themeName);
-              this.loadCurrentTheme();
-              vscode.window.showInformationMessage(
-                vscode.l10n.t("Theme reset succesfully")
-              );
+              this.loadCurrentTheme(vscode.l10n.t("Theme reset succesfully"));
+              // vscode.window.showInformationMessage(
+              //   vscode.l10n.t("Theme reset succesfully")
+              // );
             });
             return;
           case "refreshTheme":
@@ -289,53 +324,73 @@ class ThemeEditorPanel {
    * Reset theme
    */
   public resetThemeColor = async () => {
+    // const applyTo: Group = {
+    //   colors: false,
+    //   tokenColors: false,
+    //   semanticTokenColors: false,
+    //   syntax: false,
+    // };
     await saveTheme(this.themeName, {}, {}, {});
+    // await saveTheme(this.themeName, {}, {}, {}, applyTo);
   };
 
   /*
    *
    * Reset single color in the theme
    */
-  public resetColor = async (color: string) => {
+  public resetColor = async (color: string, applyTo: Group) => {
     // get custom values from settings
-    const themeColorCustomizations = await getGlobalColorCustomizations(
-      this.themeName
-    );
-    //remove color from colors
-    const colorCustomizations = removeColorCustomizations(
-      themeColorCustomizations,
-      color
-    );
+    let colorCustomizations = null;
+    if (applyTo.colors) {
+      const themeColorCustomizations = await getGlobalColorCustomizations(
+        this.themeName
+      );
+      //remove color from colors
+      colorCustomizations = removeColorCustomizations(
+        themeColorCustomizations,
+        color
+      );
+    }
 
-    const themeTokenColorCustomizations =
-      await getGlobalTokenColorCustomizations(this.themeName);
-    //remove color from tokens and syntax
-    const syntaxCustomizations = removeSyntaxColorCustomizations(
-      themeTokenColorCustomizations,
-      color
-    );
+    let tokenColorCustomizations = null;
+    if (applyTo.tokenColors || applyTo.syntax) {
+      const themeTokenColorCustomizations =
+        await getGlobalTokenColorCustomizations(this.themeName);
 
-    //remove color from tokens
-    const tokenColorCustomizations = {
-      ...removeTokenColorCustomizations(themeTokenColorCustomizations, color),
-      ...syntaxCustomizations,
-    };
+      //remove colors from syntax
+      let syntaxCustomizations = null;
+      if (applyTo.syntax) {
+        syntaxCustomizations = removeSyntaxColorCustomizations(
+          themeTokenColorCustomizations,
+          color
+        );
+      }
 
-    const themeSemanticTokenColorCustomizations =
-      await getGlobalSemanticTokenColorCustomizations(this.themeName);
+      //remove color from tokens
+      tokenColorCustomizations = {
+        ...removeTokenColorCustomizations(themeTokenColorCustomizations, color),
+        ...syntaxCustomizations,
+      };
+    }
 
-    //remove color from semantic tokens
-    const semanticTokenColorCustomizations =
-      removeSemanticTokenColorCustomizations(
+    let semanticTokenColorCustomizations = null;
+    if (applyTo.semanticTokenColors) {
+      const themeSemanticTokenColorCustomizations =
+        await getGlobalSemanticTokenColorCustomizations(this.themeName);
+
+      //remove color from semantic tokens
+      semanticTokenColorCustomizations = removeSemanticTokenColorCustomizations(
         themeSemanticTokenColorCustomizations,
         color
       );
+    }
 
     await saveTheme(
       this.themeName,
       colorCustomizations,
       tokenColorCustomizations,
-      semanticTokenColorCustomizations
+      semanticTokenColorCustomizations,
+      applyTo
     );
   };
 
@@ -343,65 +398,190 @@ class ThemeEditorPanel {
    *
    * Update color in the theme
    */
-  public updateColor = async (previousColor: string, newColor: string) => {
-    const settingsColorKeys = this.colormaps.colorsMap[previousColor] || [];
-    const settingsTokenKeys =
-      this.colormaps.tokenColorsMap[previousColor] || {};
-    const settingsSyntaxKeys = this.colormaps.syntaxMap[previousColor] || [];
-    // semantic tokens
-    const settingsSemanticTokenKeys =
-      this.colormaps.semanticTokenColorMap[previousColor] || [];
-
-    // get custom values from settings
-    const themeColorCustomizations = await getGlobalColorCustomizations(
-      this.themeName
-    );
-    const themeTokenColorCustomizations =
-      await getGlobalTokenColorCustomizations(this.themeName);
-    const themeSemanticTokenColorCustomizations =
-      await getGlobalSemanticTokenColorCustomizations(this.themeName);
-
+  public updateColor = async (
+    previousColor: string,
+    newColor: string,
+    applyTo: Group
+  ) => {
     // final colors object
-    const colorCustomizations = buildColorCustomizations(
-      settingsColorKeys,
-      themeColorCustomizations,
-      newColor,
-      this.themeObj.colors
-    );
+    let colorCustomizations = null;
+    if (applyTo.colors) {
+      // get custom values from settings
+      const themeColorCustomizations = await getGlobalColorCustomizations(
+        this.themeName
+      );
+      const settingsColorKeys = this.colormaps.colorsMap[previousColor] || [];
+      colorCustomizations = buildColorCustomizations(
+        settingsColorKeys,
+        themeColorCustomizations,
+        newColor,
+        this.themeObj.colors
+      );
+    }
+
+    // let themeTokenColorCustomizations = null;
+    // if (applyTo.syntax || applyTo.tokenColors) {
+    //   themeTokenColorCustomizations = await getGlobalTokenColorCustomizations(
+    //     this.themeName
+    //   );
+    // }
 
     // final syntax colors object
-    const syntaxColorCustomizations = buildSyntaxColorCustomizations(
-      settingsSyntaxKeys,
-      themeTokenColorCustomizations,
-      // this.themeObj.syntax
-      newColor
-    );
+    let syntaxColorCustomizations = null;
+    if (applyTo.syntax) {
+      const settingsSyntaxKeys = this.colormaps.syntaxMap[previousColor] || [];
+      const themeTokenColorCustomizations =
+        await getGlobalTokenColorCustomizations(this.themeName);
 
-    // final token colors object
-    const tokenColorCustomizations = {
-      ...buildTokenColorCustomizations(
-        settingsTokenKeys,
+      syntaxColorCustomizations = buildSyntaxColorCustomizations(
+        settingsSyntaxKeys,
         themeTokenColorCustomizations,
         newColor
-      ),
-      // adding syntax colors
-      ...syntaxColorCustomizations,
-    };
+      );
+    }
+
+    // final token colors object
+    let tokenColorCustomizations = null;
+    if (applyTo.tokenColors || applyTo.syntax) {
+      const settingsTokenKeys =
+        this.colormaps.tokenColorsMap[previousColor] || {};
+      const themeTokenColorCustomizations =
+        await getGlobalTokenColorCustomizations(this.themeName);
+
+      // if (applyTo.syntax && !applyTo.tokenColors){
+      // tokenColorCustomizations = {
+      //   ...themeTokenColorCustomizations,
+      //   ...syntaxColorCustomizations,
+      // };
+      // }
+      tokenColorCustomizations = {
+        ...buildTokenColorCustomizations(
+          settingsTokenKeys,
+          themeTokenColorCustomizations,
+          newColor
+        ),
+        // adding syntax colors
+        ...(syntaxColorCustomizations || {}),
+      };
+    }
 
     // final semantic token colors object
-    const semanticTokenColorCustomizations =
-      buildSemanticTokenColorCustomizations(
+    let semanticTokenColorCustomizations = null;
+    if (applyTo.semanticTokenColors) {
+      const themeSemanticTokenColorCustomizations =
+        await getGlobalSemanticTokenColorCustomizations(this.themeName);
+      // semantic tokens
+      const settingsSemanticTokenKeys =
+        this.colormaps.semanticTokenColorsMap[previousColor] || [];
+      semanticTokenColorCustomizations = buildSemanticTokenColorCustomizations(
         settingsSemanticTokenKeys,
         themeSemanticTokenColorCustomizations,
         newColor
       );
+    }
 
+    // return;
     await saveTheme(
       this.themeName,
       // themeColorCustomizations,
       colorCustomizations,
       tokenColorCustomizations,
-      semanticTokenColorCustomizations
+      semanticTokenColorCustomizations,
+      applyTo
+    );
+  };
+
+  /*
+   *
+   * Update color array in the theme
+   */
+  public updatePropertyList = async (
+    propertyColors: PropertyColor[],
+    applyTo: Group
+  ) => {
+    // final colors object
+    let colorCustomizations = null;
+    if (applyTo.colors) {
+      // get custom values from settings
+      const themeColorCustomizations = await getGlobalColorCustomizations(
+        this.themeName
+      );
+      // const settingsColorKeys = this.colormaps.colorsMap[previousColor] || [];
+      colorCustomizations = buildPropertyColorCustomizations(
+        propertyColors,
+        themeColorCustomizations
+      );
+    }
+
+    // delete later
+    // let syntaxColorCustomizations = null;
+    // let tokenColorCustomizations = null;
+    // let semanticTokenColorCustomizations = null;
+
+    // final syntax colors object
+    let syntaxColorCustomizations = null;
+    if (applyTo.syntax) {
+      // const settingsSyntaxKeys = this.colormaps.syntaxMap[previousColor] || [];
+      const themeTokenColorCustomizations =
+        await getGlobalTokenColorCustomizations(this.themeName);
+
+      syntaxColorCustomizations = buildPropertySyntaxColorCustomizations(
+        // settingsSyntaxKeys,
+        themeTokenColorCustomizations,
+        propertyColors
+      );
+    }
+
+    // final token colors object
+    // {
+    //   "scope": ["entity.name.type.interface", "keyword.other.platform.os.swift"],
+    //   "type": "foreground"
+    // }
+    // console.log(
+    //   "syntaxColorCustomizations",
+    //   JSON.stringify(syntaxColorCustomizations)
+    // );
+    let tokenColorCustomizations = null;
+    if (applyTo.tokenColors || applyTo.syntax) {
+      // const settingsTokenKeys = {};
+      // const settingsTokenKeys =
+      //   this.colormaps.tokenColorsMap[previousColor] || {};
+      const themeTokenColorCustomizations =
+        await getGlobalTokenColorCustomizations(this.themeName);
+
+      tokenColorCustomizations = {
+        ...buildPropertyTokenColorCustomizations(
+          propertyColors,
+          themeTokenColorCustomizations
+          // newColor
+        ),
+        // adding syntax colors
+        ...(syntaxColorCustomizations || {}),
+      };
+      // console.log(
+      //   "in tokenColorCustomizations",
+      //   JSON.stringify(tokenColorCustomizations)
+      // );
+    }
+
+    // final semantic token colors object
+    let semanticTokenColorCustomizations = null;
+    if (applyTo.semanticTokenColors) {
+      const themeSemanticTokenColorCustomizations =
+        await getGlobalSemanticTokenColorCustomizations(this.themeName);
+      semanticTokenColorCustomizations =
+        buildPropertySemanticTokenColorCustomizations(
+          propertyColors,
+          themeSemanticTokenColorCustomizations
+        );
+    }
+
+    await saveTheme(
+      this.themeName,
+      colorCustomizations,
+      tokenColorCustomizations,
+      semanticTokenColorCustomizations,
+      applyTo
     );
   };
 
@@ -419,7 +599,7 @@ class ThemeEditorPanel {
     }
   }
 
-  private loadCurrentTheme(): void {
+  private loadCurrentTheme(message?: string): void {
     this.themeName =
       vscode.workspace
         .getConfiguration("workbench")
@@ -434,6 +614,8 @@ class ThemeEditorPanel {
         try {
           const { themeJson, globalCustomizations } = result;
           this.themeObj = themeJson;
+          // ? has alpha chanel
+          // console.log(JSON.stringify(this.themeObj.colors));
           // this.globalSettings = globalCustomizations;
           const customColorList = getCustomColors(globalCustomizations);
 
@@ -462,20 +644,38 @@ class ThemeEditorPanel {
             ),
           };
 
+          this.alphaColors = getAlphaProps(fullThemeJson.colors);
           this.colormaps = getColorUsage(fullThemeJson);
 
           // Color list without transparency
-          const colors: string[] = sortColorsByAppereances(this.colormaps);
+          const colors = sortColorsByAppereances(this.colormaps);
+          // console.log(
+          //   JSON.stringify(colors) // color list ordered by appearences
+          // );
+
+          // const colors: string[] = sortColorsByAppereances(this.colormaps);
+          // console.log(
+          // "**",
+          // JSON.stringify(colors), // color list ordered by appearences
+          // JSON.stringify(this.colormaps) // map by group
+          // JSON.stringify(customColorList) // overrides
+          // );
+          // console.log("themeobj ", JSON.stringify(this.themeObj.type));
           this._panel?.webview.postMessage({
             type: "themeChanged",
+            themeType: this.themeObj.type,
             theme: this.themeName,
             // json: themeJson, // not using now
             colormaps: this.colormaps,
+            alphaColors: this.alphaColors,
             customColorList: customColorList,
-            colors: colors,
+            colors,
+            // colors: colors,
             error: "",
             tunerSettings: customNames,
+            ...(message && { message }),
           });
+          // try {
         } catch (error) {
           this._panel?.webview.postMessage({
             type: "error",

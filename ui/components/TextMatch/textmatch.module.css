@@ -1,0 +1,4 @@
+.match {
+  background-color: var(--vscode-editor-findMatchBackground) !important;
+  color: var(--vscode-editor-findMatchForeground);
+}

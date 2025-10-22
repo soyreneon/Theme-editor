@@ -13,23 +13,61 @@
 }
 .typeContainer .header h4 {
   display: inline-block;
-  font-size: 1.1em;
+  font-size: 0.99em;
   padding-bottom: 8px;
 }
-.typeContainer a {
+.typeContainer .header a {
+  font-size: 0.77em;
   display: flex;
-  font-size: 0.8em;
+}
+.typeContainer a {
   color: var(--vscode-foreground);
   margin-right: 7px;
   text-decoration: none;
+  cursor: pointer;
 }
 .typeContainer a:hover {
   text-decoration: underline;
 }
-.typeContainer a i {
+.typeContainer ul {
+  padding-left: 3px;
+}
+.typeContainer li .pencil {
+  display: none;
+  font-size: 11px;
+}
+.typeContainer li:hover .pencil {
+  display: initial;
+}
+.typeContainer li .dash {
+  display: initial;
+  opacity: 0.5;
+  font-size: 11px;
+}
+.typeContainer li:hover .dash {
+  display: none;
+}
+.typeContainer .header a i {
   margin-top: -1px;
+}
+.typeContainer li a {
+  text-overflow: ellipsis;
 }
 .typeContainer li {
   font-size: 0.85em;
   overflow-x: hidden;
+}
+.message {
+  margin-top: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: var(--vscode-editor-background);
+  border: solid 0.5px var(--vscode-terminal-ansiBrightYellow);
+  color: var(--vscode-editor-foreground);
+  font-size: 0.84em;
+}
+@media (max-width: 320px) {
+  .typeContainer .header a span {
+    display: none;
+  }
 }

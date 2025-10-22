@@ -53,7 +53,7 @@ export interface ColorMap {
   colorsMap: ColorStructure;
   tokenColorsMap: TokenColorMap;
   syntaxMap: ColorStructure;
-  semanticTokenColorMap: ColorStructure;
+  semanticTokenColorsMap: ColorStructure;
 }
 
 // Define types for global settings
@@ -104,3 +104,21 @@ type ColorInfo = {
 
 export type TunerSettings = Record<string, ColorInfo>;
 export type ThemeTunerSettings = Record<string, TunerSettings>;
+
+export type Group = {
+  colors: boolean;
+  tokenColors: boolean;
+  syntax: boolean;
+  semanticTokenColors: boolean;
+};
+
+export type Filter =
+  | "colors"
+  | "tokenColors"
+  | "syntax"
+  | "semanticTokenColors"
+  | "all";
+
+export type ColorOrders = Record<Filter, string[]>;
+
+export type PropertyColor = { property: string; color: string };

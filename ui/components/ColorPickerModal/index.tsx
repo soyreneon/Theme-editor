@@ -11,7 +11,7 @@ interface ColorPickerProps {
 
 const ColorPicker: FC<ColorPickerProps> = ({ color, onColorSelected }) => {
   const store = useStore();
-  const { translations, colors } = store;
+  const { translations, colorOrders, tunerSettings } = store;
   const [isModalShown, setIsModalShown] = useState<boolean>(false);
   const [colorSelected, setColorSelected] = useState<string>("");
 
@@ -48,22 +48,47 @@ const ColorPicker: FC<ColorPickerProps> = ({ color, onColorSelected }) => {
       </Tooltip>
       {isModalShown && (
         <Modal onAccept={handleModal} isApplyEnabled={colorSelected !== ""}>
+          <div className={styles.headerCompare}>
+            <i
+              aria-label={translations["compare"]}
+              className="codicon codicon-color-mode"
+            />
+            <span>{color}</span>
+            <div className={styles.compare}>
+              <div style={{ background: color }} />
+              {colorSelected && <div style={{ background: colorSelected }} />}
+            </div>
+            {colorSelected && <span>{colorSelected}</span>}
+          </div>
+
           <div className={styles.colorContainer}>
-            {colors
+            {colorOrders.all
               .filter((current) => current !== color)
-              .map((i) => (
-                <Tooltip caption={i} direction="bottom">
-                  <button
-                    key={i}
-                    type="button"
-                    className={`${styles.colorBtn} ${
-                      colorSelected === i ? styles.checked : ""
-                    }`}
-                    onClick={() => handleColorClick(i)}
-                    style={{ backgroundColor: i }}
-                  />
-                </Tooltip>
-              ))}
+              .map((i) => {
+                let caption = tunerSettings?.[i]?.name
+                  ? ` ${i.toUpperCase()} (${tunerSettings?.[i]?.name})`
+                  : ` ${i.toUpperCase()}`;
+                return (
+                  <Tooltip
+                    caption={caption}
+                    direction={"bottom"}
+                    style={{
+                      marginLeft: "10px",
+                      ...(caption.length > 8 ? {} : { minWidth: 40 }),
+                    }}
+                  >
+                    <button
+                      key={i}
+                      type="button"
+                      className={`${styles.colorBtn} ${
+                        colorSelected === i ? styles.checked : ""
+                      }`}
+                      onClick={() => handleColorClick(i)}
+                      style={{ backgroundColor: i }}
+                    />
+                  </Tooltip>
+                );
+              })}
           </div>
         </Modal>
       )}

@@ -1,33 +1,114 @@
-import { type FC } from "react";
+import { type FC, useEffect, useRef, useMemo, useState } from "react";
 import { type ColorMap, type TunerSettings } from "../../../types";
 import AccordionContent from "./AccordionContent";
+import TextMatch from "../TextMatch";
 import styles from "./accordion.module.css";
+import { useStore } from "../../useStore";
+import { useDebounce } from "../../hooks/useDebounce";
 
 interface AccordionProps {
   color: string;
   colormaps: ColorMap;
   customColorList: string[];
   settings: TunerSettings;
+  onTriggerScroll: (value: number) => void;
 }
+
+const colorTypes = ["colors", "tokenColors", "syntax", "semanticTokenColors"];
 
 const Accordion: FC<AccordionProps> = ({
   color,
   colormaps,
   customColorList,
   settings,
+  onTriggerScroll,
 }) => {
-  const getColorLength = (arr: any[]) => (arr ?? []).length;
+  const store = useStore();
+  const {
+    filter,
+    lastColorChanged,
+    setLastColorChanged,
+    tunerSettings,
+    searchString,
+  } = store;
+  const debouncedSearch = useDebounce<string>(searchString, 500);
+  const accordionRef = useRef<HTMLDetailsElement>(null);
+  const isOpen = useMemo(() => color === lastColorChanged, []);
+  const [isAccordionOpen, setIsAccordionOpen] = useState(isOpen);
 
-  const count =
-    getColorLength(colormaps.colorsMap[color]) +
-    getColorLength(colormaps.tokenColorsMap[color]?.scope) +
-    getColorLength(colormaps.syntaxMap[color]) +
-    getColorLength(colormaps.semanticTokenColorMap[color]);
+  useEffect(() => {
+    // timeout to wait for tunersettings case
+    setTimeout(() => {
+      if (accordionRef.current && color === lastColorChanged) {
+        onTriggerScroll(accordionRef.current.offsetTop);
+        setLastColorChanged("");
+      }
+    }, 200);
+  }, [lastColorChanged, tunerSettings]);
+
+  const onToggleAccordion = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    setIsAccordionOpen((prev) => !prev);
+  };
+
+  const getColorLength = (arr: any[]): number => (arr ?? []).length;
+
+  const getCurrentCount = (): number => {
+    if (colorTypes.includes(filter)) {
+      return getColorLength(
+        (filter === "tokenColors"
+          ? colormaps.tokenColorsMap[color]?.scope
+          : colormaps[`${filter}Map` as keyof ColorMap][color]) as []
+      );
+    }
+
+    return colorTypes.reduce((acc: number, current) => {
+      return (
+        acc +
+        getColorLength(
+          (current === "tokenColors"
+            ? colormaps.tokenColorsMap[color]?.scope
+            : colormaps[`${current}Map` as keyof ColorMap][color]) as []
+        )
+      );
+    }, 0) as number;
+  };
+
+  const count = getCurrentCount();
   const hasCustomizations = customColorList.includes(color);
 
+  const getIsEmptyColor = (): boolean => {
+    if (filter === "all") {
+      return false;
+    }
+    if (
+      filter === "tokenColors" &&
+      getColorLength(colormaps.tokenColorsMap[color]?.scope) > 0
+    ) {
+      return false;
+    }
+    if (
+      colorTypes.includes(filter) &&
+      getColorLength(colormaps[`${filter}Map` as keyof ColorMap][color] as []) >
+        0
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  if (getIsEmptyColor()) {
+    return null;
+  }
+
   return (
-    <details className="vscode-collapsible">
-      <summary>
+    <details
+      ref={accordionRef}
+      className="vscode-collapsible"
+      {...(isOpen && { open: true })}
+    >
+      <summary onClick={onToggleAccordion}>
         <i className="codicon codicon-chevron-right icon-arrow"></i>
         <h2 className="title">
           <span
@@ -41,12 +122,11 @@ const Accordion: FC<AccordionProps> = ({
             </span>
           ) : null}
           <span className={styles.colorheader}>
-            {color}
+            <TextMatch text={color} match={debouncedSearch} />
             {settings?.[color]?.name && (
-              <span> ({settings?.[color]?.name})</span>
+              <span className={styles.name}> ({settings?.[color]?.name})</span>
             )}
             {hasCustomizations ? " * " : " "}
-            {/* {getColorLength(colormaps.semanticTokenColorMap[color]) || " "} */}
           </span>
         </h2>
         <div className={styles.badgeContainer}>
@@ -54,12 +134,13 @@ const Accordion: FC<AccordionProps> = ({
         </div>
       </summary>
       <div>
-        <AccordionContent
-          color={color}
-          colormaps={colormaps}
-          hasCustomizations={hasCustomizations}
-          // name={settings[color]?.name}
-        />
+        {isAccordionOpen && (
+          <AccordionContent
+            color={color}
+            colormaps={colormaps}
+            hasCustomizations={hasCustomizations}
+          />
+        )}
       </div>
     </details>
   );

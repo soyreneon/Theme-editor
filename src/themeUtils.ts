@@ -8,6 +8,7 @@ import {
   type SemanticTokenColors,
   type CustomSemanticTokenColors,
   type SimpleColorStructure,
+  type Group,
 } from "../types/";
 import { isEmpty } from "./utils";
 
@@ -172,7 +173,13 @@ export const saveTheme = async (
   themeName: string,
   themeColorCustomizations: SimpleColorStructure | null,
   themeTokenColorCustomizations: TokenColorCustomization | null,
-  themeSemanticTokenColorCustomizations: SemanticTokenColors | null
+  themeSemanticTokenColorCustomizations: SemanticTokenColors | null,
+  applyTo: Group = {
+    colors: true,
+    syntax: true,
+    tokenColors: true,
+    semanticTokenColors: true,
+  }
 ): Promise<void> => {
   const configuration = vscode.workspace.getConfiguration();
 
@@ -204,34 +211,43 @@ export const saveTheme = async (
   };
 
   // overwrite colors
-  const colorCustomizations =
-    configuration.get<Record<string, any>>("workbench.colorCustomizations") ||
-    {};
-  const finalColors = setCustomizations(
-    themeColorCustomizations || {},
-    colorCustomizations
-  );
+  let finalColors;
+  if (applyTo.colors) {
+    const colorCustomizations =
+      configuration.get<Record<string, any>>("workbench.colorCustomizations") ||
+      {};
+    finalColors = setCustomizations(
+      themeColorCustomizations || {},
+      colorCustomizations
+    );
+  }
 
   // overwrite tokens
-  const tokenColorCustomizations =
-    configuration.get<TokenColorCustomization>(
-      "editor.tokenColorCustomizations"
-    ) || {};
-  const finalTokens = setCustomizations(
-    themeTokenColorCustomizations || {},
-    tokenColorCustomizations
-  );
+  let finalTokens;
+  if (applyTo.tokenColors || applyTo.syntax) {
+    const tokenColorCustomizations =
+      configuration.get<TokenColorCustomization>(
+        "editor.tokenColorCustomizations"
+      ) || {};
+    finalTokens = setCustomizations(
+      themeTokenColorCustomizations || {},
+      tokenColorCustomizations
+    );
+  }
 
   // overwrite semantic tokens
-  const semanticTokenColorCustomizations =
-    configuration.get<TokenColorCustomization>(
-      "editor.semanticTokenColorCustomizations"
-    ) || {};
+  let finalSemanticTokens;
+  if (applyTo.semanticTokenColors) {
+    const semanticTokenColorCustomizations =
+      configuration.get<TokenColorCustomization>(
+        "editor.semanticTokenColorCustomizations"
+      ) || {};
 
-  const finalSemanticTokens = setSemanticCustomizations(
-    themeSemanticTokenColorCustomizations || {},
-    semanticTokenColorCustomizations
-  );
+    finalSemanticTokens = setSemanticCustomizations(
+      themeSemanticTokenColorCustomizations || {},
+      semanticTokenColorCustomizations
+    );
+  }
 
   // pending bug, error trying to save semantic tokens with the structure
   // *.declaration: { bold: true, foreground: "#00faff" },
@@ -253,24 +269,31 @@ export const saveTheme = async (
   // };
 
   try {
-    await configuration.update(
-      "workbench.colorCustomizations",
-      finalColors,
-      vscode.ConfigurationTarget.Global
-    );
-
-    if (themeTokenColorCustomizations) {
+    if (applyTo?.colors) {
       await configuration.update(
-        "editor.tokenColorCustomizations",
-        finalTokens,
+        "workbench.colorCustomizations",
+        finalColors,
         vscode.ConfigurationTarget.Global
       );
     }
-    await configuration.update(
-      "editor.semanticTokenColorCustomizations",
-      finalSemanticTokens,
-      vscode.ConfigurationTarget.Global
-    );
+
+    if (applyTo?.syntax || applyTo?.tokenColors) {
+      if (themeTokenColorCustomizations) {
+        await configuration.update(
+          "editor.tokenColorCustomizations",
+          finalTokens,
+          vscode.ConfigurationTarget.Global
+        );
+      }
+    }
+
+    if (applyTo?.semanticTokenColors) {
+      await configuration.update(
+        "editor.semanticTokenColorCustomizations",
+        finalSemanticTokens,
+        vscode.ConfigurationTarget.Global
+      );
+    }
   } catch (error: any) {
     vscode.window.showErrorMessage(
       vscode.l10n.t("Failed to update theme {0}.", error.message)

@@ -5,7 +5,7 @@
 .colorheader {
   font-family: monospace;
 }
-.colorheader span:first-child {
+.colorheader span.name {
   text-transform: initial;
 }
 .colorPreview {

@@ -10,6 +10,9 @@ import {
   type Settings,
   type SimpleColorStructure,
   type ScopeMap,
+  type ColorMap,
+  type ColorOrders,
+  type PropertyColor,
 } from "../types/";
 
 // Helper function to normalize color to 6-digit hex without alpha and lowercase
@@ -27,9 +30,9 @@ export const normalizeColor = (color: string): string => {
 // get alpha chanel in color code
 export const getAlpha = (color: string): string => {
   if (color.length === 5) {
-    return `${color[4]}`.toUpperCase();
+    return `${color[4]}${color[4]}`.toLowerCase();
   } else if (color.length === 9) {
-    return color.substring(7, 9).toUpperCase();
+    return color.substring(7, 9).toLowerCase();
   }
   return "";
 };
@@ -42,6 +45,49 @@ export const isEmpty = (obj: {}) => {
     }
   }
   return true;
+};
+
+/*
+ * Get props with alpha chanel
+ */
+export const getAlphaProps = (
+  colorKeys: SimpleColorStructure = {}
+  // color: string
+): SimpleColorStructure[] => {
+  if (isEmpty(colorKeys)) {
+    return [];
+  }
+
+  const newColorKeys: SimpleColorStructure[] = [];
+  for (const [key, value] of Object.entries(colorKeys)) {
+    const alpha = getAlpha(value);
+    if (alpha) {
+      newColorKeys.push({ [key]: alpha });
+    }
+  }
+
+  return newColorKeys;
+};
+
+/*
+ * Array colors to properties
+ */
+export const buildPropertyColorCustomizations = (
+  colorKeys: PropertyColor[],
+  themeColorCustomizations: Record<string, any>
+): SimpleColorStructure => {
+  // generate new colors
+  colorKeys.forEach((setting) => {
+    let newAlpha = getAlpha(setting.color);
+    if (newAlpha === "ff") {
+      newAlpha = "";
+    }
+
+    themeColorCustomizations[setting.property] = `${normalizeColor(
+      setting.color
+    )}${newAlpha}`;
+  });
+  return themeColorCustomizations;
 };
 
 /*
@@ -64,6 +110,27 @@ export const buildColorCustomizations = (
   return themeColorCustomizations;
 };
 
+export const buildPropertyTokenColorCustomizations = (
+  propertyColors: PropertyColor[], // new keys to add on settings.json
+  themeTokenColorCustomizations: TokenColorCustomization // settingsTokenKeys from settings.json
+): TokenColorCustomization | null => {
+  const tokeyKeys: TextMateRule[] = propertyColors.map(
+    (propColor) =>
+      ({
+        scope: [propColor.property],
+        settings: { foreground: propColor.color },
+      } as TextMateRule)
+  );
+
+  const { scopeMap } = mapTextMateRules(
+    themeTokenColorCustomizations.textMateRules as TextMateRule[],
+    tokeyKeys,
+    true
+  );
+
+  return compactTokenColorParse(scopeMap);
+};
+
 export const buildTokenColorCustomizations = (
   tokenKeys: TokenColor, // new keys to add on settings.json
   themeTokenColorCustomizations: TokenColorCustomization, // settingsTokenKeys from settings.json
@@ -72,7 +139,6 @@ export const buildTokenColorCustomizations = (
 ): TokenColorCustomization | null => {
   const { scopeMap } = mapTextMateRules(
     themeTokenColorCustomizations.textMateRules as TextMateRule[],
-    // themeObjTokenColors as TextMateRule[]
     [{ scope: tokenKeys.scope, settings: { [tokenKeys.type]: color } }],
     true
   );
@@ -80,25 +146,13 @@ export const buildTokenColorCustomizations = (
   return compactTokenColorParse(scopeMap);
 };
 
-export const buildSyntaxColorCustomizations = (
-  syntaxKeys: string[], // new keys to add on settings.json
-  themeTokenColorCustomizations: TokenColorCustomization, // settingsTokenKeys from settings.json
-  color: string // new color
-  // themeObjSyntaxColors?: SimpleColorStructure // from theme.json (to remove redundant colors)
-): SimpleColorStructure | null => {
-  const { textMateRules, ...customSyntax } = themeTokenColorCustomizations;
-  syntaxKeys = syntaxKeys.reduce(
-    (acc: string[], current) =>
-      (acc = [...acc, ...current.split(",").map((x) => x.trim())]),
-    []
-  );
-  const newSyntax: SimpleColorStructure = Object.fromEntries(
-    syntaxKeys.map((x) => [x, color])
-  );
-
+const getCleanSyntax = (
+  newSyntax: SimpleColorStructure,
+  customSyntax: TokenColorCustomization
+): SimpleColorStructure => {
   const result: SimpleColorStructure = {};
 
-  // divide keys if they are compunded
+  // divide keys if they are compounded
   for (const [compoundKey, color] of Object.entries(customSyntax)) {
     const keys = compoundKey.split(",").map((k) => k.trim());
     for (const key of keys) {
@@ -110,6 +164,68 @@ export const buildSyntaxColorCustomizations = (
   for (const [key, overrideColor] of Object.entries(newSyntax)) {
     result[key] = overrideColor;
   }
+
+  return result;
+};
+
+export const buildPropertySyntaxColorCustomizations = (
+  themeTokenColorCustomizations: TokenColorCustomization, // settingsTokenKeys from settings.json
+  colors: PropertyColor[] // new color
+): SimpleColorStructure | null => {
+  const { textMateRules, ...customSyntax } = themeTokenColorCustomizations;
+  const newSyntax: SimpleColorStructure = Object.fromEntries(
+    colors.map((x) => [x.property, x.color])
+  );
+  return getCleanSyntax(newSyntax, customSyntax);
+};
+
+export const buildSyntaxColorCustomizations = (
+  syntaxKeys: string[], // new keys to add on settings.json
+  themeTokenColorCustomizations: TokenColorCustomization, // settingsTokenKeys from settings.json
+  color: string // new color
+): SimpleColorStructure | null => {
+  const { textMateRules, ...customSyntax } = themeTokenColorCustomizations;
+
+  // separate entries if they re compound, e.g.:  ["variables, properties"]
+  syntaxKeys = syntaxKeys.reduce(
+    (acc: string[], current) =>
+      (acc = [...acc, ...current.split(",").map((x) => x.trim())]),
+    []
+  );
+
+  // create pair colors obj:  {"variables":"#c54e64","properties":"#c54e64","numbers":"#c54e64"}
+  const newSyntax: SimpleColorStructure = Object.fromEntries(
+    syntaxKeys.map((x) => [x, color])
+  );
+
+  return getCleanSyntax(newSyntax, customSyntax);
+};
+
+export const buildPropertySemanticTokenColorCustomizations = (
+  propertyColors: PropertyColor[],
+  themeTokenColorCustomizations: SemanticTokenColors
+): SemanticTokenColors => {
+  const result: SemanticTokenColors = {
+    ...JSON.parse(JSON.stringify(themeTokenColorCustomizations)),
+  };
+
+  propertyColors.forEach((key) => {
+    if (result[key.property]) {
+      if (
+        typeof result[key.property] === "object" &&
+        result[key.property] !== null
+      ) {
+        result[key.property] = {
+          ...(result[key.property] as Object),
+          foreground: key.color,
+        };
+      } else {
+        result[key.property] = { foreground: key.color };
+      }
+    } else {
+      result[key.property] = { foreground: key.color };
+    }
+  });
 
   return result;
 };
@@ -433,16 +549,16 @@ export const getColorUsage = (
   colorsMap: ColorStructure;
   tokenColorsMap: TokenColorMap;
   syntaxMap: ColorStructure;
-  semanticTokenColorMap: ColorStructure;
+  semanticTokenColorsMap: ColorStructure;
 } => {
   const colorsMap = getColorsMap(theme.colors);
   const tokenColorsMap = getTokenColorsMap(theme.tokenColors);
   const syntaxMap = getSyntaxMap(theme.syntax);
-  const semanticTokenColorMap = getSemanticMap(
+  const semanticTokenColorsMap = getSemanticMap(
     theme.semanticTokenColors as SemanticTokenColors
   );
 
-  return { colorsMap, tokenColorsMap, syntaxMap, semanticTokenColorMap };
+  return { colorsMap, tokenColorsMap, syntaxMap, semanticTokenColorsMap };
 };
 
 /*
@@ -548,51 +664,53 @@ export const getCustomColors = (global: GlobalCustomizations): string[] => {
  * simpleTokenColorParse: creates TextMate rules with individual scopes (possibly removed in the future)
  * compactTokenColorParse: groups scopes with the same settings into a single TextMate rule
  */
-export const sortColorsByAppereances = (colormaps: {
-  colorsMap: ColorStructure;
-  tokenColorsMap: TokenColorMap;
-  syntaxMap: ColorStructure;
-  semanticTokenColorMap: ColorStructure;
-}) => {
+export const sortColorsByAppereances = (colormaps: ColorMap): ColorOrders => {
   // Create a unified colorCounts object
-  const colorCounts: Record<string, { count: number }> = {};
+  const maps = ["colors", "tokenColors", "syntax", "semanticTokenColors"];
+  type Counts = Record<string, { count: number }>;
+  const colorCounts: Counts = {};
+  const colorGroupCounts: Record<(typeof maps)[number], Counts> = {
+    colors: {},
+    tokenColors: {},
+    syntax: {},
+    semanticTokenColors: {},
+  };
 
   // Count elements in colorsMap
-  for (const [color, properties] of Object.entries(colormaps.colorsMap)) {
-    if (!colorCounts[color]) {
-      colorCounts[color] = { count: 0 };
-    }
-    colorCounts[color].count += properties.length;
-  }
+  maps.forEach((mapGroup) => {
+    for (const [color, properties] of Object.entries(
+      colormaps[`${mapGroup}Map` as keyof ColorMap]
+    )) {
+      if (!colorCounts[color]) {
+        colorCounts[color] = { count: 0 };
+      }
+      if (!colorGroupCounts[mapGroup][color]) {
+        colorGroupCounts[mapGroup][color] = { count: 0 };
+      }
 
-  // Count elements in tokenColorsMap (based on scope length)
-  for (const [color, tokenData] of Object.entries(colormaps.tokenColorsMap)) {
-    if (!colorCounts[color]) {
-      colorCounts[color] = { count: 0 };
+      if (mapGroup === "tokenColors") {
+        colorGroupCounts[mapGroup][color].count += properties.scope.length;
+        colorCounts[color].count += properties.scope.length;
+      } else {
+        colorGroupCounts[mapGroup][color].count += properties.length;
+        colorCounts[color].count += properties.length;
+      }
     }
-    colorCounts[color].count += tokenData.scope.length;
-  }
+  });
 
-  // Count elements in syntaxMap
-  for (const [color, categories] of Object.entries(colormaps.syntaxMap)) {
-    if (!colorCounts[color]) {
-      colorCounts[color] = { count: 0 };
-    }
-    colorCounts[color].count += categories.length;
-  }
-
-  // Count elements in semanticTokenColorMap
-  for (const [color, categories] of Object.entries(
-    colormaps.semanticTokenColorMap
-  )) {
-    if (!colorCounts[color]) {
-      colorCounts[color] = { count: 0 };
-    }
-    colorCounts[color].count += categories.length;
-  }
-
+  const sortByNumber = (counts: Counts): string[] =>
+    Object.entries(counts)
+      .sort((a, b) => b[1].count - a[1].count) // More elements first
+      .map(([color]) => color);
   // Sort colors by count in descending order and return as an array of color keys
-  return Object.entries(colorCounts)
-    .sort((a, b) => b[1].count - a[1].count) // More elements first
-    .map(([color]) => color);
+  return {
+    ...maps.reduce(
+      (acc, current) => ({
+        ...acc,
+        [current]: sortByNumber(colorGroupCounts[current]),
+      }),
+      {} as ColorOrders
+    ),
+    all: sortByNumber(colorCounts),
+  };
 };
