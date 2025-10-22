@@ -159,7 +159,7 @@ class ThemeEditorPanel {
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
       ThemeEditorPanel.viewType,
-      "ThemeTuner — Real-Time Theme Editor",
+      "ThemeTuner",
       column || vscode.ViewColumn.One,
       // column,
       getWebviewOptions(extensionUri)

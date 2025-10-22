@@ -1,8 +1,10 @@
 ## ThemeTuner
 
-ThemeTuner is a tool to change/fix colors globally in `settings.json` file for your current theme. It scans all the colors defined (even those defined without this extension) and displays them sorted by number of occurrences.
+Customize any `VSCode` theme you want. ThemeTuner will change/fix colors globally in `settings.json` file for your current theme. It scans all the colors defined (even those defined without this extension) and displays them sorted by number of occurrences.
 
 # Demo
+
+We modified the `Monokai` theme, a default vscode theme:
 
 ![Watch ThemeTuner Demo](https://github.com/soyreneon/Theme-editor/raw/main/media/demo.gif)
 
@@ -75,7 +77,7 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 
 - If you need to identify a specific Texmate token color, press `Ctrl+Shift+P` or `Cmd+Shift+P` and type `Developer: Inspect Editor Tokens and Scopes` and you can find it.
 
-- Eyedropper tool is a native tool provided by browser, sometimes it makes small mistakes identifiyng colors (the error rate is about &plusmn;2). For windows, eyedropper doesn't support click outside vscode and you need to zoom in text to identify typografy colors. Great tool for identifying no transparency colors.
+- Eyedropper tool is a native tool provided by browser, sometimes it makes small mistakes identifiyng colors (the error rate is about &plusmn;2). For windows, eyedropper doesn't support click outside vscode. Screen resolution matters when using eyedropper, it could give poor results on low density resolutions. Great tool for identifying no transparency colors.
 
 # Future features
 

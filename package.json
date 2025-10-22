@@ -42,7 +42,14 @@
     "generate",
     "generator",
     "creator",
-    "creation"
+    "creation",
+    "A11y",
+    "WCAG",
+    "contrast",
+    "accesibility",
+    "color-blind",
+    "colourblind",
+    "colorblind"
   ],
   "activationEvents": [
     "onWebviewPanel:themeEditor"

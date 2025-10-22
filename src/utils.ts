@@ -488,7 +488,7 @@ const getTokenColorsMap = (
       tokenColorsMap[normalizedForeground].scope.push(scope);
     }
 
-    if (background) {
+    if (scope === "global" && background) {
       const normalizedBackground = normalizeColor(background);
       if (!tokenColorsMap[normalizedBackground]) {
         tokenColorsMap[normalizedBackground] = {

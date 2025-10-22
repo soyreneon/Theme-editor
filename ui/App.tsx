@@ -51,6 +51,8 @@ export function App() {
       const regex = /^[#abcdefABCDEF012345679]+$/i;
       return regex.test(str);
     };
+    const cleanString = (s: string) => s.toLowerCase().trim();
+
     if (debouncedSearch) {
       if (debouncedSearch.length >= 6 && chroma.valid(debouncedSearch)) {
         // is an exact color match or close color
@@ -76,7 +78,7 @@ export function App() {
         const newList = colorOrders[filter].filter((color) =>
           color
             .toLowerCase()
-            .includes(debouncedSearch.replace("#", "").toLowerCase().trim())
+            .includes(cleanString(debouncedSearch.replace("#", "")))
         );
         setList(newList);
       } else {
@@ -84,34 +86,25 @@ export function App() {
         const newList = colorOrders[filter].filter((color) => {
           if (["all", "colors"].includes(filter)) {
             const isMatch = colorMap.colorsMap[color]?.find((p) =>
-              p
-                .toLowerCase()
-                .trim()
-                .includes(debouncedSearch.toLowerCase().trim())
+              cleanString(p).includes(cleanString(debouncedSearch))
             );
             if (isMatch) return true;
-          } else if (["all", "tokenColors"].includes(filter)) {
+          }
+          if (["all", "tokenColors"].includes(filter)) {
             const isMatch = colorMap.tokenColorsMap[color]?.scope?.find((p) =>
-              p
-                .toLowerCase()
-                .trim()
-                .includes(debouncedSearch.toLowerCase().trim())
+              cleanString(p).includes(cleanString(debouncedSearch))
             );
             if (isMatch) return true;
-          } else if (["all", "syntax"].includes(filter)) {
+          }
+          if (["all", "syntax"].includes(filter)) {
             const isMatch = colorMap.syntaxMap[color]?.find((p) =>
-              p
-                .toLowerCase()
-                .trim()
-                .includes(debouncedSearch.toLowerCase().trim())
+              cleanString(p).includes(cleanString(debouncedSearch))
             );
             if (isMatch) return true;
-          } else if (["all", "semanticTokenColors"].includes(filter)) {
+          }
+          if (["all", "semanticTokenColors"].includes(filter)) {
             const isMatch = colorMap.semanticTokenColorsMap[color]?.find((p) =>
-              p
-                .toLowerCase()
-                .trim()
-                .includes(debouncedSearch.toLowerCase().trim())
+              cleanString(p).includes(cleanString(debouncedSearch))
             );
             if (isMatch) return true;
           }
