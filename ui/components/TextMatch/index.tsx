@@ -1,5 +1,5 @@
 import React, { type FC } from "react";
-import styles from "./textMatch.module.css";
+import styles from "./textmatch.module.css";
 
 export interface TextMatchProps {
   text: string;

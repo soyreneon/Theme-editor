@@ -4,6 +4,11 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.10.4]
+
+- Minor fixes
+- Replace assets and README
+
 ## [1.10.0]
 
 - Filter by property type

@@ -3,6 +3,7 @@
     "module": "Node16",
     "moduleResolution": "Node16",
     "target": "ES2022",
+    "skipLibCheck": true,
     "lib": ["ES2022", "dom"],
     "sourceMap": true,
     "rootDir": "./",
