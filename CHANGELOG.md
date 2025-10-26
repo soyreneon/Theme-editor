@@ -4,6 +4,10 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.10.6]
+
+- Fix search issue and update README
+
 ## [1.10.5]
 
 - Add license

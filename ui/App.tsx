@@ -48,7 +48,7 @@ export function App() {
 
   useEffect(() => {
     const isHexColorPart = (str: string): boolean => {
-      const regex = /^[#abcdefABCDEF012345679]+$/i;
+      const regex = /^[#abcdefABCDEF0123456789]+$/i;
       return regex.test(str);
     };
     const cleanString = (s: string) => s.toLowerCase().trim();

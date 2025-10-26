@@ -79,6 +79,12 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 
 - Eyedropper tool is a native tool provided by browser, sometimes it makes small mistakes identifiyng colors (the error rate is about &plusmn;2). For windows, eyedropper doesn't support click outside vscode. Screen resolution matters when using eyedropper, it could give poor results on low density resolutions. Great tool for identifying no transparency colors.
 
+- Commands may vary depending on the code editor.
+
+# Installing on other editors
+
+For VSCode editor you can install it from [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=soyreneon.themeeditor) and for VSCode Compatible Editors (`Cursor`, `Windsurf`, etc) you can get it from [VSX Open Registry](https://open-vsx.org/extension/soyreneon/themeeditor)
+
 # Future features
 
 Depending on demand, new features are coming(some features have being released but don't forget to rate it):
