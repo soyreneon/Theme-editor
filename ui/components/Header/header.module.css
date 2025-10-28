@@ -3,3 +3,17 @@
   justify-content: space-between;
   margin-right: 10px;
 }
+/* .gear {
+  display: none;
+}
+.icons {
+  display: initial;
+}
+@media (max-width: 320px) {
+  .icons {
+    display: none;
+  }
+  .gear {
+    display: initial;
+  }
+} */

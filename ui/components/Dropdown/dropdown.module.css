@@ -1,0 +1,45 @@
+.dropdownWrapper {
+  display: flex;
+  flex-direction: row;
+  float: left;
+  position: relative;
+}
+
+.dropdownMenu {
+  min-width: 150px;
+  display: none;
+  z-index: 1;
+  position: absolute;
+  right: 10%;
+  top: 23px;
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+.dropdownMenu.show {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownItem {
+  width: 100%;
+  line-height: 25px;
+  border: 0;
+  padding: 0 8px;
+  cursor: pointer;
+  transition: 0.1s ease-in;
+  font-size: 0.9em;
+  background-color: var(--vscode-editor-background) !important;
+  color: var(--vscode-editor-foreground);
+  border: 0.5px solid var(--vscode-editor-selectionBackground);
+  text-align: left;
+}
+
+.dropdownItem:hover {
+  background-color: var(--vscode-input-background) !important;
+  /* background-color: var(--vscode-activityBar-activeFocusBorder) !important; */
+}
+
+.dropdownItem:not(:last-child) {
+  border-bottom: 0.5px solid var(--vscode-editor-selectionBackground);
+}

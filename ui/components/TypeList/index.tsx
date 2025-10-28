@@ -71,6 +71,10 @@ const TypeList: FC<TypeListProps> = ({
     setInputValue(color);
     setIsModalOpen(false);
   };
+  const getAlphaProp = (propName: string): string =>
+    alphaColors.find((alpha) => Object.keys(alpha)[0] === propName)?.[
+      propName
+    ] || "";
 
   if (type !== filter && filter !== "all") return null;
   return (
@@ -101,6 +105,10 @@ const TypeList: FC<TypeListProps> = ({
             <li key={prop}>
               <i className={`codicon codicon-dash ${styles.dash}`} />
               <i className={`codicon codicon-edit ${styles.pencil}`} />
+              {getAlphaProp(prop) && (
+                <i className={`codicon codicon-eye ${styles.eye}`} />
+              )}
+
               <a onClick={() => onHandleClick(prop)}>
                 <TextMatch text={prop} match={debouncedSearch} />
               </a>
@@ -116,11 +124,7 @@ const TypeList: FC<TypeListProps> = ({
           >
             <div>
               <ColorBox
-                value={`${inputValue}${
-                  alphaColors.find(
-                    (alpha) => Object.keys(alpha)[0] === propertyName.current
-                  )?.[propertyName.current] || ""
-                }`}
+                value={`${inputValue}${getAlphaProp(propertyName.current)}`}
                 setValue={setInputValue}
                 hasAlpha={type === "colors"}
                 hasColorPalette

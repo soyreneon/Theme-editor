@@ -32,6 +32,11 @@
 .typeContainer ul {
   padding-left: 3px;
 }
+.typeContainer li .eye {
+  font-size: 11px;
+  color: var(--vscode-input-foreground);
+  margin-right: 2px;
+}
 .typeContainer li .pencil {
   display: none;
   font-size: 11px;

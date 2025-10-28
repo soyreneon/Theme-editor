@@ -27,6 +27,8 @@ import {
   removeSyntaxColorCustomizations,
   removeSemanticTokenColorCustomizations,
   sortColorsByAppereances,
+  invertColorMapping,
+  tokenColorMapToTextMateRules,
 } from "./utils";
 import {
   getThemeJsonByName,
@@ -624,7 +626,8 @@ class ThemeEditorPanel {
 
           const { scopeMap } = mapTextMateRules(
             themeJson.tokenColors || [],
-            textMateRules || []
+            textMateRules || [],
+            true
           );
 
           const fullThemeJson: FullThemeJson = {
@@ -661,6 +664,19 @@ class ThemeEditorPanel {
           // JSON.stringify(customColorList) // overrides
           // );
           // console.log("themeobj ", JSON.stringify(this.themeObj.type));
+          /*
+          console.log(
+            "tobj ",
+            fullThemeJson.tokenColors &&
+              JSON.stringify(
+                tokenColorMapToTextMateRules(fullThemeJson.tokenColors)
+              ), // good
+            JSON.stringify(invertColorMapping(this.colormaps.colorsMap)), // good
+            JSON.stringify(fullThemeJson.syntax), // good
+            JSON.stringify(fullThemeJson.semanticTokenColors) // good
+          );
+           */
+
           this._panel?.webview.postMessage({
             type: "themeChanged",
             themeType: this.themeObj.type,

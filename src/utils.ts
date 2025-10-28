@@ -714,3 +714,23 @@ export const sortColorsByAppereances = (colormaps: ColorMap): ColorOrders => {
     all: sortByNumber(colorCounts),
   };
 };
+
+export const invertColorMapping = (
+  colors: ColorStructure
+): SimpleColorStructure => {
+  const output: SimpleColorStructure = {};
+
+  for (const [color, keys] of Object.entries(colors)) {
+    for (const key of keys) {
+      output[key] = color;
+    }
+  }
+
+  return output;
+};
+
+export const tokenColorMapToTextMateRules = (
+  scopeMap: ScopeMap
+): TokenColorCustomization | null => {
+  return compactTokenColorParse(scopeMap);
+};
