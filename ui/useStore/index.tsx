@@ -11,24 +11,25 @@ import {
   type Filter,
   type ColorOrders,
   type SimpleColorStructure,
-  type TokenColorCustomization,
+  type TextMateRule,
   type SemanticTokenColors,
 } from "../../types";
 import captions from "../language";
 
 type CaptionKeys = (typeof captions)[number];
+type ExportObj = {
+  tokenColors?: TextMateRule[];
+  colors?: SimpleColorStructure;
+  syntax?: SimpleColorStructure;
+  semanticTokens?: SemanticTokenColors;
+};
 interface StoreContextType {
   title: string | null;
   colorOrders: ColorOrders;
   // colorOrders: string[];
   loading: boolean;
   colorMap: ColorMap;
-  exportObj: {
-    tokenColors: TokenColorCustomization;
-    colors: SimpleColorStructure;
-    syntax: SimpleColorStructure;
-    semanticTokens: SemanticTokenColors;
-  };
+  exportObj: ExportObj;
   alphaColors: SimpleColorStructure[];
   customColorList: string[];
   tunerSettings: TunerSettings;
@@ -67,7 +68,7 @@ const initialState = {
     semanticTokenColorsMap: {},
   },
   exportObj: {
-    tokenColors: {},
+    tokenColors: [],
     colors: {},
     syntax: {},
     semanticTokens: {},
@@ -136,6 +137,25 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
+      const isEmpty = (obj: {}) => {
+        for (const prop in obj) {
+          if (Object.hasOwn(obj, prop)) {
+            return false;
+          }
+        }
+        return true;
+      };
+      const getExportObj = (obj: ExportObj = {}): any => {
+        return {
+          ...(obj?.tokenColors?.length && { tokenColors: obj.tokenColors }),
+          ...(obj?.colors && !isEmpty(obj?.colors) && { colors: obj.colors }),
+          ...(obj?.syntax && !isEmpty(obj?.syntax) && { syntax: obj.syntax }),
+          ...(obj?.semanticTokens &&
+            !isEmpty(obj?.semanticTokens) && {
+              semanticTokens: obj.semanticTokens,
+            }),
+        };
+      };
 
       if (message.type === "themeChanged") {
         setState((prev) => ({
@@ -143,7 +163,8 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
           title: message.theme,
           colorOrders: message.colors,
           colorMap: message.colormaps,
-          exportObj: message.exportObj,
+          exportObj: getExportObj(message.exportObj),
+          // exportObj: message.exportObj,
           customColorList: message.customColorList,
           tunerSettings: message.tunerSettings ?? {},
           error: message.error,

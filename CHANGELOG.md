@@ -4,6 +4,15 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.14.1], Nov 2025
+
+- Add eye icon for properties with trasparency
+- Add new export feature for theme creators
+- Testing experimental logo
+- Adding new dropdown design for general actions
+- Fix minor issues
+- Tags for SEO
+
 ## [1.10.6]
 
 - Fix search issue and update README

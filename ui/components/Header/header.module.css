@@ -14,6 +14,19 @@
   padding: 0;
   text-align: left;
 }
+.pre {
+  position: relative;
+}
+.pre button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding-right: 5px;
+  padding-top: 2px;
+}
+.copied {
+  color: var(--vscode-terminal-ansiGreen);
+}
 /* .gear {
   display: none;
 }

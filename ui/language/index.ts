@@ -34,6 +34,8 @@ const captions = [
   "No results found",
   "compare",
   "Type color, prop or use the eyedropper",
+  "Copy",
+  "Copied",
   "clear",
 ] as const;
 

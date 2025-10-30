@@ -29,7 +29,7 @@ This extension has the following structure:
 - Number of available colors
 - Reset button (it will override all customizations, even those made without ThemeTuner)
 - Refresh button (refresh in case that you made changes without ThemeTuner)
-- Export (execute the native vscode command `Developer: Generate Color Theme From Current Settings`)
+- Export (for theme creators)
 - Filter by property type
 - Eyedropper tool for searching
 - Search by text(color or property)
@@ -51,7 +51,7 @@ Click a color and you will see the available tools:
 - pin/unpin color to top of the list
 - detailed property list
 - check/uncheck color group for more control applying changes
-- click property for individual color change (change transparency for workbench colors)
+- click property for individual color change (change transparency for workbench colors, eye icon indicates transparency)
 
 ![Tools and details](https://github.com/soyreneon/Theme-editor/raw/main/media/img-colorcontent.png)
 
@@ -91,7 +91,6 @@ Depending on demand, new features are coming(some features have being released b
 
 - add new property
 - color templates
-- advanced export
 
 ## License
 

@@ -684,7 +684,7 @@ class ThemeEditorPanel {
             exportObj: {
               tokenColors: tokenColorMapToTextMateRules(
                 fullThemeJson.tokenColors || {}
-              ),
+              )?.textMateRules,
               // )?.textMateRules,
               colors: invertColorMapping(this.colormaps.colorsMap),
               syntax: fullThemeJson.syntax,

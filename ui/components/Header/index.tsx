@@ -1,4 +1,4 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { vscode, useStore } from "../../useStore";
 // import ActionButton from "../ActionButton";
 import Modal from "../Modal";
@@ -19,10 +19,21 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
   const store = useStore();
   const { translations, setLoading, exportObj } = store;
   // const [isModalShown, setIsModalShown] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
   const [modalStatus, setModalStatus] = useState<{
     status: boolean;
     type: string;
   }>({ status: false, type: "" });
+
+  useEffect(() => {
+    let timer = setTimeout(() => {
+      isCopied && setIsCopied(false);
+    }, 1200);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isCopied]);
 
   const handleModal = (isAccepted: boolean) => {
     if (isAccepted) {
@@ -57,6 +68,15 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
     });
     */
     setModalStatus({ status: true, type: "export" });
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(exportObj, null, 1));
+      setIsCopied(true);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
   };
 
   const buttons: Button[] = [
@@ -134,10 +154,30 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
               acceptText={translations["Close"]}
             >
               {/* <p>{translations["Export theme"]}</p> */}
-              <code className={styles.code}>
-                {JSON.stringify(exportObj, null, 4)}
-                {/* {JSON.stringify(exportObj, null, '/t')} */}
-              </code>
+              <pre className={styles.pre}>
+                {/* <button>copy</button> */}
+                <button
+                  // type="button"
+                  // className="vscode-button secondary"
+                  type="button"
+                  className={`vscode-action-button ${
+                    isCopied && styles.copied
+                  }`}
+                  onClick={handleCopy}
+                >
+                  <i
+                    className={`codicon codicon-${isCopied ? "check" : "copy"}`}
+                    aria-hidden="true"
+                  ></i>
+                  <span>
+                    {isCopied ? translations["Copied"] : translations["Copy"]}
+                  </span>
+                </button>
+
+                <code className={styles.code}>
+                  {JSON.stringify(exportObj, null, 1)}
+                </code>
+              </pre>
             </Modal>
           )}
         </>
