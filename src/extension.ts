@@ -627,7 +627,7 @@ class ThemeEditorPanel {
           const { scopeMap } = mapTextMateRules(
             themeJson.tokenColors || [],
             textMateRules || [],
-            true
+            true // toggle this until I test it
           );
 
           const fullThemeJson: FullThemeJson = {
@@ -681,6 +681,15 @@ class ThemeEditorPanel {
             type: "themeChanged",
             themeType: this.themeObj.type,
             theme: this.themeName,
+            exportObj: {
+              tokenColors: tokenColorMapToTextMateRules(
+                fullThemeJson.tokenColors || {}
+              ),
+              // )?.textMateRules,
+              colors: invertColorMapping(this.colormaps.colorsMap),
+              syntax: fullThemeJson.syntax,
+              semanticTokens: fullThemeJson.semanticTokenColors,
+            },
             // json: themeJson, // not using now
             colormaps: this.colormaps,
             alphaColors: this.alphaColors,

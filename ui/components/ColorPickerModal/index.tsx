@@ -47,7 +47,11 @@ const ColorPicker: FC<ColorPickerProps> = ({ color, onColorSelected }) => {
         </button>
       </Tooltip>
       {isModalShown && (
-        <Modal onAccept={handleModal} isApplyEnabled={colorSelected !== ""}>
+        <Modal
+          onAccept={handleModal}
+          isApplyEnabled={colorSelected !== ""}
+          acceptText={translations["Pick"]}
+        >
           <div className={styles.headerCompare}>
             <i
               aria-label={translations["compare"]}

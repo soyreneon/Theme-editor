@@ -5,7 +5,9 @@ import { useStore } from "../../useStore";
 interface FullscreenModalProps {
   onAccept: (isAccepted: boolean) => void;
   message?: string;
+  acceptText?: string;
   isApplyEnabled?: boolean;
+  hasCancel?: boolean;
   isFullWidth?: boolean;
 }
 
@@ -13,6 +15,8 @@ const FullscreenModal: FC<PropsWithChildren<FullscreenModalProps>> = ({
   onAccept,
   message,
   isFullWidth,
+  hasCancel = true,
+  acceptText,
   isApplyEnabled = true,
   children,
 }) => {
@@ -34,14 +38,16 @@ const FullscreenModal: FC<PropsWithChildren<FullscreenModalProps>> = ({
         {message && <h4 className={styles.disclaimer}>{message}</h4>}
         {children}
         <div className={styles.btnWrapper}>
-          <button
-            className="vscode-button secondary"
-            onClick={() => {
-              onAccept(false);
-            }}
-          >
-            {translations["Cancel"]}
-          </button>
+          {hasCancel && (
+            <button
+              className="vscode-button secondary"
+              onClick={() => {
+                onAccept(false);
+              }}
+            >
+              {translations["Cancel"]}
+            </button>
+          )}
           <button
             className="vscode-button"
             onClick={() => {
@@ -49,7 +55,7 @@ const FullscreenModal: FC<PropsWithChildren<FullscreenModalProps>> = ({
             }}
             disabled={!isApplyEnabled}
           >
-            {translations["Apply"]}
+            {acceptText || translations["Apply"]}
           </button>
         </div>
       </div>

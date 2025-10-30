@@ -3,6 +3,17 @@
   justify-content: space-between;
   margin-right: 10px;
 }
+.code {
+  display: block;
+  overflow-y: scroll;
+  max-height: 150px;
+  height: 150px;
+  width: auto;
+  font-size: 0.8em;
+  margin-top: 20px;
+  padding: 0;
+  text-align: left;
+}
 /* .gear {
   display: none;
 }

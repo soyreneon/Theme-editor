@@ -11,6 +11,8 @@ import {
   type Filter,
   type ColorOrders,
   type SimpleColorStructure,
+  type TokenColorCustomization,
+  type SemanticTokenColors,
 } from "../../types";
 import captions from "../language";
 
@@ -21,6 +23,12 @@ interface StoreContextType {
   // colorOrders: string[];
   loading: boolean;
   colorMap: ColorMap;
+  exportObj: {
+    tokenColors: TokenColorCustomization;
+    colors: SimpleColorStructure;
+    syntax: SimpleColorStructure;
+    semanticTokens: SemanticTokenColors;
+  };
   alphaColors: SimpleColorStructure[];
   customColorList: string[];
   tunerSettings: TunerSettings;
@@ -57,6 +65,12 @@ const initialState = {
     tokenColorsMap: {},
     syntaxMap: {},
     semanticTokenColorsMap: {},
+  },
+  exportObj: {
+    tokenColors: {},
+    colors: {},
+    syntax: {},
+    semanticTokens: {},
   },
   customColorList: [],
   tunerSettings: {},
@@ -129,6 +143,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
           title: message.theme,
           colorOrders: message.colors,
           colorMap: message.colormaps,
+          exportObj: message.exportObj,
           customColorList: message.customColorList,
           tunerSettings: message.tunerSettings ?? {},
           error: message.error,

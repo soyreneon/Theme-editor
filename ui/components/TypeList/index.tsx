@@ -109,7 +109,7 @@ const TypeList: FC<TypeListProps> = ({
                 <i className={`codicon codicon-eye ${styles.eye}`} />
               )}
 
-              <a onClick={() => onHandleClick(prop)}>
+              <a onClick={() => onHandleClick(prop)} tabIndex={0}>
                 <TextMatch text={prop} match={debouncedSearch} />
               </a>
             </li>

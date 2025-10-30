@@ -17,19 +17,26 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ title, count }) => {
   const store = useStore();
-  const { translations, setLoading } = store;
-  const [isModalShown, setIsModalShown] = useState<boolean>(false);
+  const { translations, setLoading, exportObj } = store;
+  // const [isModalShown, setIsModalShown] = useState<boolean>(false);
+  const [modalStatus, setModalStatus] = useState<{
+    status: boolean;
+    type: string;
+  }>({ status: false, type: "" });
+
   const handleModal = (isAccepted: boolean) => {
     if (isAccepted) {
       vscode.postMessage({
         command: "resetTheme",
       });
     }
-    setIsModalShown(false);
+    // setIsModalShown(false);
+    setModalStatus({ status: false, type: "" });
   };
 
   const handleReset = () => {
-    setIsModalShown(true);
+    // setIsModalShown(true);
+    setModalStatus({ status: true, type: "reset" });
   };
 
   const handleRefresh = () => {
@@ -40,27 +47,33 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
       });
     }, 800);
   };
+  const handleCloseExport = () => {
+    setModalStatus({ status: false, type: "" });
+  };
   const handleExport = () => {
+    /*
     vscode.postMessage({
       command: "exportTheme",
     });
+    */
+    setModalStatus({ status: true, type: "export" });
   };
 
   const buttons: Button[] = [
     {
-      caption: translations["reset theme"],
+      caption: translations["Reset theme"],
       // direction: "bottom",
       // icon: "clear-all",
       onClick: handleReset,
     },
     {
-      caption: translations["refresh"],
+      caption: translations["Refresh"],
       // direction: "bottom",
       // icon: "refresh",
       onClick: handleRefresh,
     },
     {
-      caption: translations["export theme"],
+      caption: translations["Export theme"],
       // direction: "bottom",
       // icon: "export",
       onClick: handleExport,
@@ -90,7 +103,7 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
         {translations["Color count"]}: {count}
       </h5>
       <hr className="vscode-divider" />
-      {isModalShown && (
+      {/* {isModalShown && (
         <Modal
           onAccept={handleModal}
           message={
@@ -99,6 +112,35 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
             ]
           }
         />
+      )} */}
+      {modalStatus.status && (
+        <>
+          {modalStatus.type === "reset" && (
+            <Modal
+              onAccept={handleModal}
+              message={
+                translations[
+                  "Are you sure you want to reset this theme?, it will revert to the default theme values and removes custom names and pins."
+                ]
+              }
+            />
+          )}
+          {modalStatus.type === "export" && (
+            <Modal
+              isFullWidth
+              hasCancel={false}
+              onAccept={handleCloseExport}
+              message={translations["Export theme"]}
+              acceptText={translations["Close"]}
+            >
+              {/* <p>{translations["Export theme"]}</p> */}
+              <code className={styles.code}>
+                {JSON.stringify(exportObj, null, 4)}
+                {/* {JSON.stringify(exportObj, null, '/t')} */}
+              </code>
+            </Modal>
+          )}
+        </>
       )}
     </header>
   );
