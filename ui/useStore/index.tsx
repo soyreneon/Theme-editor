@@ -17,7 +17,7 @@ import {
 import captions from "../language";
 
 type CaptionKeys = (typeof captions)[number];
-type ExportObj = {
+export type ExportObj = {
   tokenColors?: TextMateRule[];
   colors?: SimpleColorStructure;
   syntax?: SimpleColorStructure;

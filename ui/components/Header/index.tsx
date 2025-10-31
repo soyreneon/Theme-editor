@@ -1,29 +1,49 @@
-import { useState, useEffect, type FC } from "react";
-import { vscode, useStore } from "../../useStore";
+import { useState, useEffect, useMemo, type FC } from "react";
+import { vscode, useStore, ExportObj } from "../../useStore";
 // import ActionButton from "../ActionButton";
 import Modal from "../Modal";
 import Dropdown from "../Dropdown";
 import styles from "./header.module.css";
 import { type Button } from "../Dropdown";
-
+import { type SimpleColorStructure } from "../../../types";
 interface HeaderProps {
   title: string | null;
   count: number;
 }
-// interface Button extends TooltipProps {
-//   icon: string;
-//   onClick: () => void;
-// }
+
+const generateFinalObj = (
+  obj: ExportObj,
+  alphaColors: SimpleColorStructure[]
+): ExportObj => {
+  let result: SimpleColorStructure = {};
+  let hasColors = false;
+  if (obj?.colors && alphaColors.length) {
+    hasColors = true;
+    result = obj.colors;
+    alphaColors.map((alpha) => {
+      const keys = Object.keys(alpha);
+      if (result[keys[0]].length <= 7) {
+        result[keys[0]] = `${result[keys[0]]}${alpha[keys[0]]}`;
+      }
+    });
+  }
+
+  return {
+    ...obj,
+    ...(hasColors && { colors: result }),
+  };
+};
 
 const Header: FC<HeaderProps> = ({ title, count }) => {
   const store = useStore();
-  const { translations, setLoading, exportObj } = store;
+  const { translations, setLoading, exportObj, alphaColors } = store;
   // const [isModalShown, setIsModalShown] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [modalStatus, setModalStatus] = useState<{
     status: boolean;
     type: string;
   }>({ status: false, type: "" });
+  const finalObj = useMemo(() => generateFinalObj(exportObj, alphaColors), []);
 
   useEffect(() => {
     let timer = setTimeout(() => {
@@ -72,7 +92,7 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(JSON.stringify(exportObj, null, 1));
+      await navigator.clipboard.writeText(JSON.stringify(finalObj, null, 1));
       setIsCopied(true);
     } catch (err) {
       console.error("Failed to copy text: ", err);
@@ -175,7 +195,7 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
                 </button>
 
                 <code className={styles.code}>
-                  {JSON.stringify(exportObj, null, 1)}
+                  {JSON.stringify(finalObj, null, 1)}
                 </code>
               </pre>
             </Modal>
