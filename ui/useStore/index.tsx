@@ -21,7 +21,7 @@ export type ExportObj = {
   tokenColors?: TextMateRule[];
   colors?: SimpleColorStructure;
   syntax?: SimpleColorStructure;
-  semanticTokens?: SemanticTokenColors;
+  semanticTokenColors?: SemanticTokenColors;
 };
 interface StoreContextType {
   title: string | null;
@@ -71,7 +71,7 @@ const initialState = {
     tokenColors: [],
     colors: {},
     syntax: {},
-    semanticTokens: {},
+    semanticTokenColors: {},
   },
   customColorList: [],
   tunerSettings: {},
@@ -150,9 +150,9 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
           ...(obj?.tokenColors?.length && { tokenColors: obj.tokenColors }),
           ...(obj?.colors && !isEmpty(obj?.colors) && { colors: obj.colors }),
           ...(obj?.syntax && !isEmpty(obj?.syntax) && { syntax: obj.syntax }),
-          ...(obj?.semanticTokens &&
-            !isEmpty(obj?.semanticTokens) && {
-              semanticTokens: obj.semanticTokens,
+          ...(obj?.semanticTokenColors &&
+            !isEmpty(obj?.semanticTokenColors) && {
+              semanticTokenColors: obj.semanticTokenColors,
             }),
         };
       };

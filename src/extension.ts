@@ -688,7 +688,7 @@ class ThemeEditorPanel {
               // )?.textMateRules,
               colors: invertColorMapping(this.colormaps.colorsMap),
               syntax: fullThemeJson.syntax,
-              semanticTokens: fullThemeJson.semanticTokenColors,
+              semanticTokenColors: fullThemeJson.semanticTokenColors,
             },
             // json: themeJson, // not using now
             colormaps: this.colormaps,

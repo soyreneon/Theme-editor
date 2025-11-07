@@ -60,7 +60,7 @@ export const getAlphaProps = (
 
   const newColorKeys: SimpleColorStructure[] = [];
   for (const [key, value] of Object.entries(colorKeys)) {
-    const alpha = getAlpha(value);
+    const alpha = typeof value === "string" ? getAlpha(value) : "";
     if (alpha) {
       newColorKeys.push({ [key]: alpha });
     }
@@ -380,7 +380,9 @@ export const mergeSemanticTokens = (
 
   const expandAndAssign = (source: SemanticTokenColors) => {
     // ? normalize color??
-    for (const [key, value] of Object.entries(source)) {
+    for (const [key, value] of Object.entries(
+      JSON.parse(JSON.stringify(source))
+    )) {
       if (typeof value === "string") {
         result[key] = { foreground: value };
       } else {
@@ -414,8 +416,12 @@ export const mapTextMateRules = (
       if (!scope) {
         scopeMap["global"] = {
           ...scopeMap["global"],
-          ...(settings.foreground && { foreground: settings.foreground }),
-          ...(settings.background && { background: settings.background }),
+          ...(settings.foreground && {
+            foreground: normalizeColor(settings.foreground),
+          }),
+          ...(settings.background && {
+            background: normalizeColor(settings.background),
+          }),
         };
         continue;
       }
@@ -426,8 +432,12 @@ export const mapTextMateRules = (
         const { foreground, background, ...restSettings } = settings;
         scopeMap[singleScope] = {
           ...scopeMap[singleScope],
-          ...(settings.foreground && { foreground: settings.foreground }),
-          ...(settings.background && { background: settings.background }),
+          ...(settings.foreground && {
+            foreground: normalizeColor(settings.foreground),
+          }),
+          ...(settings.background && {
+            background: normalizeColor(settings.background),
+          }),
           ...(addExtraSettings && restSettings),
         };
       }
