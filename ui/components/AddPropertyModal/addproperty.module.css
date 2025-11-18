@@ -1,0 +1,26 @@
+.parent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header {
+  min-width: fit-content;
+  margin-bottom: 0;
+}
+.select {
+  flex: 1;
+}
+.input {
+  width: 100%;
+}
+.error {
+  color: var(--vscode-terminal-ansiRed);
+  font-size: 0.8em;
+  margin-top: 3px;
+  display: block;
+}

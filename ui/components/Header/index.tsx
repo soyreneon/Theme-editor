@@ -3,6 +3,7 @@ import { vscode, useStore, ExportObj } from "../../useStore";
 // import ActionButton from "../ActionButton";
 import Modal from "../Modal";
 import Dropdown from "../Dropdown";
+import AddPropertyModal from "../AddPropertyModal";
 import styles from "./header.module.css";
 import { type Button } from "../Dropdown";
 import { type SimpleColorStructure } from "../../../types";
@@ -99,13 +100,21 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
     }
   };
 
+  const handleAddProperty = () => {
+    setModalStatus({ status: true, type: "addProperty" });
+  };
+
+  const handleAddPropertyAccept = (isAccepted: boolean) => {
+    setModalStatus({ status: false, type: "" });
+    if (isAccepted) {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 800);
+    }
+  };
+
   const buttons: Button[] = [
-    {
-      caption: translations["Reset theme"],
-      // direction: "bottom",
-      // icon: "clear-all",
-      onClick: handleReset,
-    },
     {
       caption: translations["Refresh"],
       // direction: "bottom",
@@ -113,10 +122,20 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
       onClick: handleRefresh,
     },
     {
+      caption: translations["Add property"],
+      onClick: handleAddProperty,
+    },
+    {
       caption: translations["Export theme"],
       // direction: "bottom",
       // icon: "export",
       onClick: handleExport,
+    },
+    {
+      caption: translations["Reset theme"],
+      // direction: "bottom",
+      // icon: "clear-all",
+      onClick: handleReset,
     },
   ];
   return (
@@ -199,6 +218,12 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
                 </code>
               </pre>
             </Modal>
+          )}
+          {modalStatus.type === "addProperty" && (
+            <AddPropertyModal
+              onAccept={handleAddPropertyAccept}
+              translations={translations}
+            />
           )}
         </>
       )}

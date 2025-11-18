@@ -37,6 +37,10 @@ const captions = [
   "Copy",
   "Copied",
   "clear",
+  "Add property",
+  "Property type",
+  "Property name",
+  "Color",
 ] as const;
 
 export default captions;

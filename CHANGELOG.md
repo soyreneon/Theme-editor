@@ -4,6 +4,11 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.15.1], Nov 2025
+
+- Add property feature
+- Minor fixes
+
 ## [1.14.3], Nov 2025
 
 - Add eye icon for properties with trasparency

@@ -270,6 +270,21 @@ class ThemeEditorPanel {
             // this.loadCurrentTheme(vscode.l10n.t("Property updated"));
 
             return;
+          case "add":
+            // message.type, message.property, message.color
+            const applyToAdd: Group = {
+              colors: message.type === "workbench",
+              tokenColors: message.type === "token",
+              syntax: message.type === "syntax",
+              semanticTokenColors: message.type === "semantic",
+            };
+            this.updatePropertyList(
+              [{ property: message.property, color: message.color }],
+              applyToAdd
+            ).then(() => {
+              this.loadCurrentTheme(vscode.l10n.t("Property added"));
+            });
+            return;
           case "colorName":
             setTunerSetting(this.themeName, message.color, {
               name: message.name,
