@@ -4,6 +4,7 @@ import { vscode, useStore, ExportObj } from "../../useStore";
 import Modal from "../Modal";
 import Dropdown from "../Dropdown";
 import AddPropertyModal from "../AddPropertyModal";
+import ColorTemplatesModal from "../ColorTemplatesModal";
 import styles from "./header.module.css";
 import { type Button } from "../Dropdown";
 import { type SimpleColorStructure } from "../../../types";
@@ -100,11 +101,15 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
     }
   };
 
+  const handleColorTemplates = () => {
+    setModalStatus({ status: true, type: "colorTemplates" });
+  };
+
   const handleAddProperty = () => {
     setModalStatus({ status: true, type: "addProperty" });
   };
 
-  const handleAddPropertyAccept = (isAccepted: boolean) => {
+  const handleAccept = (isAccepted: boolean) => {
     setModalStatus({ status: false, type: "" });
     if (isAccepted) {
       setLoading(true);
@@ -124,6 +129,10 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
     {
       caption: translations["Add property"],
       onClick: handleAddProperty,
+    },
+    {
+      caption: translations["Color templates"],
+      onClick: handleColorTemplates,
     },
     {
       caption: translations["Export theme"],
@@ -221,9 +230,13 @@ const Header: FC<HeaderProps> = ({ title, count }) => {
           )}
           {modalStatus.type === "addProperty" && (
             <AddPropertyModal
-              onAccept={handleAddPropertyAccept}
+              onAccept={handleAccept}
+              // onAccept={handleAddPropertyAccept}
               translations={translations}
             />
+          )}
+          {modalStatus.type === "colorTemplates" && (
+            <ColorTemplatesModal onAccept={handleAccept} />
           )}
         </>
       )}

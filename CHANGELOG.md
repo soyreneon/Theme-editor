@@ -4,9 +4,10 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [1.15.1], Nov 2025
+## [1.16.2], Nov 2025
 
 - Add property feature
+- Add color templates
 - Minor fixes
 
 ## [1.14.3], Nov 2025

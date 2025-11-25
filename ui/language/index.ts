@@ -41,6 +41,9 @@ const captions = [
   "Property type",
   "Property name",
   "Color",
+  "Color templates",
+  "Template",
+  "Alpha",
 ] as const;
 
 export default captions;

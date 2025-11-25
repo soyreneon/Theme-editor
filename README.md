@@ -72,6 +72,8 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 | ----------------------------------- | :-------------------------------------------------------------------------: |
 | Workbench colors                    | Textmate token colors </br> Semantic token colors </br> Syntax colors </br> |
 
+<details>
+<summary>Considerations</summary>
 ## Considerations
 
 - _ThemeTuner **only shows a list of the properties defined in your theme** (when a prop is not defined, it takes the default vscode core value). If some property is missing, then is not defined and you have to add it manually. **THAT MEANS YOU MIGHT NOT FIND THE PROPERTY COLOR YOU'RE LOOKING FOR. e.g. if you switch to `Dark+ (Default Dark+)` theme, you will only see token colors, background editor and other colors will be taken from vscode core settings**_
@@ -81,6 +83,7 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 - Eyedropper tool is a native tool provided by browser, sometimes it makes small mistakes identifiyng colors (the error rate is about &plusmn;2). For windows, eyedropper doesn't support click outside vscode. Screen resolution matters when using eyedropper, it could give poor results on low density resolutions. Great tool for identifying no transparency colors.
 
 - Commands may vary depending on the code editor.
+</details>
 
 # Installing on other editors
 

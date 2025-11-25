@@ -101,7 +101,7 @@ const AddPropertyModal: FC<AddPropertyModalProps> = ({
       hasCancel={true}
       message={translations["Add property"]}
       acceptText={translations["Apply"]}
-      isApplyEnabled={isValid ? true : false}
+      isApplyEnabled={!!isValid}
     >
       <div className={styles.parent}>
         <div className={styles.body}>

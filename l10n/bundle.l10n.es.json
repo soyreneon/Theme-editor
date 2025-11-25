@@ -47,5 +47,7 @@
   "Add property": "Añadir propiedad",
   "Property type": "Tipo de propiedad",
   "Property name": "Nombre de propiedad",
-  "Color": "Color"
+  "Color templates": "Plantillas de color",
+  "Color": "Color",
+  "Alpha": "Alfa"
 }

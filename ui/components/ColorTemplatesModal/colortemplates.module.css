@@ -1,0 +1,17 @@
+.parent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header {
+  min-width: fit-content;
+  margin-bottom: 0;
+}
+.select {
+  flex: 1;
+}

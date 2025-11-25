@@ -285,6 +285,62 @@ class ThemeEditorPanel {
               this.loadCurrentTheme(vscode.l10n.t("Property added"));
             });
             return;
+          case "templateColor":
+            // message.properties is separated by type
+            // Call updatePropertyList for each type that has properties
+            const promises = [];
+
+            if (message.properties.colors?.length > 0) {
+              promises.push(
+                this.updatePropertyList(message.properties.colors, {
+                  colors: true,
+                  tokenColors: false,
+                  syntax: false,
+                  semanticTokenColors: false,
+                })
+              );
+            }
+
+            if (message.properties.tokenColors?.length > 0) {
+              promises.push(
+                this.updatePropertyList(message.properties.tokenColors, {
+                  colors: false,
+                  tokenColors: true,
+                  syntax: false,
+                  semanticTokenColors: false,
+                })
+              );
+            }
+
+            if (message.properties.syntax?.length > 0) {
+              promises.push(
+                this.updatePropertyList(message.properties.syntax, {
+                  colors: false,
+                  tokenColors: false,
+                  syntax: true,
+                  semanticTokenColors: false,
+                })
+              );
+            }
+
+            if (message.properties.semanticTokenColors?.length > 0) {
+              promises.push(
+                this.updatePropertyList(
+                  message.properties.semanticTokenColors,
+                  {
+                    colors: false,
+                    tokenColors: false,
+                    syntax: false,
+                    semanticTokenColors: true,
+                  }
+                )
+              );
+            }
+
+            Promise.all(promises).then(() => {
+              this.loadCurrentTheme(vscode.l10n.t("Color updated"));
+            });
+            return;
           case "colorName":
             setTunerSetting(this.themeName, message.color, {
               name: message.name,
