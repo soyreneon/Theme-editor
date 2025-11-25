@@ -21,6 +21,9 @@ Install ThemeTuner, then press `Cmd+Shift+P` on macOS or `Ctrl+Shift+P` on Windo
 
 To modify a diferent theme, switch to another theme using `Cmd+K+T` on macOS or `Ctrl+K+T` on Windows and Linux. It will re-scan the new theme.
 
+<details>
+<summary>Interface</summary>
+
 ## Interface
 
 This extension has the following structure:
@@ -39,6 +42,11 @@ This extension has the following structure:
 Check this reference image:
 
 ![Overall interface](https://github.com/soyreneon/Theme-editor/raw/main/media/img_interface.png)
+
+</details>
+
+<details>
+<summary>Tools</summary>
 
 ## Tools
 
@@ -59,6 +67,8 @@ Click a color and you will see the available tools:
 The `*` mark indicates these color has been customized
 
 ![Color customized](https://github.com/soyreneon/Theme-editor/raw/main/media/img-customized.png)
+
+</details>
 
 <details>
 <summary>Tips</summary>
