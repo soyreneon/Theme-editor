@@ -60,6 +60,9 @@ The `*` mark indicates these color has been customized
 
 ![Color customized](https://github.com/soyreneon/Theme-editor/raw/main/media/img-customized.png)
 
+<details>
+<summary>Tips</summary>
+
 ## Tips
 
 ThemeTuner was designed to edit themes guided by our vision, so you don't need to be an expert in theming or in all the existing properties.
@@ -72,8 +75,11 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 | ----------------------------------- | :-------------------------------------------------------------------------: |
 | Workbench colors                    | Textmate token colors </br> Semantic token colors </br> Syntax colors </br> |
 
+</details>
+
 <details>
-<summary>Considerations</summary>
+<summary>Considerations and common issues</summary>
+
 ## Considerations
 
 - _ThemeTuner **only shows a list of the properties defined in your theme** (when a prop is not defined, it takes the default vscode core value). If some property is missing, then is not defined and you have to add it manually. **THAT MEANS YOU MIGHT NOT FIND THE PROPERTY COLOR YOU'RE LOOKING FOR. e.g. if you switch to `Dark+ (Default Dark+)` theme, you will only see token colors, background editor and other colors will be taken from vscode core settings**_
@@ -85,9 +91,17 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 - Commands may vary depending on the code editor.
 </details>
 
+<details>
+<summary>Installing on other editors</summary>
+
 # Installing on other editors
 
 For VSCode editor you can install it from [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=soyreneon.themeeditor) and for VSCode Compatible Editors (`Cursor`, `Windsurf`, etc) you can get it from [VSX Open Registry](https://open-vsx.org/extension/soyreneon/themeeditor)
+
+</details>
+
+<details>
+<summary>Future features</summary>
 
 # Future features
 
@@ -95,8 +109,4 @@ Depending on demand, new features are coming(some features have being released b
 
 - color templates
 
-## License
-
-MIT
-
-**Enjoy!**
+</details>
