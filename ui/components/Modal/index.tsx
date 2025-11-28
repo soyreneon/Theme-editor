@@ -31,12 +31,14 @@ const FullscreenModal: FC<PropsWithChildren<FullscreenModalProps>> = ({
   const { translations } = store;
   return (
     <div className={styles.fullscreenModal}>
-      <div
-        className={styles.modalContent}
-        {...(isFullWidth && { style: { width: "100%" } })}
-      >
-        {message && <h4 className={styles.disclaimer}>{message}</h4>}
-        {children}
+      <div className={styles.wrapper}>
+        <div
+          className={styles.modalContent}
+          {...(isFullWidth && { style: { width: "100%" } })}
+        >
+          {message && <h4 className={styles.disclaimer}>{message}</h4>}
+          {children}
+        </div>
         <div className={styles.btnWrapper}>
           {hasCancel && (
             <button

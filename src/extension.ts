@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import chroma from "chroma-js";
 import {
   type ThemeJson,
   type FullThemeJson,
@@ -286,56 +287,27 @@ class ThemeEditorPanel {
             });
             return;
           case "templateColor":
-            // message.properties is separated by type
-            // Call updatePropertyList for each type that has properties
-            const promises = [];
+            const templateGroups = [
+              "colors",
+              "tokenColors",
+              "syntax",
+              "semanticTokenColors",
+            ] as const;
 
-            if (message.properties.colors?.length > 0) {
-              promises.push(
-                this.updatePropertyList(message.properties.colors, {
-                  colors: true,
-                  tokenColors: false,
-                  syntax: false,
-                  semanticTokenColors: false,
+            type TemplateGroup = (typeof templateGroups)[number];
+
+            const baseValues = Object.fromEntries(
+              templateGroups.map((g) => [g, false])
+            ) as Record<TemplateGroup, boolean>;
+
+            const promises = templateGroups
+              .filter((group) => message.properties[group]?.length > 0)
+              .map((group) =>
+                this.updatePropertyList(message.properties[group], {
+                  ...baseValues,
+                  [group]: true,
                 })
               );
-            }
-
-            if (message.properties.tokenColors?.length > 0) {
-              promises.push(
-                this.updatePropertyList(message.properties.tokenColors, {
-                  colors: false,
-                  tokenColors: true,
-                  syntax: false,
-                  semanticTokenColors: false,
-                })
-              );
-            }
-
-            if (message.properties.syntax?.length > 0) {
-              promises.push(
-                this.updatePropertyList(message.properties.syntax, {
-                  colors: false,
-                  tokenColors: false,
-                  syntax: true,
-                  semanticTokenColors: false,
-                })
-              );
-            }
-
-            if (message.properties.semanticTokenColors?.length > 0) {
-              promises.push(
-                this.updatePropertyList(
-                  message.properties.semanticTokenColors,
-                  {
-                    colors: false,
-                    tokenColors: false,
-                    syntax: false,
-                    semanticTokenColors: true,
-                  }
-                )
-              );
-            }
 
             Promise.all(promises).then(() => {
               this.loadCurrentTheme(vscode.l10n.t("Color updated"));
@@ -380,6 +352,15 @@ class ThemeEditorPanel {
               loading: false,
             });
             return;
+          // case "propValue":
+          //   this._panel?.webview.postMessage({
+          //     type: "propValue",
+          //     prop:
+          //       globalCustomizations.colors?.["editor.background"] ||
+          //       themeJson.colors?.["editor.background"] ||
+          //       "",
+          //   });
+          //   return;
           case "exportTheme":
             vscode.commands.executeCommand(
               "workbench.action.generateColorTheme"
@@ -748,9 +729,29 @@ class ThemeEditorPanel {
           );
            */
 
+          const getThemeType = (
+            type: string = "",
+            themeColor?: string,
+            customColor?: string
+          ): string => {
+            if (["dark", "light"].includes(type)) {
+              return type;
+            }
+            const value = themeColor || customColor || "";
+            if (chroma.valid(value)) {
+              return chroma(value).luminance() > 0.5 ? "light" : "dark";
+            }
+
+            return "";
+          };
+
           this._panel?.webview.postMessage({
             type: "themeChanged",
-            themeType: this.themeObj.type,
+            themeType: getThemeType(
+              this.themeObj.type,
+              themeJson.colors?.["editor.background"],
+              globalCustomizations.colors?.["editor.background"]
+            ),
             theme: this.themeName,
             exportObj: {
               tokenColors: tokenColorMapToTextMateRules(

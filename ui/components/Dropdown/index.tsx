@@ -46,6 +46,7 @@ const Dropdown: FC<DropdownProps> = ({ buttons }) => {
       >
         {buttons.map((button) => (
           <button
+            key={`key-${button.caption}`}
             type="button"
             value="messenger"
             tab-index="0"

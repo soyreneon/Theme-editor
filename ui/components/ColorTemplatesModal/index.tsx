@@ -3,7 +3,7 @@ import Modal from "../Modal";
 import ColorBox from "../ColorBox";
 import Checkbox from "../Checkbox";
 import { vscode, useStore } from "../../useStore";
-import styles from "./addproperty.module.css";
+import styles from "./colortemplates.module.css";
 import templateList from "./templates";
 
 interface ColorTemplateModalProps {
@@ -25,6 +25,9 @@ interface TemplateState {
 const ColorTemplateModal: FC<ColorTemplateModalProps> = ({ onAccept }) => {
   const store = useStore();
   const { translations, themeType } = store;
+  const [isDarkTemplate, setIsDarkTemplate] = useState<boolean>(
+    themeType === "dark"
+  );
   const [templateIndex, setTemplateIndex] = useState<number>(1);
   const [templateState, setTemplateState] = useState<TemplateState>({});
   const [templateAlpha, setTemplateAlpha] = useState<number>(0);
@@ -34,7 +37,7 @@ const ColorTemplateModal: FC<ColorTemplateModalProps> = ({ onAccept }) => {
   // Initialize template state once on component mount
   useEffect(() => {
     initializeTemplateState(templateIndex);
-  }, [templateIndex, themeType]);
+  }, [templateIndex, isDarkTemplate]);
 
   // Initialize template state when template changes
   const initializeTemplateState = (index: number) => {
@@ -42,20 +45,20 @@ const ColorTemplateModal: FC<ColorTemplateModalProps> = ({ onAccept }) => {
     const newState: TemplateState = {};
 
     template.colors.forEach((colorGroup) => {
-      const defaultColor =
-        themeType === "dark" ? colorGroup.defaultDark : colorGroup.defaultLight;
+      const defaultColor = isDarkTemplate
+        ? colorGroup.defaultDark
+        : colorGroup.defaultLight;
       const key = colorGroup.name;
 
       // If optional, start as disabled; otherwise enabled
       newState[key] = {
-        enabled: !colorGroup.optional,
+        enabled: colorGroup?.optional || true,
         color: defaultColor,
       };
     });
 
     setTemplateState(newState);
-    // Set template-level alpha
-    setTemplateAlpha((template.colors[0] as any)?.alpha || 0);
+    setTemplateAlpha(template.alpha || 0);
   };
 
   const handleTemplateChange = (index: number) => {
@@ -98,16 +101,14 @@ const ColorTemplateModal: FC<ColorTemplateModalProps> = ({ onAccept }) => {
         return;
       }
 
-      let finalColor = state.color;
-
-      // Add alpha to properties marked as transparent (using template-level alpha)
+      // Add alpha to properties marked as transparent
       colorGroup.properties.forEach((prop) => {
+        let finalColor = state.color;
         if ((prop as any).isTransparent && templateAlpha > 0) {
           const alphaHex = Math.round((templateAlpha / 100) * 255)
             .toString(16)
-            .padStart(2, "0")
-            .toUpperCase();
-          finalColor = `${state.color}${alphaHex}`;
+            .padStart(2, "0");
+          finalColor = `${state.color}${alphaHex}`.toLowerCase();
         }
 
         propertyListByType[colorGroup.type].push({
@@ -123,8 +124,6 @@ const ColorTemplateModal: FC<ColorTemplateModalProps> = ({ onAccept }) => {
   const handleAccept = () => {
     const propertyListByType = buildPropertyListByType();
 
-    console.log(propertyListByType);
-    return;
     vscode.postMessage({
       command: "templateColor",
       properties: propertyListByType,
@@ -144,13 +143,19 @@ const ColorTemplateModal: FC<ColorTemplateModalProps> = ({ onAccept }) => {
     }
   };
 
+  const isApplyEnabled = (): boolean => {
+    return !!Object.keys(templateState).find(
+      (color) => templateState[color]?.enabled
+    );
+  };
+
   return (
     <Modal
       isFullWidth
       onAccept={handleModalAction}
-      hasCancel={true}
       message={translations["Color templates"]}
       acceptText={translations["Apply"]}
+      isApplyEnabled={isApplyEnabled()}
     >
       <div className={styles.parent}>
         <div className={styles.body}>
@@ -162,8 +167,9 @@ const ColorTemplateModal: FC<ColorTemplateModalProps> = ({ onAccept }) => {
                 handleTemplateChange(parseInt(e.target.value));
               }}
             >
-              {templateList.map((template) => (
-                <option key={template.index} value={template.index}>
+              // ! review ok fine
+              {templateList.map((template, i) => (
+                <option key={1 + 1} value={i + 1}>
                   {template.title}
                 </option>
               ))}
@@ -171,9 +177,16 @@ const ColorTemplateModal: FC<ColorTemplateModalProps> = ({ onAccept }) => {
             <i className="chevron-icon codicon codicon-chevron-down icon-arrow" />
           </div>
         </div>
-        {/* Template-level alpha control */}
-        {(currentTemplate.colors[0] as any)?.alpha !== undefined && (
-          <div className={styles.alphaContainer} style={{ marginTop: "16px" }}>
+        {!themeType && (
+          <Checkbox
+            id="switchColors"
+            title={translations["Switch colors"]}
+            isDefaultChecked={isDarkTemplate}
+            onToggleChecked={setIsDarkTemplate}
+          />
+        )}
+        {currentTemplate?.alpha !== undefined && (
+          <div className={styles.alphaContainer}>
             <label className={styles.alphaLabel}>
               {translations["Alpha"]}: {templateAlpha}%
             </label>
@@ -188,44 +201,75 @@ const ColorTemplateModal: FC<ColorTemplateModalProps> = ({ onAccept }) => {
           </div>
         )}
 
-        {currentTemplate.colors?.map((colorGroup) => {
-          const state = templateState[colorGroup.name];
+        <div>
+          {currentTemplate.colors?.map((colorGroup) => {
+            const state = templateState[colorGroup.name];
 
-          return (
-            <details
-              key={colorGroup.name}
-              className="vscode-collapsible"
-              name="accordion-template"
-            >
-              <summary>
-                <i className="codicon codicon-chevron-right icon-arrow" />
-                <h2 className="title">{colorGroup.name}</h2>
-              </summary>
+            return (
+              <details
+                key={colorGroup.name}
+                className="vscode-collapsible"
+                name="accordion-template"
+              >
+                <summary>
+                  <i className="codicon codicon-chevron-right icon-arrow" />
+                  <h2 className={`title ${styles.colorTitle}`}>
+                    <span
+                      className={styles.colorPreview}
+                      style={{
+                        backgroundColor: state?.color,
+                        opacity: state?.enabled ? 1 : 0.4,
+                      }}
+                    />
+                    {!state?.enabled && (
+                      <i
+                        className={`codicon codicon-circle-slash ${styles.slash}`}
+                      />
+                    )}
+                    {colorGroup.name}
+                  </h2>
+                  {colorGroup.optional && (
+                    <div className="actions">
+                      <button
+                        type="button"
+                        className="vscode-action-button"
+                        title={
+                          state?.enabled
+                            ? translations["not include color"]
+                            : translations["include color"]
+                        }
+                        onClick={() =>
+                          handleOptionalToggle(colorGroup.name, !state?.enabled)
+                        }
+                      >
+                        <i
+                          className={`codicon codicon-${
+                            state?.enabled ? "eye-closed" : "check"
+                          }`}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </div>
+                  )}
+                </summary>
 
-              <div style={{ padding: "12px 0" }}>
-                {colorGroup.optional && state && (
-                  <Checkbox
-                    id={`templateColor-${templateIndex}-${colorGroup.name}`}
-                    title={translations["This color change is also applied to"]}
-                    onToggleChecked={(isChecked) => {
-                      handleOptionalToggle(colorGroup.name, isChecked);
-                    }}
-                  />
-                )}
-
-                {state && state.enabled && (
-                  <ColorBox
-                    value={state.color}
-                    setValue={(newColor) =>
-                      handleColorChange(colorGroup.name, newColor)
-                    }
-                    hasColorPalette
-                  />
-                )}
-              </div>
-            </details>
-          );
-        })}
+                <div className={styles.box}>
+                  {state?.enabled ? (
+                    <ColorBox
+                      value={state?.color}
+                      setValue={(newColor) =>
+                        handleColorChange(colorGroup.name, newColor)
+                      }
+                      hasColorPalette
+                    />
+                  ) : (
+                    <p>{translations["Not included"]}</p>
+                  )}
+                </div>
+              </details>
+            );
+          })}
+        </div>
       </div>
     </Modal>
   );

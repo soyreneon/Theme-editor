@@ -49,5 +49,9 @@
   "Property name": "Nombre de propiedad",
   "Color templates": "Plantillas de color",
   "Color": "Color",
-  "Alpha": "Alfa"
+  "Alpha": "Alfa",
+  "not include color": "no incluir color",
+  "include color": "incluir color",
+  "Not included": "No incluido",
+  "Switch colors": "Cambiar colores"
 }

@@ -3,15 +3,79 @@
   flex-direction: column;
   gap: 16px;
 }
+
 .body {
   display: flex;
   align-items: center;
   gap: 12px;
 }
+
 .header {
   min-width: fit-content;
   margin-bottom: 0;
 }
+
 .select {
   flex: 1;
+}
+
+.box {
+  padding: 12px 0;
+}
+.colorTitle {
+  text-transform: initial !important;
+  position: relative;
+}
+.slash {
+  position: absolute;
+  left: 25px;
+  top: 4px;
+}
+.colorPreview {
+  display: inline-block;
+  width: 40px;
+  height: 1em;
+  margin-bottom: -3px;
+  margin-right: 10px;
+  border: solid var(--vscode-focusBorder);
+  border-width: 0 1px 1px 0;
+}
+
+.alphaContainer {
+  display: flex;
+}
+
+.alphaLabel {
+  min-width: 30%;
+  /* font-size: 0.9em; */
+  line-height: 2em;
+}
+
+.alphaSlider {
+  width: 100%;
+  cursor: pointer;
+  height: 20px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--vscode-editor-background);
+}
+
+.alphaSlider::-webkit-slider-thumb,
+.alphaSlider::-moz-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--vscode-input-foreground);
+  cursor: pointer;
+  border: 1px solid var(--vscode-inputOption-activeBorder);
+}
+
+.alphaSlider::-webkit-slider-runnable-track,
+.alphaSlider::-moz-range-track {
+  background: var(--vscode-inputOption-activeBorder);
+  border: none;
+  height: 2px;
 }

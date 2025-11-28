@@ -33,6 +33,7 @@ This extension has the following structure:
 - Reset button (it will override all customizations, even those made without ThemeTuner)
 - Refresh button (refresh in case that you made changes without ThemeTuner)
 - Export (for theme creators)
+- Color Templates
 - Add property (if prop already exist, modify value)
 - Filter by property type
 - Eyedropper tool for searching
@@ -117,6 +118,6 @@ For VSCode editor you can install it from [VSCode marketplace](https://marketpla
 
 Depending on demand, new features are coming(some features have being released but don't forget to rate it):
 
-- color templates
+- new color templates
 
 </details>

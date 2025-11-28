@@ -44,6 +44,10 @@ const captions = [
   "Color templates",
   "Template",
   "Alpha",
+  "not include color",
+  "include color",
+  "Not included",
+  "Switch colors",
 ] as const;
 
 export default captions;
