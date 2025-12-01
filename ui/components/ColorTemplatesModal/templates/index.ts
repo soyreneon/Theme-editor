@@ -2,6 +2,9 @@ import { type Filter } from "../../../../types";
 import borders from "./borders";
 import solidEditor from "./solidEditor1";
 import brackets from "./brackets";
+import activityBar from "./activityBar";
+import fileTracking from "./fileTracking";
+
 type TemplateColor = {
   type: Exclude<Filter, "all">;
   name: string;
@@ -22,6 +25,12 @@ export type Template = {
   alpha?: number;
 };
 
-const templateList: Template[] = [borders, solidEditor, brackets];
+const templateList: Template[] = [
+  borders,
+  solidEditor,
+  brackets,
+  activityBar,
+  fileTracking,
+];
 
 export default templateList;
