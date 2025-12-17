@@ -2,7 +2,9 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [1.21.2], 16 Dec 2025
+
+- Fix modal button overflow
 
 ## [1.21.1], 12 Dec 2025
 
