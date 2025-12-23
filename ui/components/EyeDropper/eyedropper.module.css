@@ -12,8 +12,10 @@
 }
 .eyeInput {
   position: absolute;
-  left: -9999;
-  width: 0;
+  left: -20px;
+  padding: 0 !important;
+  display: inline-block !important;
+  width: 0 !important;
   height: 0;
   opacity: 0;
 }

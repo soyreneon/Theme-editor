@@ -3,7 +3,7 @@
   "displayName": "ThemeTuner (Real-Time Theme Editor)",
   "publisher": "soyreneon",
   "description": "%extension.description%",
-  "version": "1.21.2",
+  "version": "1.21.3",
   "engines": {
     "vscode": "^1.99.0"
   },

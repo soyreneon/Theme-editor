@@ -47,11 +47,18 @@ const EyeDropper: FC<EyeDropperProps> = ({ onChange, color = "#ffffff" }) => {
   }, [color]);
 
   const handleNativePick = async () => {
+    const isLinux = navigator.platform.toLowerCase().includes("linux");
+
+    const canUseEyeDropper =
+      typeof (window as any).EyeDropper === "function" && !isLinux;
+
     // Use native EyeDropper if available
-    const Win: any = window as any;
-    if (typeof Win.EyeDropper === "function") {
+    // const Win: any = window as any;
+    if (!canUseEyeDropper) {
+      // if (typeof Win.EyeDropper === "function") {
       try {
-        const picker = new Win.EyeDropper();
+        // const picker = new Win.EyeDropper();
+        const picker = new (window as any).EyeDropper();
         const result = await picker.open();
         // result.sRGBHex should be like "#RRGGBB"
         if (result && result.sRGBHex) {
@@ -60,6 +67,7 @@ const EyeDropper: FC<EyeDropperProps> = ({ onChange, color = "#ffffff" }) => {
         }
       } catch {
         // user cancelled or error - ignore
+        inputRef.current?.click();
       }
       return;
     }

@@ -2,6 +2,10 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
+## [1.21.3], 23 Dec 2025
+
+- Fix linux issue, eye dropper tool is not working due to permissions so we are using a native solution
+
 ## [1.21.2], 16 Dec 2025
 
 - Fix modal button overflow

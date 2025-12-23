@@ -99,6 +99,8 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 
 - Eyedropper tool is a native tool provided by browser, sometimes it makes small mistakes identifiyng colors (the error rate is about &plusmn;2). For windows, eyedropper doesn't support click outside vscode. Screen resolution matters when using eyedropper, it could give poor results on low density resolutions. Great tool for identifying no transparency colors.
 
+- Eyedropper has compatibility issues on linux, a workaround using a native solution is implemented.
+
 - Commands may vary depending on the code editor.
 </details>
 
