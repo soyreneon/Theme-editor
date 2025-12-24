@@ -54,7 +54,7 @@ const EyeDropper: FC<EyeDropperProps> = ({ onChange, color = "#ffffff" }) => {
 
     // Use native EyeDropper if available
     // const Win: any = window as any;
-    if (!canUseEyeDropper) {
+    if (canUseEyeDropper) {
       // if (typeof Win.EyeDropper === "function") {
       try {
         // const picker = new Win.EyeDropper();
