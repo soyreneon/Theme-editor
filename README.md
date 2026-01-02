@@ -97,9 +97,9 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 
 - If you need to identify a specific Texmate token color, press `Ctrl+Shift+P` or `Cmd+Shift+P` and type `Developer: Inspect Editor Tokens and Scopes` and you can find it.
 
-- Eyedropper tool is a native tool provided by browser, sometimes it makes small mistakes identifiyng colors (the error rate is about &plusmn;2). For windows, eyedropper doesn't support click outside vscode. Screen resolution matters when using eyedropper, it could give poor results on low density resolutions. Great tool for identifying no transparency colors.
+- Eye dropper tool is a native tool provided by browser, sometimes it makes small mistakes identifiyng colors (the error rate is about &plusmn;2). For windows, eye dropper doesn't support click outside vscode. Screen resolution matters when using eye dropper, it could give poor results on low density resolutions. Great tool for identifying no transparency colors.
 
-- Eyedropper has compatibility issues on linux, a workaround using a native solution is implemented.
+- Eye dropper has compatibility issues on linux, a workaround using a native solution is implemented but it might not work.
 
 - Commands may vary depending on the code editor.
 </details>

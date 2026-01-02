@@ -2,6 +2,10 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
+## [1.21.5], 2 Jan 2026
+
+- Modify disclaimer
+
 ## [1.21.4], 24 Dec 2025
 
 - Fix logic applied

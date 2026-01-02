@@ -1,4 +1,4 @@
 {
-  "extension.description": "Personaliza y edita tus temas con una inferfaz amigable. Aplica cambios en tiempo real y restaura a su configuración inicial cuando quieras.",
+  "extension.description": "Personaliza y edita temas de vscode con una inferfaz amigable. Aplica cambios en tiempo real y restaura a su configuración inicial cuando quieras.",
   "command.openThemeEditor.title": "ThemeTuner: Abrir ThemeTuner(Editor de temas)"
 }
