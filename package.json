@@ -3,7 +3,7 @@
   "displayName": "ThemeTuner (Real-Time Theme Editor)",
   "publisher": "soyreneon",
   "description": "%extension.description%",
-  "version": "1.21.5",
+  "version": "1.22.0",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -22,7 +22,17 @@
     "Other"
   ],
   "keywords": [
+    "background",
+    "foreground",
+    "tab",
+    "ui",
+    "interface",
+    "activityBar",
+    "activity-bar",
+    "titleBar",
+    "sideBar",
     "color-theme",
+    "change",
     "change-code-color",
     "vsc-theme",
     "theme",
@@ -31,7 +41,9 @@
     "editor",
     "theme-tuner",
     "color",
+    "colors",
     "customizer",
+    "customize",
     "customization",
     "style",
     "custom",
@@ -53,7 +65,9 @@
     "textmate",
     "syntax",
     "token",
-    "tokencolors"
+    "tokencolors",
+    "workbench",
+    "workspace"
   ],
   "activationEvents": [
     "onWebviewPanel:themeEditor"

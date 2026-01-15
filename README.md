@@ -22,6 +22,17 @@ Install ThemeTuner, then press `Cmd+Shift+P` on macOS or `Ctrl+Shift+P` on Windo
 To modify a diferent theme, switch to another theme using `Cmd+K+T` on macOS or `Ctrl+K+T` on Windows and Linux. It will re-scan the new theme.
 
 <details>
+<summary>Why to use ThemeTuner?</summary>
+
+So you finally found the perfect theme, except for… hmm!
+
+When trying to manually edit a VS Code theme, we realized it has many different properties defined, and finding the right one is quite difficult.
+
+Furthermore, changing one property might not match other properties that share the same color, quickly leading to confusion. With ThemeTuner, you can use a UI to modify colors, view them grouped together, use color templates, and customize any theme in real time.
+
+</details>
+
+<details>
 <summary>Interface</summary>
 
 ## Interface
