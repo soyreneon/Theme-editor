@@ -4,7 +4,7 @@ All notable changes to the "themeeditor" extension will be documented in this fi
 
 ## [1.22.0], 2 Jan 2026
 
-- Add descrition to README and add new metatags for SEO optimization
+- Add description to README and add new metatags for SEO optimization
 
 ## [1.21.5], 2 Jan 2026
 
