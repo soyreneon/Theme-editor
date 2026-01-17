@@ -119,7 +119,7 @@ export const buildPropertyTokenColorCustomizations = (
       ({
         scope: [propColor.property],
         settings: { foreground: propColor.color },
-      } as TextMateRule)
+      }) as TextMateRule
   );
 
   const { scopeMap } = mapTextMateRules(
@@ -427,7 +427,11 @@ export const mapTextMateRules = (
       }
 
       // Normalize scope to an array
-      const scopes = Array.isArray(scope) ? scope : [scope];
+      const scopes = Array.isArray(scope)
+        ? scope
+        : scope.includes(",")
+          ? scope.split(",").map((s) => s.trim())
+          : [scope];
       for (const singleScope of scopes) {
         const { foreground, background, ...restSettings } = settings;
         scopeMap[singleScope] = {

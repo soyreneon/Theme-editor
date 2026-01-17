@@ -2,7 +2,11 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
-## [1.22.0], 2 Jan 2026
+## [1.22.1], 17 Jan 2026
+
+- Fix textmate rules processing when multiproperty on single string is defined
+
+## [1.22.0], 15 Jan 2026
 
 - Add description to README and add new metatags for SEO optimization
 
