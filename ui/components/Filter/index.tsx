@@ -3,6 +3,7 @@ import { Filter } from "../../../types";
 import EyeDropper from "../EyeDropper";
 import { useStore } from "../../useStore";
 import styles from "./filter.module.css";
+import Checkbox from "../Checkbox";
 
 const Filter = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -14,6 +15,9 @@ const Filter = () => {
     setSearchString,
     searchString,
     loading,
+    showSimpleCheck,
+    simpleSearchEnabled,
+    setToggleSimpleSearch,
   } = store;
 
   useEffect(() => {
@@ -90,6 +94,19 @@ const Filter = () => {
         </div>
       </div>
       <hr className="vscode-divider" />
+      {showSimpleCheck && (
+        <>
+          <Checkbox
+            id={`simple-check`}
+            isDefaultChecked={simpleSearchEnabled}
+            title={`${translations["Simple Search"]}`}
+            onToggleChecked={(isChecked) => {
+              setToggleSimpleSearch(isChecked);
+            }}
+          />
+          <hr className="vscode-divider" />
+        </>
+      )}
     </>
   );
 };

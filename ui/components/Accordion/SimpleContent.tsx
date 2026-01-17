@@ -108,11 +108,7 @@ const Accordion: FC<AccordionProps> = ({
   }
 
   return (
-    <details
-      ref={accordionRef}
-      className="vscode-collapsible"
-      {...(isOpen && { open: true })}
-    >
+    <>
       <summary onClick={onToggleAccordion}>
         <i className="codicon codicon-chevron-right icon-arrow"></i>
         <h2 className="title">
@@ -147,7 +143,7 @@ const Accordion: FC<AccordionProps> = ({
           />
         )}
       </div>
-    </details>
+    </>
   );
 };
 

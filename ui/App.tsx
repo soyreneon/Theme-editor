@@ -35,6 +35,7 @@ export function App() {
     error,
     message,
     searchString,
+    setToggleSimpleCheck,
   } = store;
   const debouncedSearch = useDebounce<string>(searchString, 500);
 
@@ -53,6 +54,7 @@ export function App() {
     };
     const cleanString = (s: string) => s.toLowerCase().trim();
 
+    setToggleSimpleCheck(false);
     if (debouncedSearch) {
       if (debouncedSearch.length >= 6 && chroma.valid(debouncedSearch)) {
         // is an exact color match or close color
@@ -83,6 +85,7 @@ export function App() {
         setList(newList);
       } else {
         // is a prop
+        setToggleSimpleCheck(true);
         const newList = colorOrders[filter].filter((color) => {
           if (["all", "colors"].includes(filter)) {
             const isMatch = colorMap.colorsMap[color]?.find((p) =>
