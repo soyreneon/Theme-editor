@@ -32,26 +32,6 @@
 .typeContainer ul {
   padding-left: 3px;
 }
-.typeContainer li .eye {
-  font-size: 11px;
-  color: var(--vscode-input-foreground);
-  margin-right: 2px;
-}
-.typeContainer li .pencil {
-  display: none;
-  font-size: 11px;
-}
-.typeContainer li:hover .pencil {
-  display: initial;
-}
-.typeContainer li .dash {
-  display: initial;
-  opacity: 0.5;
-  font-size: 11px;
-}
-.typeContainer li:hover .dash {
-  display: none;
-}
 .typeContainer .header a i {
   margin-top: -1px;
 }
@@ -61,15 +41,6 @@
 .typeContainer li {
   font-size: 0.85em;
   overflow-x: hidden;
-}
-.message {
-  margin-top: 8px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background-color: var(--vscode-editor-background);
-  border: solid 0.5px var(--vscode-terminal-ansiBrightYellow);
-  color: var(--vscode-editor-foreground);
-  font-size: 0.84em;
 }
 @media (max-width: 320px) {
   .typeContainer .header a span {

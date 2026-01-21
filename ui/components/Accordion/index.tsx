@@ -1,6 +1,7 @@
 import { type FC, useEffect, useRef, useMemo, useState } from "react";
 import { type ColorMap, type TunerSettings } from "../../../types";
 import AccordionContent from "./AccordionContent";
+import SimpleContent from "./SimpleContent";
 import TextMatch from "../TextMatch";
 import styles from "./accordion.module.css";
 import { useStore } from "../../useStore";
@@ -59,7 +60,7 @@ const Accordion: FC<AccordionProps> = ({
       return getColorLength(
         (filter === "tokenColors"
           ? colormaps.tokenColorsMap[color]?.scope
-          : colormaps[`${filter}Map` as keyof ColorMap][color]) as []
+          : colormaps[`${filter}Map` as keyof ColorMap][color]) as [],
       );
     }
 
@@ -69,7 +70,7 @@ const Accordion: FC<AccordionProps> = ({
         getColorLength(
           (current === "tokenColors"
             ? colormaps.tokenColorsMap[color]?.scope
-            : colormaps[`${current}Map` as keyof ColorMap][color]) as []
+            : colormaps[`${current}Map` as keyof ColorMap][color]) as [],
         )
       );
     }, 0) as number;
@@ -104,7 +105,13 @@ const Accordion: FC<AccordionProps> = ({
   }
 
   if (simpleSearchEnabled) {
-    return <p>hola </p>;
+    return (
+      <SimpleContent
+        color={color}
+        colormaps={colormaps}
+        match={debouncedSearch}
+      />
+    );
   }
 
   return (

@@ -15,7 +15,6 @@ import {
   type SemanticTokenColors,
 } from "../../types";
 import captions from "../language";
-import { show } from "../components/Dropdown/dropdown.module.css";
 
 type CaptionKeys = (typeof captions)[number];
 export type ExportObj = {
@@ -82,7 +81,7 @@ const initialState = {
   tunerSettings: {},
   translations: captions.reduce(
     (acc, caption) => ({ ...acc, [caption]: caption }),
-    {} as Record<CaptionKeys, string>
+    {} as Record<CaptionKeys, string>,
   ),
   themeType: "",
   error: "",
@@ -194,6 +193,8 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
           alphaColors: message.alphaColors,
           message: message.message,
           loading: false,
+          showSimpleCheck: false,
+          simpleSearchEnabled: false,
           themeType: message.themeType,
           searchString: prev.title !== message.theme ? "" : prev.searchString,
           filter: prev.title !== message.theme ? "all" : prev.filter,

@@ -1,0 +1,53 @@
+.propertyItem {
+  font-size: 1em;
+  overflow-x: hidden;
+}
+.bullet {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 8px;
+  border-left-width: 1px;
+  border-bottom-width: 1px;
+  border-color: #999;
+  margin-right: 5px;
+}
+.propertyItem a {
+  color: var(--vscode-foreground);
+  margin-right: 7px;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.propertyItem a:hover {
+  text-decoration: underline;
+}
+.propertyItem .eye {
+  font-size: 11px !important;
+  color: var(--vscode-input-foreground);
+  margin-right: 2px;
+}
+.pencil {
+  display: none !important;
+  font-size: 11px !important;
+}
+.propertyItem:hover .pencil {
+  display: initial !important;
+}
+.propertyItem .dash {
+  display: initial;
+  opacity: 0.5;
+  font-size: 11px !important;
+}
+.propertyItem:hover .dash {
+  display: none;
+}
+.message {
+  margin-top: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: var(--vscode-editor-background);
+  border: solid 0.5px var(--vscode-terminal-ansiBrightYellow);
+  color: var(--vscode-editor-foreground);
+  font-size: 0.84em;
+}
