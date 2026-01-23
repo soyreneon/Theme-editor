@@ -2,6 +2,10 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
+## [1.22.2], 23 Jan 2026
+
+- prettier config to avoid overwrite multiple files
+
 ## [1.22.1], 17 Jan 2026
 
 - Fix textmate rules processing when multiproperty on single string is defined
