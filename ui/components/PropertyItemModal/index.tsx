@@ -94,10 +94,14 @@ const PropertyItemModal: FC<PropertyItemModalProps> = ({
         <Modal
           isFullWidth
           onAccept={handleModal}
-          message={`${translations["Individual color change"]}: ${propertyName.current}`}
+          // message={`${translations["Individual color change"]}: ${propertyName.current}`}
           isApplyEnabled={inputValue !== color}
         >
           <div>
+            <h3>
+              {translations["Individual color change"]}{" "}
+              <span className="vscode-badge">{propertyName.current}</span>
+            </h3>
             <ColorBox
               value={`${inputValue}${getAlphaProp(propertyName.current)}`}
               setValue={setInputValue}

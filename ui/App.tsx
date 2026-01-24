@@ -9,6 +9,7 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import chroma from "chroma-js";
 import { useStore, vscode } from "./useStore";
+import { isHexColorPart, cleanString } from "./utils";
 import captions from "./language";
 import Accordion from "./components/Accordion";
 import Loader from "./components/Loader";
@@ -48,12 +49,6 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    const isHexColorPart = (str: string): boolean => {
-      const regex = /^[#abcdefABCDEF0123456789]+$/i;
-      return regex.test(str);
-    };
-    const cleanString = (s: string) => s.toLowerCase().trim();
-
     setToggleSimpleCheck(false);
     if (debouncedSearch) {
       if (debouncedSearch.length >= 6 && chroma.valid(debouncedSearch)) {

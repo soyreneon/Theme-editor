@@ -14,21 +14,32 @@ import {
   type ColorOrders,
   type PropertyColor,
 } from "../types/";
+import chroma from "chroma-js";
 
 // Helper function to normalize color to 6-digit hex without alpha and lowercase
 export const normalizeColor = (color: string): string => {
-  if (color.length === 4) {
-    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toLowerCase();
-  } else if (color.length === 5) {
-    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toLowerCase();
-  } else if (color.length === 9) {
-    return color.substring(0, 7).toLowerCase();
+  if (chroma.valid(color)) {
+    return chroma(color).hex("rgb");
   }
-  return color.toLowerCase();
+  return "";
+
+  // if (color.length === 4) {
+  //   return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toLowerCase();
+  // } else if (color.length === 5) {
+  //   return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toLowerCase();
+  // } else if (color.length === 9) {
+  //   return color.substring(0, 7).toLowerCase();
+  // }
+  // return color.toLowerCase();
 };
 
 // get alpha chanel in color code
 export const getAlpha = (color: string): string => {
+  // if (chroma.valid(color)) {
+  //   const alpha = chroma(color).hex();
+  //   return `${alpha[7]}${alpha[8]}`;
+  // }
+  // return "";
   if (color.length === 5) {
     return `${color[4]}${color[4]}`.toLowerCase();
   } else if (color.length === 9) {
