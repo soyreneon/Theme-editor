@@ -36,7 +36,7 @@ export const normalizeColor = (color: string): string => {
 // get alpha chanel in color code
 export const getAlpha = (color: string): string => {
   // if (chroma.valid(color)) {
-  //   const alpha = chroma(color).hex();
+  //   const alpha = chroma(color).hex("rgba");
   //   return `${alpha[7]}${alpha[8]}`;
   // }
   // return "";
