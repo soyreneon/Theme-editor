@@ -79,10 +79,12 @@ const PropertyItemModal: FC<PropertyItemModalProps> = ({
           }}
         />
       ) : (
-        <i className={`codicon codicon-dash ${styles.dash}`} />
+        <>
+          <i className={`codicon codicon-dash ${styles.dash}`} />
+          <i className={`codicon codicon-edit ${styles.pencil}`} />
+        </>
       )}
 
-      <i className={`codicon codicon-edit ${styles.pencil}`} />
       {getAlphaProp(prop) && (
         <i className={`codicon codicon-eye ${styles.eye}`} />
       )}

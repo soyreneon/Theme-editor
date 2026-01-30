@@ -4,7 +4,7 @@
 }
 .bullet {
   display: inline-block;
-  width: 10px;
+  width: 13px;
   height: 10px;
   /* border-radius: 8px; */
   border-style: solid;
@@ -12,9 +12,9 @@
   border-color: var(--vscode-editor-inactiveSelectionBackground);
   margin-right: 5px;
 }
-.propertyItem:hover .bullet {
+/* .propertyItem:hover .bullet {
   display: none !important;
-}
+} */
 .propertyItem a {
   color: var(--vscode-foreground);
   margin-right: 7px;

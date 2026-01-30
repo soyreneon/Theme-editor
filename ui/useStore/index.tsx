@@ -81,7 +81,7 @@ const initialState = {
   tunerSettings: {},
   translations: captions.reduce(
     (acc, caption) => ({ ...acc, [caption]: caption }),
-    {} as Record<CaptionKeys, string>,
+    {} as Record<CaptionKeys, string>
   ),
   themeType: "",
   error: "",
@@ -194,7 +194,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
           message: message.message,
           loading: false,
           showSimpleCheck: false,
-          simpleSearchEnabled: false,
+          simpleSearchEnabled: prev.title === message.theme,
           themeType: message.themeType,
           searchString: prev.title !== message.theme ? "" : prev.searchString,
           filter: prev.title !== message.theme ? "all" : prev.filter,
