@@ -2,9 +2,9 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
-## [1.22.3], 29 Jan 2026
+## [1.22.4], 29 Jan 2026
 
-- add meta tags for seo optimization
+- add meta tags for seo optimization and add image for transparency color picker
 
 ## [1.22.2], 23 Jan 2026
 
