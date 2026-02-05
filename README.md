@@ -1,6 +1,6 @@
 ## ThemeTuner
 
-Customize any `VSCode` theme you want. ThemeTuner will change/fix colors globally in `settings.json` file for your current theme. It scans all the colors defined (even those defined without this extension) and displays them sorted by number of occurrences.
+Customize any `VSCode` theme you want. ThemeTuner will change/fix colors globally in `settings.json` file for your current theme. It scans all the colors defined (even those defined without this extension) and displays them sorted by number of occurrences. No extra config needed.
 
 # Demo
 
@@ -48,7 +48,7 @@ This extension has the following structure:
 - Add property (if prop already exist, modify value)
 - Filter by property type
 - Eyedropper tool for searching
-- Search by text(color or property)
+- Search by text(color or property and new simple search feature)
 - Color list (Each color has its own tools and detailed property list)
 
 Check this reference image:
