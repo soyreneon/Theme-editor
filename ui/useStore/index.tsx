@@ -39,9 +39,13 @@ interface StoreContextType {
   message: string;
   filter: Filter;
   searchString: string;
+  showSimpleCheck: boolean;
+  simpleSearchEnabled: boolean;
   lastColorChanged: string;
   setLoading: (loading: boolean) => void;
   setSearchString: (value: string) => void;
+  setToggleSimpleSearch: (value: boolean) => void;
+  setToggleSimpleCheck: (value: boolean) => void;
   setFilter: (filter: Filter) => void;
   setMessage: (text: string) => void;
   setLastColorChanged: (text: string) => void;
@@ -84,6 +88,8 @@ const initialState = {
   message: "",
   lastColorChanged: "",
   searchString: "",
+  showSimpleCheck: false,
+  simpleSearchEnabled: false,
   filter: "all" as Filter,
 };
 
@@ -118,11 +124,27 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
     }));
   };
 
-  // Add setMessage function
+  // Add setSearchString function
   const setSearchString = (searchString: string) => {
     setState((prev) => ({
       ...prev,
       searchString,
+    }));
+  };
+
+  // Add setToggleSimpleSearch function
+  const setToggleSimpleSearch = (enabled: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      simpleSearchEnabled: enabled,
+    }));
+  };
+
+  // Add setToggleSimpleSearch function
+  const setToggleSimpleCheck = (enabled: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      showSimpleCheck: enabled,
     }));
   };
 
@@ -171,6 +193,8 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
           alphaColors: message.alphaColors,
           message: message.message,
           loading: false,
+          showSimpleCheck: false,
+          simpleSearchEnabled: prev.title === message.theme,
           themeType: message.themeType,
           searchString: prev.title !== message.theme ? "" : prev.searchString,
           filter: prev.title !== message.theme ? "all" : prev.filter,
@@ -207,6 +231,8 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
         ...state,
         setLoading,
         setSearchString,
+        setToggleSimpleSearch,
+        setToggleSimpleCheck,
         setFilter,
         setMessage,
         setLastColorChanged,

@@ -1,10 +1,12 @@
 import { type FC, useEffect, useRef, useMemo, useState } from "react";
 import { type ColorMap, type TunerSettings } from "../../../types";
 import AccordionContent from "./AccordionContent";
+import SimpleContent from "./SimpleContent";
 import TextMatch from "../TextMatch";
 import styles from "./accordion.module.css";
 import { useStore } from "../../useStore";
 import { useDebounce } from "../../hooks/useDebounce";
+import { isHexColorPart, cleanString } from "../../utils";
 
 interface AccordionProps {
   color: string;
@@ -30,6 +32,7 @@ const Accordion: FC<AccordionProps> = ({
     setLastColorChanged,
     tunerSettings,
     searchString,
+    simpleSearchEnabled,
   } = store;
   const debouncedSearch = useDebounce<string>(searchString, 500);
   const accordionRef = useRef<HTMLDetailsElement>(null);
@@ -100,6 +103,22 @@ const Accordion: FC<AccordionProps> = ({
 
   if (getIsEmptyColor()) {
     return null;
+  }
+
+  // console.log("h"); // debug re-renders
+
+  if (
+    simpleSearchEnabled &&
+    cleanString(debouncedSearch) !== "" &&
+    !isHexColorPart(cleanString(debouncedSearch))
+  ) {
+    return (
+      <SimpleContent
+        color={color}
+        colormaps={colormaps}
+        match={debouncedSearch}
+      />
+    );
   }
 
   return (

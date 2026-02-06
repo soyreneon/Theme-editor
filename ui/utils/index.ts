@@ -20,3 +20,10 @@ const setValidColor = (n: number) => {
   }
   return n;
 };
+
+export const isHexColorPart = (str: string): boolean => {
+  const regex = /^[#abcdefABCDEF0123456789]+$/i;
+  return regex.test(str);
+};
+
+export const cleanString = (s: string) => s.toLowerCase().trim();

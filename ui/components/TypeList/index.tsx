@@ -1,13 +1,9 @@
-import { type FC, useState, useRef, useEffect } from "react";
-import chroma from "chroma-js";
-import { useDebounce } from "../../hooks/useDebounce";
+import { type FC } from "react";
 import styles from "./typelist.module.css";
-import { useStore, vscode } from "../../useStore";
-import { type Filter, type Group } from "../../../types";
-import ColorBox from "../ColorBox";
-import Modal from "../Modal";
+import { useStore } from "../../useStore";
+import { type Filter } from "../../../types";
 import Checkbox from "../Checkbox";
-import TextMatch from "../TextMatch";
+import PropertyItemModal from "../PropertyItemModal";
 
 interface TypeListProps {
   color: string;
@@ -18,13 +14,6 @@ interface TypeListProps {
   onToggleChecked?: (value: boolean) => void;
 }
 
-const applyTo: Group = {
-  colors: false,
-  tokenColors: false,
-  syntax: false,
-  semanticTokenColors: false,
-};
-
 const TypeList: FC<TypeListProps> = ({
   color,
   list,
@@ -33,48 +22,10 @@ const TypeList: FC<TypeListProps> = ({
   type,
   onToggleChecked,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState<string>(color);
   const store = useStore();
-  const propertyName = useRef<string>("");
-  const {
-    translations,
-    filter,
-    alphaColors,
-    searchString,
-    setLastColorChanged,
-    setLoading,
-  } = store;
-  const debouncedSearch = useDebounce<string>(searchString, 1500);
+  const { translations, filter } = store;
   const checkId = `add-${color.slice(1)}-${title.replace(/\s+/g, "")}`;
   const propsList = list?.sort();
-
-  const onHandleClick = (property: string) => {
-    setIsModalOpen(true);
-    propertyName.current = property;
-  };
-
-  const handleModal = (isAccepted: boolean) => {
-    if (isAccepted) {
-      setLoading(true);
-      setLastColorChanged(chroma(inputValue).hex("rgb"));
-      vscode.postMessage({
-        command: "singleProp",
-        property: propertyName.current,
-        color: inputValue,
-        oldColor: color,
-        applyTo: { ...applyTo, [type]: true },
-        // pass total count of properties with this color from parent
-      });
-    }
-
-    setInputValue(color);
-    setIsModalOpen(false);
-  };
-  const getAlphaProp = (propName: string): string =>
-    alphaColors.find((alpha) => Object.keys(alpha)[0] === propName)?.[
-      propName
-    ] || "";
 
   if (type !== filter && filter !== "all") return null;
   return (
@@ -103,44 +54,10 @@ const TypeList: FC<TypeListProps> = ({
         <ul>
           {propsList.map((prop) => (
             <li key={prop}>
-              <i className={`codicon codicon-dash ${styles.dash}`} />
-              <i className={`codicon codicon-edit ${styles.pencil}`} />
-              {getAlphaProp(prop) && (
-                <i className={`codicon codicon-eye ${styles.eye}`} />
-              )}
-
-              <a onClick={() => onHandleClick(prop)} tabIndex={0}>
-                <TextMatch text={prop} match={debouncedSearch} />
-              </a>
+              <PropertyItemModal prop={prop} type={type} color={color} />
             </li>
           ))}
         </ul>
-        {isModalOpen && (
-          <Modal
-            isFullWidth
-            onAccept={handleModal}
-            message={`${translations["Individual color change"]}: ${propertyName.current}`}
-            isApplyEnabled={inputValue !== color}
-          >
-            <div>
-              <ColorBox
-                value={`${inputValue}${getAlphaProp(propertyName.current)}`}
-                setValue={setInputValue}
-                hasAlpha={type === "colors"}
-                hasColorPalette
-              />
-              {type === "colors" && (
-                <p className={styles.message}>
-                  {
-                    translations[
-                      "Before changing transparency, review if this color must be transparent or it will obscure content"
-                    ]
-                  }
-                </p>
-              )}
-            </div>
-          </Modal>
-        )}
       </div>
     )
   );

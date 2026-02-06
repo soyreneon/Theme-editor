@@ -48,6 +48,7 @@ const captions = [
   "include color",
   "Not included",
   "Switch colors",
+  "Simple Search",
 ] as const;
 
 export default captions;
