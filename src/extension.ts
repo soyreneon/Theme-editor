@@ -210,7 +210,7 @@ class ThemeEditorPanel {
           type: "refresh",
           loading: true,
         });
-        this.loadCurrentTheme();
+        this.loadCurrentTheme("", "loadTheme");
       }
     });
 
@@ -233,7 +233,7 @@ class ThemeEditorPanel {
               // language: vscode.env.language,
               translations,
             });
-            this.loadCurrentTheme();
+            this.loadCurrentTheme("", "loadTheme");
             return;
           case "save":
             // new method: get older color, search on this.colormaps and replace to the new color on settings
@@ -653,7 +653,7 @@ class ThemeEditorPanel {
     }
   }
 
-  private loadCurrentTheme(message?: string): void {
+  private loadCurrentTheme(message?: string, type?: string): void {
     this.themeName =
       vscode.workspace
         .getConfiguration("workbench")
@@ -746,7 +746,7 @@ class ThemeEditorPanel {
           };
 
           this._panel?.webview.postMessage({
-            type: "themeChanged",
+            type: type ?? "themeChanged",
             themeType: getThemeType(
               this.themeObj.type,
               themeJson.colors?.["editor.background"],

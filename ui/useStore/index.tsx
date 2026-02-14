@@ -179,7 +179,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
         };
       };
 
-      if (message.type === "themeChanged") {
+      if (message.type === "themeChanged" || message.type === "loadTheme") {
         setState((prev) => ({
           ...prev,
           title: message.theme,
@@ -194,7 +194,8 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({
           message: message.message,
           loading: false,
           showSimpleCheck: false,
-          simpleSearchEnabled: prev.title === message.theme,
+          simpleSearchEnabled:
+            message.type === "loadTheme" ? false : prev.simpleSearchEnabled,
           themeType: message.themeType,
           searchString: prev.title !== message.theme ? "" : prev.searchString,
           filter: prev.title !== message.theme ? "all" : prev.filter,

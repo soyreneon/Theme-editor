@@ -2,13 +2,14 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
-## [1.23.3], 29 Jan 2026
+## [1.23.4], 13 Feb 2026
 
 - Add a new simple search feature for property search: it will make easier to find specific properties
 - Fix bug when a color from theme is undefined or named by color name instead of hex code
 - Modify single color change property desing to have a colorful badge
 - Code reorganized
 - Fix tags
+- Other bug fixes
 
 ## [1.22.4], 29 Jan 2026
 
