@@ -54,5 +54,6 @@
   "include color": "incluir color",
   "Not included": "No incluido",
   "Switch colors": "Cambiar colores",
-  "Simple Search": "Búsqueda simple"
+  "Simple Search": "Búsqueda simple",
+  "Theme customizations detected in workspace settings. The Theme Editor extension may not work properly. It's recommended to apply theme changes at the user level instead.": "Se detectaron personalizaciones de tema en la configuración del espacio de trabajo. La extensión Theme Editor puede no funcionar correctamente. Se recomienda aplicar cambios de tema a nivel de usuario."
 }

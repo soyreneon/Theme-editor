@@ -40,6 +40,7 @@ import {
   resetTunerThemeSettings,
   saveTheme,
   setTunerSetting,
+  detectWorkspaceThemeProperties,
 } from "./themeUtils";
 
 // This method is called when your extension is activated
@@ -745,33 +746,40 @@ class ThemeEditorPanel {
             return "";
           };
 
-          this._panel?.webview.postMessage({
-            type: type ?? "themeChanged",
-            themeType: getThemeType(
-              this.themeObj.type,
-              themeJson.colors?.["editor.background"],
-              globalCustomizations.colors?.["editor.background"]
-            ),
-            theme: this.themeName,
-            exportObj: {
-              tokenColors: tokenColorMapToTextMateRules(
-                fullThemeJson.tokenColors || {}
-              )?.textMateRules,
-              // )?.textMateRules,
-              colors: invertColorMapping(this.colormaps.colorsMap),
-              syntax: fullThemeJson.syntax,
-              semanticTokenColors: fullThemeJson.semanticTokenColors,
-            },
-            // json: themeJson, // not using now
-            colormaps: this.colormaps,
-            alphaColors: this.alphaColors,
-            customColorList: customColorList,
-            colors,
-            // colors: colors,
-            error: "",
-            tunerSettings: customNames,
-            ...(message && { message }),
-          });
+          // Detect workspace-level theme properties
+          detectWorkspaceThemeProperties(this.themeName).then(
+            (workspaceMessage) => {
+              const finalMessage = workspaceMessage || message;
+
+              this._panel?.webview.postMessage({
+                type: type ?? "themeChanged",
+                themeType: getThemeType(
+                  this.themeObj.type,
+                  themeJson.colors?.["editor.background"],
+                  globalCustomizations.colors?.["editor.background"]
+                ),
+                theme: this.themeName,
+                exportObj: {
+                  tokenColors: tokenColorMapToTextMateRules(
+                    fullThemeJson.tokenColors || {}
+                  )?.textMateRules,
+                  // )?.textMateRules,
+                  colors: invertColorMapping(this.colormaps.colorsMap),
+                  syntax: fullThemeJson.syntax,
+                  semanticTokenColors: fullThemeJson.semanticTokenColors,
+                },
+                // json: themeJson, // not using now
+                colormaps: this.colormaps,
+                alphaColors: this.alphaColors,
+                customColorList: customColorList,
+                colors,
+                // colors: colors,
+                error: "",
+                tunerSettings: customNames,
+                ...(finalMessage && { message: finalMessage }),
+              });
+            }
+          );
           // try {
         } catch (error) {
           this._panel?.webview.postMessage({

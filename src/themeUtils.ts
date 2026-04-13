@@ -438,3 +438,92 @@ export const setTunerSetting = async (
     );
   }
 };
+
+/**
+ * Detects workspace-level theme properties applied to the current theme
+ * Reads only from .vscode/settings.json, not global user settings
+ * Returns warning message if workspace customizations are found
+ */
+export const detectWorkspaceThemeProperties = async (
+  themeName: string
+): Promise<string | null> => {
+  try {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || workspaceFolders.length === 0) {
+      return null;
+    }
+
+    const workspaceFolder = workspaceFolders[0];
+
+    // Read workspace settings file directly from .vscode/settings.json
+    const settingsPath = vscode.Uri.joinPath(
+      workspaceFolder.uri,
+      ".vscode",
+      "settings.json"
+    );
+
+    let workspaceSettings: Record<string, any> = {};
+    try {
+      const settingsContent = await vscode.workspace.fs.readFile(settingsPath);
+      const decoder = new TextDecoder();
+      const settingsText = decoder.decode(settingsContent);
+      workspaceSettings = parse(settingsText);
+    } catch (err) {
+      // .vscode/settings.json doesn't exist or can't be read, which is fine
+      return null;
+    }
+
+    // Check if current theme has workspace-level customizations
+    const themeKey = `[${themeName}]`;
+
+    const workspaceColorCustomizations =
+      workspaceSettings["workbench.colorCustomizations"] || {};
+    const workspaceTokenColorCustomizations =
+      workspaceSettings["editor.tokenColorCustomizations"] || {};
+    const workspaceSemanticTokenColorCustomizations =
+      workspaceSettings["editor.semanticTokenColorCustomizations"] || {};
+
+    console.log(
+      "Workspace color customizations:",
+      workspaceColorCustomizations
+    );
+    console.log(
+      "Workspace token color customizations:",
+      workspaceTokenColorCustomizations
+    );
+    console.log(
+      "Workspace semantic token color customizations:",
+      workspaceSemanticTokenColorCustomizations
+    );
+
+    const hasWorkspaceColors =
+      workspaceColorCustomizations[themeKey] &&
+      !isEmpty(workspaceColorCustomizations[themeKey]);
+
+    const hasWorkspaceTokenColors =
+      workspaceTokenColorCustomizations[themeKey] &&
+      (Array.isArray(workspaceTokenColorCustomizations[themeKey])
+        ? workspaceTokenColorCustomizations[themeKey].length > 0
+        : Object.keys(workspaceTokenColorCustomizations[themeKey]).length > 0);
+
+    const hasWorkspaceSemanticTokenColors =
+      workspaceSemanticTokenColorCustomizations[themeKey] &&
+      workspaceSemanticTokenColorCustomizations[themeKey]?.rules &&
+      !isEmpty(workspaceSemanticTokenColorCustomizations[themeKey].rules);
+
+    if (
+      hasWorkspaceColors ||
+      hasWorkspaceTokenColors ||
+      hasWorkspaceSemanticTokenColors
+    ) {
+      return vscode.l10n.t(
+        "Theme customizations detected in workspace settings. The Theme Editor extension may not work properly. It's recommended to apply theme changes at the user level instead."
+      );
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error detecting workspace theme properties:", error);
+    return null;
+  }
+};

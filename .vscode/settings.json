@@ -1,13 +1,111 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "files.exclude": {
-        "out": false, // set this to true to hide the "out" folder with the compiled JS files
-        "dist": false // set this to true to hide the "dist" folder with the compiled JS files
-    },
-    "search.exclude": {
-        "out": true, // set this to false to include "out" folder in search results
-        "dist": true // set this to false to include "dist" folder in search results
-    },
-    // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-    "typescript.tsc.autoDetect": "off"
+  "files.exclude": {
+    "out": false, // set this to true to hide the "out" folder with the compiled JS files
+    "dist": false // set this to true to hide the "dist" folder with the compiled JS files
+  },
+  "search.exclude": {
+    "out": true, // set this to false to include "out" folder in search results
+    "dist": true // set this to false to include "dist" folder in search results
+  },
+  // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
+  "typescript.tsc.autoDetect": "off",
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#4A2B6A",
+    "[Atom One Dark]": {
+      "sideBar.background": "#4791ffFF"
+    }
+  },
+  "editor.tokenColorCustomizations": {
+    // "comments": "#229977",
+    // "textMateRules": [
+    //   {
+    //     "scope": [
+    //       "string",
+    //       "markup.inserted",
+    //       "markup.raw",
+    //       "source.elixir quoted",
+    //       "source.json meta.structure.dictionary.json > value.json > string.quoted.json",
+    //       "source.json meta.structure.array.json > value.json > string.quoted.json",
+    //       "source.json meta.structure.dictionary.json > value.json > string.quoted.json > punctuation",
+    //       "source.json meta.structure.array.json > value.json > string.quoted.json > punctuation",
+    //       "string.quoted.double punctuation",
+    //       "source.js meta.template.expression.js punctuation.accessor",
+    //       "source.ts meta.template.expression.ts punctuation.accessor",
+    //       "source.tsx meta.template.expression.tsx punctuation.accessor",
+    //       "entity.name.type.module.js",
+    //       "entity.name.type.module.ts",
+    //       "entity.name.type.module.jsx",
+    //       "entity.name.type.module.tsx",
+    //       "meta.template.expression.js string.quoted punctuation.definition",
+    //       "meta.template.expression.jsx string.quoted punctuation.definition",
+    //       "meta.template.expression.ts string.quoted punctuation.definition",
+    //       "meta.template.expression.tsx string.quoted punctuation.definition",
+    //       "meta.template.expression.js string.template punctuation.definition.string.template",
+    //       "meta.template.expression.jsx string.template punctuation.definition.string.template",
+    //       "meta.template.expression.ts string.template punctuation.definition.string.template",
+    //       "meta.template.expression.tsx string.template punctuation.definition.string.template",
+    //       "markup.inline.raw.markdown",
+    //       "keyword.operator.other.ruby"
+    //     ],
+    //     "settings": {
+    //       "foreground": "#d802ec"
+    //     }
+    //   }
+    // ],
+    "[Visual Studio Dark]": {
+      // "comments": "#229977",
+      // "textMateRules": [
+      //   { "scope": "string", "settings": { "foreground": "#f2ec3d" } },
+      //   {
+      //     "scope": "string.quoted.double punctuation",
+      //     "settings": { "foreground": "#02ec3d" }
+      //   }
+      // ]
+      // "textMateRules": [
+      //   {
+      //     "scope": [
+      //       "string",
+      //       "markup.inserted",
+      //       "markup.raw",
+      //       "source.elixir quoted",
+      //       "source.json meta.structure.dictionary.json > value.json > string.quoted.json",
+      //       "source.json meta.structure.array.json > value.json > string.quoted.json",
+      //       "source.json meta.structure.dictionary.json > value.json > string.quoted.json > punctuation",
+      //       "source.json meta.structure.array.json > value.json > string.quoted.json > punctuation",
+      //       "string.quoted.double punctuation",
+      //       "source.js meta.template.expression.js punctuation.accessor",
+      //       "source.ts meta.template.expression.ts punctuation.accessor",
+      //       "source.tsx meta.template.expression.tsx punctuation.accessor",
+      //       "entity.name.type.module.js",
+      //       "entity.name.type.module.ts",
+      //       "entity.name.type.module.jsx",
+      //       "entity.name.type.module.tsx",
+      //       "meta.template.expression.js string.quoted punctuation.definition",
+      //       "meta.template.expression.jsx string.quoted punctuation.definition",
+      //       "meta.template.expression.ts string.quoted punctuation.definition",
+      //       "meta.template.expression.tsx string.quoted punctuation.definition",
+      //       "meta.template.expression.js string.template punctuation.definition.string.template",
+      //       "meta.template.expression.jsx string.template punctuation.definition.string.template",
+      //       "meta.template.expression.ts string.template punctuation.definition.string.template",
+      //       "meta.template.expression.tsx string.template punctuation.definition.string.template",
+      //       "markup.inline.raw.markdown",
+      //       "keyword.operator.other.ruby"
+      //     ],
+      //     "settings": {
+      //       "foreground": "#02ec3d"
+      //     }
+      //   }
+      // ]
+    }
+  },
+  "editor.semanticTokenColorCustomizations": {
+    // "[Visual Studio Dark]": {
+    //   "rules": {
+    //     "variable.declaration": {
+    //       "foreground": "#f07eea"
+    //     }
+    //   }
+    // }
+  }
 }
