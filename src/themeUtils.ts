@@ -442,7 +442,6 @@ export const setTunerSetting = async (
 /**
  * Detects workspace-level theme properties applied to the current theme
  * Reads only from .vscode/settings.json, not global user settings
- * Returns warning message if workspace customizations are found
  */
 export const detectWorkspaceThemeProperties = async (
   themeName: string
@@ -511,13 +510,21 @@ export const detectWorkspaceThemeProperties = async (
       workspaceSemanticTokenColorCustomizations[themeKey]?.rules &&
       !isEmpty(workspaceSemanticTokenColorCustomizations[themeKey].rules);
 
+    console.log(
+      "W customizations:",
+      themeKey,
+      hasWorkspaceColors,
+      hasWorkspaceTokenColors,
+      hasWorkspaceSemanticTokenColors
+    );
+
     if (
       hasWorkspaceColors ||
       hasWorkspaceTokenColors ||
       hasWorkspaceSemanticTokenColors
     ) {
       return vscode.l10n.t(
-        "Theme customizations detected in workspace settings. The Theme Editor extension may not work properly. It's recommended to apply theme changes at the user level instead."
+        "Theme customizations detected in workspace settings. ThemeTuner may not work properly. It's recommended to apply theme changes at the user level instead."
       );
     }
 

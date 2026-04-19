@@ -207,6 +207,8 @@ class ThemeEditorPanel {
     // on switching theme
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration("workbench.colorTheme")) {
+        detectWorkspaceThemeProperties(this.themeName);
+        // console.log("Theme change detected, loading theme...");
         this._panel?.webview.postMessage({
           type: "refresh",
           loading: true,
@@ -224,6 +226,8 @@ class ThemeEditorPanel {
             //   this.firstLoad = false;
             //   return;
             // }
+            detectWorkspaceThemeProperties(this.themeName);
+            // console.log("Theme READY, loading theme...");
             const translations: Record<string, string> = {};
             message.captions.map(
               (c: string) => (translations[c] = vscode.l10n.t(c))
@@ -746,40 +750,33 @@ class ThemeEditorPanel {
             return "";
           };
 
-          // Detect workspace-level theme properties
-          detectWorkspaceThemeProperties(this.themeName).then(
-            (workspaceMessage) => {
-              const finalMessage = workspaceMessage || message;
-
-              this._panel?.webview.postMessage({
-                type: type ?? "themeChanged",
-                themeType: getThemeType(
-                  this.themeObj.type,
-                  themeJson.colors?.["editor.background"],
-                  globalCustomizations.colors?.["editor.background"]
-                ),
-                theme: this.themeName,
-                exportObj: {
-                  tokenColors: tokenColorMapToTextMateRules(
-                    fullThemeJson.tokenColors || {}
-                  )?.textMateRules,
-                  // )?.textMateRules,
-                  colors: invertColorMapping(this.colormaps.colorsMap),
-                  syntax: fullThemeJson.syntax,
-                  semanticTokenColors: fullThemeJson.semanticTokenColors,
-                },
-                // json: themeJson, // not using now
-                colormaps: this.colormaps,
-                alphaColors: this.alphaColors,
-                customColorList: customColorList,
-                colors,
-                // colors: colors,
-                error: "",
-                tunerSettings: customNames,
-                ...(finalMessage && { message: finalMessage }),
-              });
-            }
-          );
+          this._panel?.webview.postMessage({
+            type: type ?? "themeChanged",
+            themeType: getThemeType(
+              this.themeObj.type,
+              themeJson.colors?.["editor.background"],
+              globalCustomizations.colors?.["editor.background"]
+            ),
+            theme: this.themeName,
+            exportObj: {
+              tokenColors: tokenColorMapToTextMateRules(
+                fullThemeJson.tokenColors || {}
+              )?.textMateRules,
+              // )?.textMateRules,
+              colors: invertColorMapping(this.colormaps.colorsMap),
+              syntax: fullThemeJson.syntax,
+              semanticTokenColors: fullThemeJson.semanticTokenColors,
+            },
+            // json: themeJson, // not using now
+            colormaps: this.colormaps,
+            alphaColors: this.alphaColors,
+            customColorList: customColorList,
+            colors,
+            // colors: colors,
+            error: "",
+            tunerSettings: customNames,
+            message,
+          });
           // try {
         } catch (error) {
           this._panel?.webview.postMessage({
