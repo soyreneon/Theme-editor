@@ -113,6 +113,8 @@ ThemeTuner was designed to edit themes guided by our vision, so you don't need t
 - Eye dropper has compatibility issues on linux, a workaround using a native solution is implemented but it might not work.
 
 - Commands may vary depending on the code editor.
+
+- ThemeTuner works on global settings level. When the workspace has customizations it shows a warning. It is recommended to remove those settings temporary to avoid unexpected results.
 </details>
 
 <details>

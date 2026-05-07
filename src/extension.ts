@@ -40,6 +40,7 @@ import {
   resetTunerThemeSettings,
   saveTheme,
   setTunerSetting,
+  detectWorkspaceThemeProperties,
 } from "./themeUtils";
 
 // This method is called when your extension is activated
@@ -206,6 +207,7 @@ class ThemeEditorPanel {
     // on switching theme
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration("workbench.colorTheme")) {
+        detectWorkspaceThemeProperties();
         this._panel?.webview.postMessage({
           type: "refresh",
           loading: true,
@@ -223,6 +225,7 @@ class ThemeEditorPanel {
             //   this.firstLoad = false;
             //   return;
             // }
+            detectWorkspaceThemeProperties();
             const translations: Record<string, string> = {};
             message.captions.map(
               (c: string) => (translations[c] = vscode.l10n.t(c))
