@@ -208,7 +208,6 @@ class ThemeEditorPanel {
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration("workbench.colorTheme")) {
         detectWorkspaceThemeProperties();
-        // console.log("Theme change detected, loading theme...");
         this._panel?.webview.postMessage({
           type: "refresh",
           loading: true,
@@ -227,7 +226,6 @@ class ThemeEditorPanel {
             //   return;
             // }
             detectWorkspaceThemeProperties();
-            // console.log("Theme READY, loading theme...");
             const translations: Record<string, string> = {};
             message.captions.map(
               (c: string) => (translations[c] = vscode.l10n.t(c))
