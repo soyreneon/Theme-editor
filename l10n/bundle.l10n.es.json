@@ -55,5 +55,5 @@
   "Not included": "No incluido",
   "Switch colors": "Cambiar colores",
   "Simple Search": "Búsqueda simple",
-  "Theme customizations detected in workspace settings. ThemeTuner may not work properly. It's recommended to apply theme changes at the user level instead.": "Se detectaron personalizaciones de tema en el archivo settings.json de tu workspace. ThemeTuner podría no funcionar correctamente. Se recomienda aplicar cambios de tema a nivel de usuario."
+  "Theme customizations detected for {0} in workspace settings. ThemeTuner may not work properly. It's recommended to apply theme changes at the user level instead.": "Se detectaron personalizaciones para el tema {0} en el archivo settings.json de tu workspace. ThemeTuner podría no funcionar correctamente. Se recomienda aplicar cambios de tema a nivel de usuario."
 }

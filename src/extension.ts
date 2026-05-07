@@ -207,7 +207,7 @@ class ThemeEditorPanel {
     // on switching theme
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration("workbench.colorTheme")) {
-        detectWorkspaceThemeProperties(this.themeName);
+        detectWorkspaceThemeProperties();
         // console.log("Theme change detected, loading theme...");
         this._panel?.webview.postMessage({
           type: "refresh",
@@ -226,7 +226,7 @@ class ThemeEditorPanel {
             //   this.firstLoad = false;
             //   return;
             // }
-            detectWorkspaceThemeProperties(this.themeName);
+            detectWorkspaceThemeProperties();
             // console.log("Theme READY, loading theme...");
             const translations: Record<string, string> = {};
             message.captions.map(
@@ -775,7 +775,7 @@ class ThemeEditorPanel {
             // colors: colors,
             error: "",
             tunerSettings: customNames,
-            message,
+            ...(message && { message }),
           });
           // try {
         } catch (error) {
