@@ -2,6 +2,11 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
+## [1.25.0], 27 July 2026
+
+- Add terminal colors template
+- Add SEO tags
+
 ## [1.24.0], 07 May 2026
 
 - Detect modifications on workspace settings that could lead into extension not working properly

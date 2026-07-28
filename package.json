@@ -3,7 +3,7 @@
   "displayName": "ThemeTuner (Real-Time Theme Editor)",
   "publisher": "soyreneon",
   "description": "%extension.description%",
-  "version": "1.24.0",
+  "version": "1.25.0",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -87,7 +87,12 @@
     "token",
     "tokencolors",
     "workbench",
-    "workspace"
+    "workspace",
+    "terminal",
+    "ansi",
+    "ansi-colors",
+    "template",
+    "templates"
   ],
   "activationEvents": [
     "onWebviewPanel:themeEditor"

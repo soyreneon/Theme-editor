@@ -4,6 +4,7 @@ import solidEditor from "./solidEditor1";
 import brackets from "./brackets";
 import activityBar from "./activityBar";
 import fileTracking from "./fileTracking";
+import terminalColors from "./terminalColors";
 
 type TemplateColor = {
   type: Exclude<Filter, "all">;
@@ -31,6 +32,7 @@ const templateList: Template[] = [
   brackets,
   activityBar,
   fileTracking,
+  terminalColors,
 ];
 
 export default templateList;
