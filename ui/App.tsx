@@ -113,11 +113,15 @@ export function App() {
     } else {
       const settings = Object.keys(tunerSettings);
       const newList = colorOrders[filter].filter(
-        (color) => !tunerSettings?.[color]?.pinned
+        (color) => chroma.valid(color) && !tunerSettings?.[color]?.pinned
       );
       settings.map((setting) => {
         const isOnList = colorOrders[filter].includes(setting);
-        if (tunerSettings?.[setting]?.pinned && isOnList) {
+        if (
+          chroma.valid(setting) &&
+          tunerSettings?.[setting]?.pinned &&
+          isOnList
+        ) {
           newList.unshift(setting);
         }
       });

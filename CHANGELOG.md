@@ -2,6 +2,11 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
+## [1.25.1], 08 Sept 2026
+
+- Handle local extension configuration, prevent errors with remote connections
+- Prevent null colors
+
 ## [1.25.0], 27 July 2026
 
 - Add terminal colors template
