@@ -444,6 +444,19 @@ export const setTunerSetting = async (
  * Reads only from .vscode/settings.json, not global user settings
  */
 export const detectWorkspaceThemeProperties = async (): Promise<null> => {
+  /*
+  const extension = vscode.extensions.getExtension("soyreneon.themeeditor");
+  if (extension?.extensionKind === vscode.ExtensionKind.Workspace) {
+    // If the extension is running in a UI context, we cannot access workspace settings
+    return null;
+  }
+  */
+
+  // check for remote envs
+  if (vscode.env.remoteName) {
+    return null;
+  }
+
   try {
     const themeName =
       vscode.workspace
