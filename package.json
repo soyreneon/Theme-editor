@@ -3,7 +3,7 @@
   "displayName": "ThemeTuner (Real-Time Theme Editor)",
   "publisher": "soyreneon",
   "description": "%extension.description%",
-  "version": "1.25.1",
+  "version": "1.25.2",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -37,7 +37,10 @@
     "change-code-color",
     "vsc-theme",
     "theme",
+    "customize-theme",
+    "theme-customization",
     "theme-editor",
+    "theme editor",
     "tema",
     "editor",
     "theme-tuner",
@@ -45,6 +48,8 @@
     "tuner",
     "color",
     "colors",
+    "theme-customizer",
+    "theme customizer",
     "customizer",
     "customize",
     "customization",
@@ -77,11 +82,14 @@
     "saturation",
     "brightness",
     "contrast",
+    "astigmatism",
+    "AAA",
     "accessibility",
     "blind",
     "color-blind",
     "colourblind",
     "colorblind",
+    "eye-strain",
     "textmate",
     "syntax",
     "token",
@@ -98,7 +106,8 @@
     "onWebviewPanel:themeEditor"
   ],
   "extensionKind": [
-    "ui"
+    "ui",
+    "workspace"
   ],
   "main": "./dist/extension.js",
   "l10n": "./l10n",

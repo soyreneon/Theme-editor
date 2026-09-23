@@ -2,6 +2,10 @@
 
 All notable changes to the "themeeditor" extension will be documented in this file.
 
+## [1.25.2], 23 Sept 2026
+
+- Handle both remote connections and local connections
+
 ## [1.25.1], 08 Sept 2026
 
 - Handle local extension configuration, prevent errors with remote connections
